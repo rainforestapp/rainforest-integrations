@@ -46,7 +46,7 @@ module Integrations
     private
 
     def message_text
-      description = run[:description].nil? ? '' : "(#{run[:description]}) "
+      description = run[:description].nil? ? '' : ("(#{run[:description]})" + ' ')
       {
         'run_completion' => "Your Rainforest Run <#{payload[:frontend_url]}|##{payload[:id]}> #{description}#{run[:status]}.",
         'run_error' => "Your Rainforest Run <#{payload[:frontend_url]}|##{payload[:id]}> #{description}errored: #{run[:error_reason]}.",
