@@ -48,12 +48,26 @@ module Integrations
     def message_text
       description = run[:description].nil? ? '' : ("(#{run[:description]})" + ' ')
       {
-        'run_completion' => "Your Rainforest Run <#{payload[:frontend_url]}|##{payload[:id]}> #{description}#{run[:status]}.",
+        'run_completion' => "Your Rainforest Run <#{payload[:frontend_url]}|##{payload[:id]}> #{description}#{run[:status]}. #{time_to_finish}",
         'run_error' => "Your Rainforest Run <#{payload[:frontend_url]}|##{payload[:id]}> #{description}errored: #{run[:error_reason]}.",
         'run_webhook_timeout' => "Your Rainforest run <#{payload[:frontend_url]}|##{payload[:id]}> #{description}timed out due to your webhook failing. If you need a hand debugging it, please let us know via email at team@rainforestqa.com.",
         'run_test_failure' => "<#{payload[:frontend_url]}|Test ##{payload[:id]}> failed!"
       }
     end
+
+    def time_to_finish
+      "Time to finish: #{humanize_secs(run[:time_to_finish])}"
+    end
+
+    def humanize_secs(seconds)
+        secs = seconds.to_i
+        [[60, :seconds], [60, :minutes], [24, :hours], [1000, :days]].map{ |count, name|
+          if secs > 0
+            secs, n = secs.divmod(count)
+            "#{n.to_i} #{name}"
+          end
+        }.compact.reverse.join(' ')
+      end
 
     def url
       settings[:url]

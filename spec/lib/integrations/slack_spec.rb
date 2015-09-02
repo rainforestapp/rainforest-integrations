@@ -56,7 +56,8 @@ describe Integrations::Slack do
           frontend_url: 'http://example.com',
           run: {
             id: 123,
-            status: 'failed'
+            status: 'failed',
+            time_to_finish: (25.minutes + 3.seconds).to_i
           }
         }
       end
@@ -68,8 +69,8 @@ describe Integrations::Slack do
         end
       end
 
-      describe 'run result inclusion' do
-        it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run <http://example.com|#123> failed."
+      describe 'run result inclusion in text' do
+        it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run <http://example.com|#123> failed. Time to finish: 25 minutes 3 seconds"
       end
 
       context 'when there is a description' do
@@ -77,7 +78,26 @@ describe Integrations::Slack do
           payload[:run][:description] = 'some description'
         end
 
-        it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run <http://example.com|#123> (some description) failed."
+        it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run <http://example.com|#123> (some description) failed. Time to finish: 25 minutes 3 seconds"
+      end
+
+      describe 'time to finish inclusion in text' do
+        context 'when time to finish is under an hour' do
+          before do
+            payload[:run][:time_to_finish] = (36.minutes + 44.seconds).to_i
+          end
+
+          it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run <http://example.com|#123> failed. Time to finish: 36 minutes 44 seconds"
+        end
+
+        context 'when time to finish is over an hour' do
+          before do
+            payload[:run][:time_to_finish] = (6.hours + 36.minutes + 44.seconds).to_i
+          end
+
+          it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run <http://example.com|#123> failed. Time to finish: 6 hours 36 minutes 44 seconds"
+        end
+
       end
     end
 
