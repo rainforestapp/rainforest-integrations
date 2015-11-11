@@ -56,7 +56,7 @@ module Integrations
 
     def test_href
       failed_test = payload[:failed_test]
-      "<#{failed_test[:frontend_url]} | Test ##{failed_test[:id]}: #{failed_test[:title]} (#{failed_test[:browser]})> "
+      "<#{failed_test[:frontend_url]} | Test ##{failed_test[:id]}: #{failed_test[:title]} (#{payload[:browser]})> "
     end
   end
 end
