@@ -31,6 +31,13 @@ module Rainforest
       rescue Addressable::URI::InvalidURIError => ex
         msg = "Invalid URL. It should look like https://you.slack.com/services/hooks/incoming-webhook?token=xyz"
         raise ConfigurationError.new(msg, original_exception: ex)
+      rescue Http::Exceptions::HttpException => e
+        if e.response.code == 404
+          # 404s happen with inactive webhooks or bad tokens - should be handled in Rainforest
+          raise ConfigurationError.new("#{e.response.parsed_response}", original_exception: e)
+        else
+          raise e
+        end
       end
 
       def message_text(event)

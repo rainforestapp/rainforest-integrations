@@ -46,7 +46,7 @@ module Rainforest::Integrations
 
     def run_description(run)
       unless run["description"].nil? or run["description"].empty?
-        %{ (run["description"])}
+        %{ (#{run["description"]})}
       end
     end
   end
