@@ -51,7 +51,7 @@ describe Integrations::HipChat do
     subject { described_class.new(event_type, payload, settings) }
 
     it "sends a correctly formatted request" do
-      expect(HTTParty).to receive(:post).with(expected_url, expected_params).and_call_original
+      expect(HTTParty).to receive(:post).with(expected_url, hash_including(:body, :headers)).and_call_original
       VCR.use_cassette('generic_hip_chat_notification') do
         expect(subject.send_event).to be_truthy
       end

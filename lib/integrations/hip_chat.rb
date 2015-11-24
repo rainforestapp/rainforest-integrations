@@ -11,6 +11,7 @@ module Integrations
     def send_event
       response = HTTParty.post(url,
         body: {
+          from: "Rainforest QA",
           color: message_color,
           message: message_text,
           notify: true,
@@ -46,8 +47,8 @@ module Integrations
 
       color_hash = {
         'run_completion' => "green",
-        'run_error' => "red",
-        'webhook_timeout' => "red",
+        'run_error' => "yellow",
+        'webhook_timeout' => "yellow",
         'run_test_failure' => "red",
       }
 

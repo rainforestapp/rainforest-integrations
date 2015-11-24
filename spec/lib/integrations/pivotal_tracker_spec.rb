@@ -58,7 +58,7 @@ describe Integrations::PivotalTracker do
     subject { described_class.new(event_type, payload, settings) }
 
     it "sends a correctly formatted request" do
-      expect(HTTParty).to receive(:post).with(expected_url, expected_params).and_call_original
+      expect(HTTParty).to receive(:post).with(expected_url, hash_including(:body, :headers)).and_call_original
       VCR.use_cassette('generic_pivotal_tracker_notification') do
         expect{ subject.send_event }.to_not raise_error
       end
