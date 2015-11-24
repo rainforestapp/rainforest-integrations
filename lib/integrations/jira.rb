@@ -2,6 +2,7 @@ require "integrations/base"
 
 module Integrations
   class Jira < Base
+    # NOTE: Jira integration development still underway
     def self.key
       'jira'
     end
