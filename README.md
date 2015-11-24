@@ -69,28 +69,28 @@ in the payload:
 
 
 #### `run_completion`
-
-- **run**: id, state, description, time_taken
-
-- **failed_tests**: id, title, frontend_url
-
+  
+- **run:** id, environment, result, description, time_taken, total_tests, total_passed_tests, total_failed_tests, total_no_result_tests
+  
 
 #### `run_error`
-
-- **run**: id, description, error_reason
-
+  
+- **run:** id, description, error_reason
+  
 
 #### `webhook_timeout`
-
-- **run**: id, description
-
+  
+- **run:** id, description
+  
 
 #### `run_test_failure`
-
-- **run**: id, description
-
-- **failed_test**: id, title, frontend_url, browser
-
+  
+- **run:** id, description, environment
+  
+- **failed_test:** id, title, frontend_url
+  
+- **browser:** full_name
+  
 
 
 

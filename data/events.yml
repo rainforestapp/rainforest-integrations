@@ -8,4 +8,4 @@ webhook_timeout:
 run_test_failure:
   run: [id, description, environment]
   failed_test: [id, title, frontend_url]
-  browser: true
+  browser: [full_name]
