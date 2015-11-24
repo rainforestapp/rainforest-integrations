@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'integrations'
 
 describe Integrations::Slack do
-  shared_examples_for "Slack notification with a specific text" do |expected_text|
+  shared_examples_for "Slack notification" do |expected_text|
     it "expects a specific text" do
         expected_params = {:body => {
             :attachments => [{
@@ -16,10 +16,16 @@ describe Integrations::Slack do
             'Accept' => 'application/json'
           }
         }
-        expect(HTTParty).to receive(:post).with(settings.first[:value], expected_params).and_call_original
-        VCR.use_cassette('generic_slack_notification') do
-          Integrations::Slack.new(event_type, payload, settings).send_event
-        end
+        response = double('response')
+        allow(response).to receive(:code).and_return(200)
+
+        expect(HTTParty).to receive(:post) do |url, options|
+          expect(url).to eq settings.first[:value]
+          text = JSON.parse(options[:body])['attachments'].first['text']
+          expect(text).to eq expected_text
+        end.and_return(response)
+
+        described_class.new(event_type, payload, settings).send_event
     end
   end
 
@@ -63,8 +69,15 @@ describe Integrations::Slack do
           frontend_url: 'http://example.com',
           run: {
             id: 123,
-            state: 'failed',
-            time_taken: (25.minutes + 3.seconds).to_i
+            result: 'failed',
+            time_taken: (25.minutes + 3.seconds).to_i,
+            total_tests: 10,
+            total_passed_tests: 8,
+            total_failed_tests: 2,
+            total_no_result_tests: 0,
+            environment: {
+              name: "QA Environment"
+            }
           }
         }
       end
@@ -76,7 +89,7 @@ describe Integrations::Slack do
       end
 
       describe 'run result inclusion in text' do
-        it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run (<http://example.com | Run #123>) failed. Time to finish: 25 minutes 3 seconds"
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123>) is complete!"
       end
 
       context 'when there is a description' do
@@ -84,26 +97,7 @@ describe Integrations::Slack do
           payload[:run][:description] = 'some description'
         end
 
-        it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run (<http://example.com | Run #123: some description>) failed. Time to finish: 25 minutes 3 seconds"
-      end
-
-      describe 'time to finish inclusion in text' do
-        context 'when time to finish is under an hour' do
-          before do
-            payload[:run][:time_taken] = (36.minutes + 44.seconds).to_i
-          end
-
-          it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run (<http://example.com | Run #123>) failed. Time to finish: 36 minutes 44 seconds"
-        end
-
-        context 'when time to finish is over an hour' do
-          before do
-            payload[:run][:time_taken] = (6.hours + 36.minutes + 44.seconds).to_i
-          end
-
-          it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run (<http://example.com | Run #123>) failed. Time to finish: 6 hours 36 minutes 44 seconds"
-        end
-
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123: some description>) is complete!"
       end
     end
 
@@ -125,8 +119,8 @@ describe Integrations::Slack do
         end
       end
 
-      describe 'error reason inclusion' do
-        it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run (<http://example.com | Run #123>) has errored! Error Reason: We were unable to create social account(s)."
+      describe 'message text' do
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123>) has encountered an error!"
       end
     end
 
@@ -136,7 +130,8 @@ describe Integrations::Slack do
         {
           run: {
             id: 7
-          }
+          },
+          frontend_url: 'http://www.example.com'
         }
       end
 
@@ -145,16 +140,27 @@ describe Integrations::Slack do
           Integrations::Slack.new(event_type, payload, settings).send_event
         end
       end
+
+      describe 'message text' do
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://www.example.com | Run #7>) has timed out due to a webhook failure!\nIf you need a hand debugging it, please let us know via email at help@rainforestqa.com."
+      end
     end
 
     context "notify of run_test_failure" do
       let(:event_type) { "run_test_failure" }
       let(:payload) do
         {
+          run: {
+            id: 666,
+            environment: {
+              name: "QA Environment"
+            }
+          },
           failed_test: {
             id: 7,
             name: "My lucky test"
-          }
+          },
+          frontend_url: 'http://www.example.com'
         }
       end
 
@@ -162,6 +168,10 @@ describe Integrations::Slack do
         VCR.use_cassette('run_test_failure_notify_slack') do
           Integrations::Slack.new(event_type, payload, settings).send_event
         end
+      end
+
+      describe "message text" do
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://www.example.com | Run #666>) has a failed a test!"
       end
     end
   end
@@ -195,7 +205,7 @@ describe Integrations::Slack do
           {
             run: {
               id: 3,
-              state: 'failed'
+              result: 'failed'
             }
           }
         end
