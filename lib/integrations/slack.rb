@@ -113,7 +113,7 @@ module Integrations
         },
         {
           title: "Browser",
-          value: payload[:browser],
+          value: payload[:browser][:full_name],
           short: true
         }
       ]

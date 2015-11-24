@@ -160,7 +160,10 @@ describe Integrations::Slack do
             id: 7,
             name: "My lucky test"
           },
-          frontend_url: 'http://www.example.com'
+          frontend_url: 'http://www.example.com',
+          browser: {
+            full_name: 'Google Chrome'
+          }
         }
       end
 
