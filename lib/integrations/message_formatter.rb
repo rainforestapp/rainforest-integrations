@@ -6,12 +6,9 @@ module Integrations
     end
 
     def run_href
+      # Should be overridden with properly formatted hyperlink if that is
+      # supported by your integration
       "Run ##{run[:id]}#{run_description} - #{payload[:frontend_url]}"
-    end
-
-    def test_href
-      failed_test = payload[:failed_test]
-      "Test ##{failed_test[:id]}: #{failed_test[:title]} - #{failed_test[:frontend_url]} (#{payload[:browser]})"
     end
 
     def run_description

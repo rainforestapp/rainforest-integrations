@@ -140,10 +140,5 @@ module Integrations
     def run_href
       "<#{payload[:frontend_url]} | Run ##{run[:id]}#{run_description}>"
     end
-
-    def test_href
-      failed_test = payload[:failed_test]
-      "<#{failed_test[:frontend_url]} | Test ##{failed_test[:id]}: #{failed_test[:title]} (#{payload[:browser]})> "
-    end
   end
 end
