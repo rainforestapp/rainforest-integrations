@@ -42,7 +42,7 @@ describe Integration do
     end
   end
 
-  describe '.all' do
+  describe '.supported_integrations' do
     let(:all_integrations) do
       {
         'slack' => { 'title' => 'Slack', 'settings' => [] },
@@ -57,7 +57,7 @@ describe Integration do
       ]
     end
 
-    subject { Integration.all }
+    subject { Integration.supported_integrations }
 
     before do
       stub_const 'Integration::INTEGRATIONS', all_integrations

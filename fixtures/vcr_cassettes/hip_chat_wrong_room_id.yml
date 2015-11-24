@@ -24,15 +24,15 @@ http_interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 10 Sep 2015 23:59:17 GMT
+      - Wed, 04 Nov 2015 22:32:36 GMT
       Server:
       - nginx
       X-Ratelimit-Limit:
       - '100'
       X-Ratelimit-Remaining:
-      - '99'
+      - '96'
       X-Ratelimit-Reset:
-      - '1441929600.0'
+      - '1446676496'
       Content-Length:
       - '94'
       Connection:
@@ -48,5 +48,5 @@ http_interactions:
           }
         }
     http_version: 
-  recorded_at: Thu, 10 Sep 2015 23:59:17 GMT
+  recorded_at: Wed, 04 Nov 2015 22:32:36 GMT
 recorded_with: VCR 2.9.3

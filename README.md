@@ -28,7 +28,7 @@ authentication and user settings.
 Each post to `events` should include a JSON object in the request body
 with the following keys:
 
-- `event_name`: The event name key (see below for more details).
+- `event_type`: The event name key (see below for more details).
 - `integrations`: A list of integrations to post the event to. Each
   integration object should have 2 keys: `key`, which is the key name
   of the integration (e.g. `"slack"`), and `settings`, which is an
@@ -69,36 +69,28 @@ in the payload:
 
 
 #### `run_completion`
-
-- **run**: id, status, description, time_to_finish
-
-- **frontend_url**:
-
-- **failed_tests**: name
-
+  
+- **run:** id, environment, result, description, time_taken, total_tests, total_passed_tests, total_failed_tests, total_no_result_tests
+  
 
 #### `run_error`
+  
+- **run:** id, description, error_reason
+  
 
-- **run**: id, description, error_reason
-
-- **frontend_url**:
-
-
-#### `run_webhook_timeout`
-
-- **run**: id, description
-
-- **frontend_url**:
-
+#### `webhook_timeout`
+  
+- **run:** id, description
+  
 
 #### `run_test_failure`
-
-- **run**: id, description
-
-- **frontend_url**:
-
-- **failed_test**: id, name
-
+  
+- **run:** id, description, environment
+  
+- **failed_test:** id, title, frontend_url
+  
+- **browser:** full_name
+  
 
 
 
@@ -106,19 +98,14 @@ in the payload:
 There are two steps to adding a new integration:
 
 1. Add an integration class to the `lib/integrations` directory. This
-   should inherit from the `Integrations::Base` class. It needs to
-   overwrite the `send_event` method and define a `key` class method.
-   If the integration post is unsuccessful, you should raise one of
-   the following errors:
-
-   - `Integrations::UserConfigurationError` for user configuration
+   should inherit from the `Integrations::Base` class and should
+   overwrite the `send_event` method. If the integration post is
+   unsuccessful, you should raise one of the following errors:
+   `Integrations::UserConfigurationError` for user configuration
    problems (such as invalid credentials);
-
-   - `Integrations::MisconfiguredIntegrationError` for non-user problems
-   in the integrations data from Rainforest;
-
-   - `Integrations::Error` for all other problems.
-
+   `Integrations::MisconfiguredIntegrationError` for non-user problems
+   in the integrations data from Rainforest; and `Integrations::Error`
+   for all other problems.
 2. Edit `data/integrations.yml` to add your integration (including the
    appropriate values for `title` and `settings`).
 

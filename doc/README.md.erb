@@ -28,7 +28,7 @@ authentication and user settings.
 Each post to `events` should include a JSON object in the request body
 with the following keys:
 
-- `event_name`: The event name key (see below for more details).
+- `event_type`: The event name key (see below for more details).
 - `integrations`: A list of integrations to post the event to. Each
   integration object should have 2 keys: `key`, which is the key name
   of the integration (e.g. `"slack"`), and `settings`, which is an
@@ -67,11 +67,11 @@ Events come with a payload that is specific to the event. The
 following events are currently supported, with the corresponding keys
 in the payload:
 
-<% @events.each do |event_name, data_hashes| %>
-#### `<%= event_name %>`
-<% data_hashes.each do |key, fields| %>
-- **<%= key %>**: <%= fields.join(", ") unless fields.nil? %>
-<% end %>
+<% @events.each do |event_type, data_hashes| %>
+#### `<%= event_type %>`
+  <% data_hashes.each do |key, data| %>
+- **<%= key %>:** <%= data.join(', ') %>
+  <% end %>
 <% end %>
 
 
@@ -96,6 +96,14 @@ There are two steps to adding a new integration:
 2. `bundle install`
 3. You need to set the environment variable `INTEGRATION_SENTRY_DSN` (no default included due to the public nature of this project)
 4. `rails s`
+
+### For internal Rainforest developers
+
+The main Rainforest app will try to call (by default, this is configurable) `http://integrations.dev` in development.
+
+1. Install Pow if you don't have it already: `curl get.pow.cx | sh`
+2. `ln -s ~/rainforest/rainforest-integration ~/.pow/integrations`
+
 
 ## Contributing
 1. Fork it ( https://github.com/[my-github-username]/rainforest-integrations/fork )

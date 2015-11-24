@@ -1,0 +1,46 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://hooks.slack.com/services/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
+    body:
+      encoding: UTF-8
+      string: '{"attachments":[{"text":"Your Rainforest Run (\u003c | Run #7\u003e)
+        has timed out due to your webhook failing. If you need a hand debugging it,
+        please let us know via email at help@rainforestqa.com.","fallback":"Your Rainforest
+        Run (\u003c | Run #7\u003e) has timed out due to your webhook failing. If
+        you need a hand debugging it, please let us know via email at help@rainforestqa.com.","color":"danger"}]}'
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - referrer no-referrer;
+      Content-Type:
+      - text/html
+      Date:
+      - Thu, 05 Nov 2015 02:33:03 GMT
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Frame-Options:
+      - SAMEORIGIN
+      Content-Length:
+      - '2'
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: ok
+    http_version: 
+  recorded_at: Thu, 05 Nov 2015 02:33:04 GMT
+recorded_with: VCR 2.9.3

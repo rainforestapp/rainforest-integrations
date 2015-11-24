@@ -2,9 +2,9 @@ require 'rails_helper'
 require 'integrations'
 
 describe Integrations::Jira do
-  subject { described_class.new(event_name, payload, settings) }
+  subject { described_class.new(event_type, payload, settings) }
 
-  let(:event_name) { 'run_failure' }
+  let(:event_type) { 'run_failure' }
   let(:payload) do
     {
       run: {
@@ -15,12 +15,24 @@ describe Integrations::Jira do
     }
   end
   let(:settings) do
-    {
-      username: 'admin',
-      password: 'something',
-      jira_base_url: 'http://example.com',
-      project_key: 'ABC'
-    }
+    [
+      {
+        key: 'username',
+        value: 'admin'
+      },
+      {
+        key: 'password',
+        value: 'something'
+      },
+      {
+        key: 'jira_base_url',
+        value: 'http://example.com'
+      },
+      {
+        key: 'project_key',
+        value: 'ABC'
+      }
+    ]
   end
 
   let(:failed_test) do
@@ -36,7 +48,7 @@ describe Integrations::Jira do
 
     context 'when there is an authentication error' do
       it 'raises a Integrations::UserConfigurationError' do
-        settings[:jira_base_url] = 'https://rainforest-integration-testing.atlassian.net'
+        settings[2][:value] = 'https://rainforest-integration-testing.atlassian.net'
 
         VCR.use_cassette('jira/authentication-error') do
           expect { send_event }.to raise_error(Integrations::UserConfigurationError, 'Authentication failed. Wrong username and/or password. Keep in mind that your JIRA username is NOT your email address.')
@@ -63,12 +75,24 @@ describe Integrations::Jira do
 
     context 'when the event has one or more failed test' do
       let(:settings) do
-        {
-          username: 'admin',
-          password: 'eizEcahrGBQAfT9BBhgoLvYikbpxZZ2LjvJVojevfpRWBBbFgj',
-          jira_base_url: 'https://rainforest-integration-testing.atlassian.net',
-          project_key: 'MVBP'
-        }
+        [
+          {
+            key: 'username',
+            value: 'admin'
+          },
+          {
+            key: 'password',
+            value: 'eizEcahrGBQAfT9BBhgoLvYikbpxZZ2LjvJVojevfpRWBBbFgj'
+          },
+          {
+            key: 'jira_base_url',
+            value: 'https://rainforest-integration-testing.atlassian.net'
+          },
+          {
+            key: 'project_key',
+            value: 'MVBP'
+          }
+        ]
       end
 
       let(:payload) do
@@ -77,7 +101,7 @@ describe Integrations::Jira do
             id: 9,
             status: "failed",
             description: "rainforest run",
-            time_to_finish: 750
+            time_taken: 750
           },
           frontend_url: "http://www.rainforestqa.com/"
         }
@@ -136,7 +160,7 @@ describe Integrations::Jira do
 
         context 'when a label is configured' do
           it 'adds the label to the issue' do
-            settings[:labels] = '    rainforest '
+            settings.push( { key: 'labels', value: '    rainforest ' })
 
             allow(HTTParty).to receive(:post) do |url, post_payload|
               json_body = JSON.parse(post_payload[:body])
@@ -152,7 +176,7 @@ describe Integrations::Jira do
 
         context 'when multiple labels are configured' do
           it 'adds the labels to the issue' do
-            settings[:labels] = '    rainforest  ,    bug '
+            settings.push({key: 'labels', value: '    rainforest  ,    bug ' })
 
             allow(HTTParty).to receive(:post) do |url, post_payload|
               json_body = JSON.parse(post_payload[:body])
@@ -169,7 +193,7 @@ describe Integrations::Jira do
         context 'when there are no label configured' do
           ['    ', nil].each do |empty_configuration|
             it 'does not add a label to the issue' do
-              settings[:labels] = empty_configuration
+              settings.push({ key: 'label', value: empty_configuration })
               allow(HTTParty).to receive(:post) do |url, post_payload|
                 json_body = JSON.parse(post_payload[:body])
 
@@ -187,10 +211,10 @@ describe Integrations::Jira do
   end
 
   describe '#jira_base_url' do
-    subject { described_class.new(event_name, payload, settings).send(:jira_base_url) }
+    subject { described_class.new(event_type, payload, settings).send(:jira_base_url) }
 
     before do
-      settings[:jira_base_url] = jira_base_url_setting
+      settings[2][:value] = jira_base_url_setting
     end
 
     context 'when URL has a trailing slash' do

@@ -1,36 +1,11 @@
 ---
 run_completion:
-  run:
-    id:
-    state:
-    description:
-    time_to_finish:
-  frontend_url:
-  failed_tests:
-    - id:
-      title:
-      frontend_url:
-    - id:
-      title:
-      frontend_url:
+  run: [id, environment, result, description, time_taken, total_tests, total_passed_tests, total_failed_tests, total_no_result_tests]
 run_error:
-  run:
-    id:
-    description:
-    error_reason:
-  frontend_url:
-run_webhook_timeout:
-  run:
-    id:
-    description:
-  frontend_url:
+  run: [id, description, error_reason]
+webhook_timeout:
+  run: [id, description]
 run_test_failure:
-  run:
-    id:
-    description:
-  frontend_url:
-  failed_test:
-    id:
-    title:
-    frontend_url:
-    browser:
+  run: [id, description, environment]
+  failed_test: [id, title, frontend_url]
+  browser: [full_name]

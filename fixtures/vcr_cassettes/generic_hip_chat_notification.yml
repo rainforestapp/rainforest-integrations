@@ -24,7 +24,9 @@ http_interactions:
       Content-Type:
       - text/html
       Date:
-      - Thu, 10 Sep 2015 23:59:17 GMT
+      - Wed, 04 Nov 2015 22:32:35 GMT
+      Location:
+      - https://api.hipchat.com/v2/room/1902326/history/b54e68df-4943-4f89-aa82-67201914d321
       Server:
       - nginx
       Strict-Transport-Security:
@@ -34,9 +36,9 @@ http_interactions:
       X-Ratelimit-Limit:
       - '100'
       X-Ratelimit-Remaining:
-      - '100'
+      - '97'
       X-Ratelimit-Reset:
-      - '1441929600.0'
+      - '1446676496'
       X-Xss-Protection:
       - 1; mode=block
       Connection:
@@ -45,5 +47,5 @@ http_interactions:
       encoding: UTF-8
       string: ''
     http_version: 
-  recorded_at: Thu, 10 Sep 2015 23:59:17 GMT
+  recorded_at: Wed, 04 Nov 2015 22:32:35 GMT
 recorded_with: VCR 2.9.3

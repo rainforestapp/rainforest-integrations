@@ -2,6 +2,10 @@ require 'yaml'
 
 class Integration
   INTEGRATIONS = YAML.load File.read(Rails.root.join('data', 'integrations.yml')).freeze
+  EVENT_TYPES = YAML.load File.read(Rails.root.join('data', 'event_types.yml')).freeze
+
+  # NOTE: Temporarily obscure integrations that aren't ready yet
+  INCOMPLETE_INTEGRATIONS = %w(hip_chat jira pivotal_tracker).freeze
 
   class NotFound < StandardError
   end
@@ -18,13 +22,21 @@ class Integration
     INTEGRATIONS.key? key
   end
 
-  def self.supported_integrations
+  def self.keys
     INTEGRATIONS.keys.freeze
   end
 
-  def self.all
+  def self.supported_integrations
     INTEGRATIONS.map do |key, data|
       { 'key' => key }.merge data
     end
+  end
+
+  def self.public_integrations
+    supported_integrations.reject { |int| INCOMPLETE_INTEGRATIONS.include?(int['key']) }
+  end
+
+  def self.supported_event_types
+    EVENT_TYPES
   end
 end

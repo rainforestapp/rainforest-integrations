@@ -2,6 +2,9 @@ require "integrations/base"
 
 module Integrations
   class HipChat < Base
+    # NOTE: HipChat integration development still underway
+    include Integrations::MessageFormatter
+
     def self.key
       "hip_chat"
     end
@@ -9,6 +12,7 @@ module Integrations
     def send_event
       response = HTTParty.post(url,
         body: {
+          from: "Rainforest QA",
           color: message_color,
           message: message_text,
           notify: true,
@@ -44,12 +48,12 @@ module Integrations
 
       color_hash = {
         'run_completion' => "green",
-        'run_error' => "red",
-        'run_webhook_timeout' => "red",
+        'run_error' => "yellow",
+        'webhook_timeout' => "yellow",
         'run_test_failure' => "red",
       }
 
-      color_hash[event_name]
+      color_hash[event_type]
     end
 
     def run_href
@@ -58,7 +62,7 @@ module Integrations
 
     def test_href
       failed_test = payload[:failed_test]
-      "<a href=\"#{failed_test[:frontend_url]}\">Test ##{failed_test[:id]}: #{failed_test[:title]}</a> (#{failed_test[:browser]})"
+      "<a href=\"#{failed_test[:frontend_url]}\">Test ##{failed_test[:id]}: #{failed_test[:title]}</a> (#{payload[:browser]})"
     end
   end
 end

@@ -17,11 +17,11 @@ describe EventsController, type: :controller do
     ]
   end
 
-  let(:event_name) { 'run_completion' }
+  let(:event_type) { 'run_completion' }
 
   let(:payload) do
     {
-      event_name: event_name,
+      event_type: event_type,
       integrations: integrations,
       payload: run_payload
     }.to_json
@@ -52,7 +52,7 @@ describe EventsController, type: :controller do
 
       it 'delegates to Integrations' do
         expect(::Integrations).to receive(:send_event)
-                                   .with(event_name: event_name,
+                                   .with(event_type: event_type,
                                          integrations: integrations,
                                          payload: run_payload)
         post :create, payload

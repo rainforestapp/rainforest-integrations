@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'integrations'
 
 describe Integrations::Slack do
-  shared_examples_for "Slack notification with a specific text" do |expected_text|
+  shared_examples_for "Slack notification" do |expected_text|
     it "expects a specific text" do
         expected_params = {:body => {
             :attachments => [{
@@ -16,15 +16,21 @@ describe Integrations::Slack do
             'Accept' => 'application/json'
           }
         }
-        expect(HTTParty).to receive(:post).with(settings[:url], expected_params).and_call_original
-        VCR.use_cassette('generic_slack_notification') do
-          Integrations::Slack.new(event_name, payload, settings).send_event
-        end
+        response = double('response')
+        allow(response).to receive(:code).and_return(200)
+
+        expect(HTTParty).to receive(:post) do |url, options|
+          expect(url).to eq settings.first[:value]
+          text = JSON.parse(options[:body])['attachments'].first['text']
+          expect(text).to eq expected_text
+        end.and_return(response)
+
+        described_class.new(event_type, payload, settings).send_event
     end
   end
 
   describe '#initialize' do
-    let(:event_name) { 'run_failure' }
+    let(:event_type) { 'run_failure' }
     let(:payload) do
       {
         run: {
@@ -35,10 +41,10 @@ describe Integrations::Slack do
     end
 
 
-    subject { described_class.new(event_name, payload, settings) }
+    subject { described_class.new(event_type, payload, settings) }
 
     context 'without a valid integration url' do
-      let(:settings) { {} }
+      let(:settings) { [] }
 
       it 'raises a MisconfiguredIntegrationError' do
         expect { subject }.to raise_error Integrations::MisconfiguredIntegrationError
@@ -47,29 +53,43 @@ describe Integrations::Slack do
   end
 
   describe "send to Slack" do
-    let(:settings) { {:url => "https://hooks.slack.com/services/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"} }
+    let(:settings) do
+      [
+        {
+          key: 'url',
+          value: 'https://hooks.slack.com/services/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'
+        }
+      ]
+    end
 
     context "notify of run_completion" do
-      let(:event_name) { "run_completion" }
+      let(:event_type) { "run_completion" }
       let(:payload) do
         {
           frontend_url: 'http://example.com',
           run: {
             id: 123,
-            state: 'failed',
-            time_to_finish: (25.minutes + 3.seconds).to_i
+            result: 'failed',
+            time_taken: (25.minutes + 3.seconds).to_i,
+            total_tests: 10,
+            total_passed_tests: 8,
+            total_failed_tests: 2,
+            total_no_result_tests: 0,
+            environment: {
+              name: "QA Environment"
+            }
           }
         }
       end
 
       it 'sends a message to Slack' do
         VCR.use_cassette('run_completion_notify_slack') do
-          Integrations::Slack.new(event_name, payload, settings).send_event
+          Integrations::Slack.new(event_type, payload, settings).send_event
         end
       end
 
       describe 'run result inclusion in text' do
-        it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run (<http://example.com | Run #123>) failed. Time to finish: 25 minutes 3 seconds"
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123>) is complete!"
       end
 
       context 'when there is a description' do
@@ -77,31 +97,12 @@ describe Integrations::Slack do
           payload[:run][:description] = 'some description'
         end
 
-        it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run (<http://example.com | Run #123: some description>) failed. Time to finish: 25 minutes 3 seconds"
-      end
-
-      describe 'time to finish inclusion in text' do
-        context 'when time to finish is under an hour' do
-          before do
-            payload[:run][:time_to_finish] = (36.minutes + 44.seconds).to_i
-          end
-
-          it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run (<http://example.com | Run #123>) failed. Time to finish: 36 minutes 44 seconds"
-        end
-
-        context 'when time to finish is over an hour' do
-          before do
-            payload[:run][:time_to_finish] = (6.hours + 36.minutes + 44.seconds).to_i
-          end
-
-          it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run (<http://example.com | Run #123>) failed. Time to finish: 6 hours 36 minutes 44 seconds"
-        end
-
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123: some description>) is complete!"
       end
     end
 
     context "notify of run_error" do
-      let(:event_name) { "run_error" }
+      let(:event_type) { "run_error" }
       let(:payload) do
         {
           frontend_url: 'http://example.com',
@@ -114,55 +115,82 @@ describe Integrations::Slack do
 
       it 'sends a message to Slack' do
         VCR.use_cassette('run_error_notify_slack') do
-          Integrations::Slack.new(event_name, payload, settings).send_event
+          Integrations::Slack.new(event_type, payload, settings).send_event
         end
       end
 
-      describe 'error reason inclusion' do
-        it_should_behave_like "Slack notification with a specific text", "Your Rainforest Run (<http://example.com | Run #123>) errored: We were unable to create social account(s)."
+      describe 'message text' do
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123>) has encountered an error!"
       end
     end
 
-    context "notify of run_webhook_timeout" do
-      let(:event_name) { "run_webhook_timeout" }
+    context "notify of webhook_timeout" do
+      let(:event_type) { "webhook_timeout" }
       let(:payload) do
         {
           run: {
             id: 7
-          }
+          },
+          frontend_url: 'http://www.example.com'
         }
       end
 
       it 'sends a message to Slack' do
-        VCR.use_cassette('run_webhook_timeout_notify_slack') do
-          Integrations::Slack.new(event_name, payload, settings).send_event
+        VCR.use_cassette('webhook_timeout_notify_slack') do
+          Integrations::Slack.new(event_type, payload, settings).send_event
         end
+      end
+
+      describe 'message text' do
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://www.example.com | Run #7>) has timed out due to a webhook failure!\nIf you need a hand debugging it, please let us know via email at help@rainforestqa.com."
       end
     end
 
     context "notify of run_test_failure" do
-      let(:event_name) { "run_test_failure" }
+      let(:event_type) { "run_test_failure" }
       let(:payload) do
         {
+          run: {
+            id: 666,
+            environment: {
+              name: "QA Environment"
+            }
+          },
           failed_test: {
             id: 7,
             name: "My lucky test"
+          },
+          frontend_url: 'http://www.example.com',
+          browser: {
+            full_name: 'Google Chrome'
           }
         }
       end
 
       it 'sends a message to Slack' do
         VCR.use_cassette('run_test_failure_notify_slack') do
-          Integrations::Slack.new(event_name, payload, settings).send_event
+          Integrations::Slack.new(event_type, payload, settings).send_event
         end
+      end
+
+      describe "message text" do
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://www.example.com | Run #666>) has a failed a test!"
       end
     end
   end
 
   describe '#message_color' do
-    subject { Integrations::Slack.new(event_name, payload, settings).message_color }
+    # message_color is a private method
+    subject { Integrations::Slack.new(event_type, payload, settings).send(:message_color) }
 
-    let(:settings) { { url: 'https://slack.com/bogus_integration' } }
+    let(:settings) do
+      [
+        {
+          key: 'url',
+          value: 'https://slack.com/bogus_integration'
+        }
+      ]
+    end
     let(:payload) do
       {
         run: {
@@ -173,14 +201,14 @@ describe Integrations::Slack do
     end
 
     context 'run_completion' do
-      let(:event_name) { 'run_completion' }
+      let(:event_type) { 'run_completion' }
 
       context 'when the run is failed' do
         let(:payload) do
           {
             run: {
               id: 3,
-              state: 'failed'
+              result: 'failed'
             }
           }
         end
@@ -194,19 +222,19 @@ describe Integrations::Slack do
     end
 
     context 'run_error' do
-      let(:event_name) { 'run_error' }
+      let(:event_type) { 'run_error' }
 
       it { is_expected.to eq 'danger' }
     end
 
-    context 'run_webhook_timeout' do
-      let(:event_name) { 'run_webhook_timeout' }
+    context 'webhook_timeout' do
+      let(:event_type) { 'webhook_timeout' }
 
       it { is_expected.to eq 'danger' }
     end
 
     context 'run_test_failure' do
-      let(:event_name) { 'run_test_failure' }
+      let(:event_type) { 'run_test_failure' }
 
       it { is_expected.to eq 'danger' }
     end

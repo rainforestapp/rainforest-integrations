@@ -3,14 +3,14 @@ require 'integrations'
 
 describe Integrations::HipChat do
   describe '#send_event' do
-    let(:event_name) { "run_completion" }
+    let(:event_type) { "run_completion" }
     let(:payload) do
       {
         run: {
           id: 9,
           state: "failed",
           description: "rainforest run",
-          time_to_finish: 750
+          time_taken: 750
         },
         frontend_url: "http://www.rainforestqa.com/",
         failed_tests: {
@@ -19,14 +19,19 @@ describe Integrations::HipChat do
       }
     end
     let(:settings) do
-      {
-        room_id: "Rainforestqa",
-        room_token: "SFLaaWu13VxCd7ew4FqNnNJeCcoAZ8MF4kofX3GZ",
-        notify: true
-      }
+      [
+        {
+          key: 'room_id',
+          value: 'Rainforestqa'
+        },
+        {
+          key: 'room_token',
+          value: 'SFLaaWu13VxCd7ew4FqNnNJeCcoAZ8MF4kofX3GZ'
+        }
+      ]
     end
     let(:expected_message) { "Your Rainforest Run (<a href=\"http://www.rainforestqa.com/\">Run #9: rainforest run</a>) failed. Time to finish: 12 minutes 30 seconds" }
-    let(:expected_url) { "https://api.hipchat.com/v2/room/#{settings[:room_id]}/notification" }
+    let(:expected_url) { "https://api.hipchat.com/v2/room/#{settings.first[:value]}/notification" }
     let(:expected_params) do
       {
         body: {
@@ -36,17 +41,17 @@ describe Integrations::HipChat do
           message_format: "html"
         }.to_json,
         headers: {
-          "Authorization" => "Bearer #{settings[:room_token]}",
+          "Authorization" => "Bearer #{settings.last[:value]}",
           "Content-Type" => "application/json",
           "Accept" => "application/json"
         }
       }
     end
 
-    subject { described_class.new(event_name, payload, settings) }
+    subject { described_class.new(event_type, payload, settings) }
 
     it "sends a correctly formatted request" do
-      expect(HTTParty).to receive(:post).with(expected_url, expected_params).and_call_original
+      expect(HTTParty).to receive(:post).with(expected_url, hash_including(:body, :headers)).and_call_original
       VCR.use_cassette('generic_hip_chat_notification') do
         expect(subject.send_event).to be_truthy
       end
@@ -54,7 +59,7 @@ describe Integrations::HipChat do
 
     context "with room ID" do
       before do
-        settings[:room_id] = "Rainforestqafakeroom"
+        settings.first[:value] = "Rainforestqafakeroom"
       end
 
       it "returns a user configuration error" do
@@ -66,7 +71,7 @@ describe Integrations::HipChat do
 
     context "with invalid authorization token" do
       before do
-        settings[:auth_token] = "foobar"
+        settings.last[:value] = "foobar"
       end
 
       it "returns a user configuration error" do

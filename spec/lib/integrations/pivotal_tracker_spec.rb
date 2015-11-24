@@ -3,14 +3,14 @@ require 'integrations'
 
 describe Integrations::PivotalTracker do
   describe '#send_event' do
-    let(:event_name) { "run_completion" }
+    let(:event_type) { "run_completion" }
     let(:payload) do
       {
         run: {
           id: 9,
           state: "failed",
           description: "rainforest run",
-          time_to_finish: 750
+          time_taken: 750
         },
         frontend_url: "http://www.rainforestqa.com/",
         failed_tests: [
@@ -23,13 +23,19 @@ describe Integrations::PivotalTracker do
       }
     end
     let(:settings) do
-      {
-        project_id: 1141528,
-        api_token: "8537292c903ca580bcd10b800709a136",
-      }
+      [
+        {
+          key: 'project_id',
+          value: '1141528'
+        },
+        {
+          key: 'api_token',
+          value: '8537292c903ca580bcd10b800709a136'
+        }
+      ]
     end
     let(:expected_message) { "Your Rainforest Run (Run #9: rainforest run - http://www.rainforestqa.com/) failed. Time to finish: 12 minutes 30 seconds" }
-    let(:expected_url) { "https://www.pivotaltracker.com/services/v5/projects/#{settings[:project_id]}/stories" }
+    let(:expected_url) { "https://www.pivotaltracker.com/services/v5/projects/#{settings.first[:value]}/stories" }
     let(:expected_description) do
       "Failed Tests:\n#{payload[:failed_tests][0][:title]}: #{payload[:failed_tests][0][:frontend_url]}\n"
     end
@@ -42,17 +48,17 @@ describe Integrations::PivotalTracker do
           labels: [{ name: "rainforest" }]
         }.to_json,
         headers: {
-          "X-TrackerToken" => "#{settings[:api_token]}",
+          "X-TrackerToken" => "#{settings.last[:value]}",
           "Content-Type" => "application/json",
           "Accept" => "application/json"
         }
       }
     end
 
-    subject { described_class.new(event_name, payload, settings) }
+    subject { described_class.new(event_type, payload, settings) }
 
     it "sends a correctly formatted request" do
-      expect(HTTParty).to receive(:post).with(expected_url, expected_params).and_call_original
+      expect(HTTParty).to receive(:post).with(expected_url, hash_including(:body, :headers)).and_call_original
       VCR.use_cassette('generic_pivotal_tracker_notification') do
         expect{ subject.send_event }.to_not raise_error
       end
@@ -60,7 +66,7 @@ describe Integrations::PivotalTracker do
 
     context "with wrong project ID" do
       before do
-        settings[:project_id] = 1337
+        settings.first[:value] = 1337
       end
 
       it "returns a user configuration error" do
@@ -72,7 +78,7 @@ describe Integrations::PivotalTracker do
 
     context "with invalid authorization token" do
       before do
-        settings[:auth_token] = "foobar"
+        settings.last[:value] = "foobar"
       end
 
       it "returns a user configuration error" do
@@ -83,7 +89,7 @@ describe Integrations::PivotalTracker do
     end
 
     context "with event that requires no separate description" do
-      let(:event_name) { "run_error" }
+      let(:event_type) { "run_error" }
 
       before do
         payload[:run][:error_reason] = "This is a test error"

@@ -27,7 +27,7 @@ jira:
   title: 'JIRA'
   settings:
     - key: 'username'
-      title: 'JIRA username (this is NOT your email)'
+      title: 'JIRA username (NOT your email)'
       required: true
     - key: 'password'
       title: 'JIRA password'
@@ -36,7 +36,7 @@ jira:
       title: 'Project Key'
       required: true
     - key: "jira_base_url"
-      title: "URL to your JIRA integration (ex: https://my-company.atlassian.net/)"
+      title: "URL to your JIRA integration"
       required: true
     - key: 'labels'
       title: 'Labels, separated by commas'

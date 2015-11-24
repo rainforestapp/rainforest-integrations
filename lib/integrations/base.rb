@@ -1,22 +1,17 @@
-require 'integrations'
-require 'integrations/formatter'
-require "httparty"
-
 module Integrations
   class Base
-    include Integrations::Formatter
-    attr_reader :event_name, :payload, :settings, :run
+    attr_reader :event_type, :payload, :settings, :run
 
     def self.key
       raise 'key must be defined in the child class'
     end
 
-    def initialize(event_name, payload, settings)
-      validate_settings settings
-      @event_name = event_name
+    def initialize(event_type, payload, settings)
+      @event_type = event_type
       @payload = payload
       @run = payload[:run] || {}
-      @settings = settings
+      @settings = Integrations::Settings.new(settings)
+      validate_settings
     end
 
     def send_event
@@ -28,16 +23,18 @@ module Integrations
     def self.required_settings
       @required_settings ||= Integration.find(key).fetch('settings').map do |setting|
         if setting['required']
-          setting.fetch('key').to_sym
+          setting.fetch('key')
         end
       end.compact
     end
 
-    def validate_settings(settings)
-      self.class.required_settings.each do |setting|
-        unless settings.key? setting
-          raise Integrations::MisconfiguredIntegrationError, "Required setting '#{setting}' was not supplied"
-        end
+    def validate_settings
+      supplied_settings = settings.keys
+      required_settings = self.class.required_settings
+      missing_settings = required_settings - supplied_settings
+
+      unless missing_settings.empty?
+        raise Integrations::MisconfiguredIntegrationError, "Required settings '#{missing_settings.join(", ")}' were not supplied to #{self.class.key}"
       end
     end
   end
