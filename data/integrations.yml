@@ -5,39 +5,39 @@ slack:
     - key: 'url'
       title: 'Slack webhook URL'
       required: true
-hip_chat:
-  title: 'HipChat'
-  settings:
-    - key: 'room_id'
-      title: 'HipChat Room id'
-      required: true
-    - key: 'room_token'
-      title: 'HipChat Room Notification Token'
-      required: true
-pivotal_tracker:
-  title: "Pivotal Tracker"
-  settings:
-    - key: "project_id"
-      title: "Project ID for new stories to be posted"
-      required: true
-    - key: "api_token"
-      title: "Pivotal Tracker API token"
-      required: "true"
-jira:
-  title: 'JIRA'
-  settings:
-    - key: 'username'
-      title: 'JIRA username (NOT your email)'
-      required: true
-    - key: 'password'
-      title: 'JIRA password'
-      required: true
-    - key: 'project_key'
-      title: 'Project Key'
-      required: true
-    - key: "jira_base_url"
-      title: "URL to your JIRA integration"
-      required: true
-    - key: 'labels'
-      title: 'Labels, separated by commas'
-      required: false
+# hip_chat:
+#   title: 'HipChat'
+#   settings:
+#     - key: 'room_id'
+#       title: 'HipChat Room id'
+#       required: true
+#     - key: 'room_token'
+#       title: 'HipChat Room Notification Token'
+#       required: true
+# pivotal_tracker:
+#   title: "Pivotal Tracker"
+#   settings:
+#     - key: "project_id"
+#       title: "Project ID for new stories to be posted"
+#       required: true
+#     - key: "api_token"
+#       title: "Pivotal Tracker API token"
+#       required: "true"
+# jira:
+#   title: 'JIRA'
+#   settings:
+#     - key: 'username'
+#       title: 'JIRA username (NOT your email)'
+#       required: true
+#     - key: 'password'
+#       title: 'JIRA password'
+#       required: true
+#     - key: 'project_key'
+#       title: 'Project Key'
+#       required: true
+#     - key: "jira_base_url"
+#       title: "URL to your JIRA integration"
+#       required: true
+#     - key: 'labels'
+#       title: 'Labels, separated by commas'
+#       required: false
