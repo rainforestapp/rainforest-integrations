@@ -1,10 +1,10 @@
 require 'rails_helper'
-require 'integrations/formatter'
+require 'integrations/message_formatter'
 
-describe Integrations::Formatter do
+describe Integrations::MessageFormatter do
   let(:class_instance) do
     klass = Class.new do
-      include Integrations::Formatter
+      include Integrations::MessageFormatter
       attr_reader :run
     end
     klass.new

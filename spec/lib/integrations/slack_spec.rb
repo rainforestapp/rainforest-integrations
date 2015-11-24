@@ -167,7 +167,8 @@ describe Integrations::Slack do
   end
 
   describe '#message_color' do
-    subject { Integrations::Slack.new(event_type, payload, settings).message_color }
+    # message_color is a private method
+    subject { Integrations::Slack.new(event_type, payload, settings).send(:message_color) }
 
     let(:settings) do
       [

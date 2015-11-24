@@ -1,6 +1,5 @@
 module Integrations
   class Base
-    include Integrations::Formatter
     attr_reader :event_type, :payload, :settings, :run
 
     def self.key

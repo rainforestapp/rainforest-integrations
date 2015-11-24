@@ -2,6 +2,8 @@ require "integrations/base"
 
 module Integrations
   class PivotalTracker < Base
+    include Integrations::MessageFormatter
+
     def self.key
       'pivotal_tracker'
     end

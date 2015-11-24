@@ -1,5 +1,5 @@
 module Integrations
-  module Formatter
+  module MessageFormatter
     def message_text
       message = self.send(event_type.dup.concat("_message").to_sym)
       "Your Rainforest Run (#{run_href}) #{message}"
@@ -19,7 +19,7 @@ module Integrations
     end
 
     def run_completion_message
-      "#{run[:state]}. #{time_taken}"
+      "is complete!"
     end
 
     def run_error_message
@@ -27,7 +27,7 @@ module Integrations
         run[:error_reason] = "unspecified (please contact help@rainforestqa.com if you'd like help debugging this)"
       end
 
-      "has errored! Error Reason: #{run[:error_reason]}."
+      "has encountered an error! Error Reason: #{run[:error_reason]}."
     end
 
     def webhook_timeout_message
@@ -35,11 +35,7 @@ module Integrations
     end
 
     def run_test_failure_message
-      "has a failed at test! #{test_href}"
-    end
-
-    def time_taken
-      "Time to finish: #{humanize_secs(run[:time_taken])}"
+      "has a failed a test! #{test_href}"
     end
 
     def humanize_secs(seconds)
@@ -49,7 +45,7 @@ module Integrations
           secs, n = secs.divmod(count)
           "#{n.to_i} #{name}"
         end
-      end.compact.reverse.join(' ')
+      end.compact.reverse.join(', ')
     end
   end
 end

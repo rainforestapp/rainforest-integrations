@@ -2,6 +2,8 @@ require "integrations/base"
 
 module Integrations
   class HipChat < Base
+    include Integrations::MessageFormatter
+
     def self.key
       "hip_chat"
     end

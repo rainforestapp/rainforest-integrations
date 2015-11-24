@@ -1,7 +1,6 @@
 ---
 run_completion:
-  run: [id, state, description, time_taken]
-  failed_tests: [id, title, frontend_url]
+  run: [id, result, description, time_taken, total_tests, total_passed_tests, total_failed_tests, total_no_result_tests]
 run_error:
   run: [id, description, error_reason]
 webhook_timeout:
