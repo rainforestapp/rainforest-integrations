@@ -10,7 +10,7 @@ class IntegrationsController < ApplicationController
   end
 
   def index
-    integrations = Integration.supported_integrations
+    integrations = Integration.public_integrations
     event_types = Integration.supported_event_types
     render json: {
       event_types: event_types,
