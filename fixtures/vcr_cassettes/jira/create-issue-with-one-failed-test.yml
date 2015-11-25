@@ -1,0 +1,62 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://admin:eizEcahrGBQAfT9BBhgoLvYikbpxZZ2LjvJVojevfpRWBBbFgj@rainforest-integration-testing.atlassian.net/rest/api/2/issue/
+    body:
+      encoding: UTF-8
+      string: '{"fields":{"project":{"key":"MVBP"},"summary":"Rainforest bug: Always
+        fails","description":"URL for the permalink...","issuetype":{"name":"Bug"}}}'
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/json
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 15 Sep 2015 15:37:12 GMT
+      Content-Type:
+      - application/json;charset=UTF-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      X-Arequestid:
+      - 697x2767x1
+      X-Asen:
+      - SEN-5727558
+      Set-Cookie:
+      - JSESSIONID=1B6B4C41B561A6C73F1966E38026558E; Path=/; Secure; HttpOnly
+      - atlassian.xsrf.token=BDCA-NIQ9-W7BU-0SZK|d568f80ad65c732f83cefad993f48ea5f79fc169|lin;
+        Path=/; Secure
+      - studio.crowd.tokenkey=""; Domain=.rainforest-integration-testing.atlassian.net;
+        Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/; Secure; HttpOnly
+      - studio.crowd.tokenkey=Z0l979SfSYxJP8M534y0ig00; Domain=.rainforest-integration-testing.atlassian.net;
+        Path=/; Secure; HttpOnly
+      X-Seraph-Loginreason:
+      - OK
+      - OUT
+      X-Asessionid:
+      - 1enn9kp
+      X-Ausername:
+      - admin
+      X-Atenant-Id:
+      - rainforest-integration-testing.atlassian.net
+      Cache-Control:
+      - no-cache, no-store, no-transform
+      X-Content-Type-Options:
+      - nosniff
+      Strict-Transport-Security:
+      - max-age=315360000;includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"id":"10107","key":"MVBP-15","self":"https://rainforest-integration-testing.atlassian.net/rest/api/2/issue/10107"}'
+    http_version: 
+  recorded_at: Tue, 15 Sep 2015 15:37:12 GMT
+recorded_with: VCR 2.9.3

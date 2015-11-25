@@ -1,0 +1,51 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.hipchat.com/v2/room/Rainforestqa/notification
+    body:
+      encoding: UTF-8
+      string: '{"color":"red","message":"Your Rainforest Run (\u003ca href=\"http://www.rainforestqa.com/\"\u003eRun
+        #9: rainforest run\u003c/a\u003e) failed. Time to finish: 12 minutes 30 seconds","notify":true,"message_format":"html"}'
+    headers:
+      Authorization:
+      - Bearer SFLaaWu13VxCd7ew4FqNnNJeCcoAZ8MF4kofX3GZ
+      Content-Type:
+      - application/json
+      Accept:
+      - application/json
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Type:
+      - text/html
+      Date:
+      - Wed, 04 Nov 2015 22:32:35 GMT
+      Location:
+      - https://api.hipchat.com/v2/room/1902326/history/b54e68df-4943-4f89-aa82-67201914d321
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000
+      X-Content-Type-Options:
+      - nosniff
+      X-Ratelimit-Limit:
+      - '100'
+      X-Ratelimit-Remaining:
+      - '97'
+      X-Ratelimit-Reset:
+      - '1446676496'
+      X-Xss-Protection:
+      - 1; mode=block
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Wed, 04 Nov 2015 22:32:35 GMT
+recorded_with: VCR 2.9.3

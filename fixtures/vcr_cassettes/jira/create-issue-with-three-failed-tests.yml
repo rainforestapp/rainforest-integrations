@@ -1,0 +1,121 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://admin:eizEcahrGBQAfT9BBhgoLvYikbpxZZ2LjvJVojevfpRWBBbFgj@rainforest-integration-testing.atlassian.net/rest/api/2/issue/
+    body:
+      encoding: UTF-8
+      string: '{"fields":{"project":{"key":"MVBP"},"summary":"Rainforest found a bug
+        in ''Always fails''","description":"Failed test name: Always fails\nhttp://www.rainforestqa.com/","issuetype":{"name":"Bug"}}}'
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/json
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 15 Sep 2015 15:59:39 GMT
+      Content-Type:
+      - application/json;charset=UTF-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      X-Arequestid:
+      - 719x2829x1
+      X-Asen:
+      - SEN-5727558
+      Set-Cookie:
+      - JSESSIONID=A33898281AAB0A86CA72CDA9E0B33302; Path=/; Secure; HttpOnly
+      - atlassian.xsrf.token=BDCA-NIQ9-W7BU-0SZK|3676ab6837cfb1696cecfbaa8fc95111b8512d31|lin;
+        Path=/; Secure
+      - studio.crowd.tokenkey=""; Domain=.rainforest-integration-testing.atlassian.net;
+        Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/; Secure; HttpOnly
+      - studio.crowd.tokenkey=Z0l979SfSYxJP8M534y0ig00; Domain=.rainforest-integration-testing.atlassian.net;
+        Path=/; Secure; HttpOnly
+      X-Seraph-Loginreason:
+      - OK
+      - OUT
+      X-Asessionid:
+      - 4wjx6k
+      X-Ausername:
+      - admin
+      X-Atenant-Id:
+      - rainforest-integration-testing.atlassian.net
+      Cache-Control:
+      - no-cache, no-store, no-transform
+      X-Content-Type-Options:
+      - nosniff
+      Strict-Transport-Security:
+      - max-age=315360000;includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"id":"10108","key":"MVBP-16","self":"https://rainforest-integration-testing.atlassian.net/rest/api/2/issue/10108"}'
+    http_version: 
+  recorded_at: Tue, 15 Sep 2015 15:59:39 GMT
+- request:
+    method: post
+    uri: https://admin:eizEcahrGBQAfT9BBhgoLvYikbpxZZ2LjvJVojevfpRWBBbFgj@rainforest-integration-testing.atlassian.net/rest/api/2/issue/
+    body:
+      encoding: UTF-8
+      string: '{"fields":{"project":{"key":"MVBP"},"summary":"Rainforest found a bug
+        in ''Always fails''","description":"Failed test name: Always fails\nhttp://www.rainforestqa.com/","issuetype":{"name":"Bug"}}}'
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/json
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 15 Sep 2015 15:59:40 GMT
+      Content-Type:
+      - application/json;charset=UTF-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      X-Arequestid:
+      - 719x2830x1
+      X-Asen:
+      - SEN-5727558
+      Set-Cookie:
+      - JSESSIONID=71A85D0F07B5B06516ACB917F2849198; Path=/; Secure; HttpOnly
+      - atlassian.xsrf.token=BDCA-NIQ9-W7BU-0SZK|bef0e65781db9edeef771911c8a2acf1b0bdee2d|lin;
+        Path=/; Secure
+      - studio.crowd.tokenkey=""; Domain=.rainforest-integration-testing.atlassian.net;
+        Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/; Secure; HttpOnly
+      - studio.crowd.tokenkey=Z0l979SfSYxJP8M534y0ig00; Domain=.rainforest-integration-testing.atlassian.net;
+        Path=/; Secure; HttpOnly
+      X-Seraph-Loginreason:
+      - OK
+      - OUT
+      X-Asessionid:
+      - 1s2h1gs
+      X-Ausername:
+      - admin
+      X-Atenant-Id:
+      - rainforest-integration-testing.atlassian.net
+      Cache-Control:
+      - no-cache, no-store, no-transform
+      X-Content-Type-Options:
+      - nosniff
+      Strict-Transport-Security:
+      - max-age=315360000;includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"id":"10109","key":"MVBP-17","self":"https://rainforest-integration-testing.atlassian.net/rest/api/2/issue/10109"}'
+    http_version: 
+  recorded_at: Tue, 15 Sep 2015 15:59:40 GMT
+recorded_with: VCR 2.9.3

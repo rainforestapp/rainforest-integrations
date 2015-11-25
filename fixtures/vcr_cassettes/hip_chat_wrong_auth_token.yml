@@ -1,0 +1,46 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.hipchat.com/v2/room/Rainforestqa/notification
+    body:
+      encoding: UTF-8
+      string: '{"color":"red","message":"Your Rainforest Run (\u003ca href=\"http://www.rainforestqa.com/\"\u003eRun
+        #9: rainforest run\u003c/a\u003e) failed. Time to finish: 12 minutes 30 seconds","notify":true,"message_format":"html"}'
+    headers:
+      Authorization:
+      - Bearer foobar
+      Content-Type:
+      - application/json
+      Accept:
+      - application/json
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 04 Nov 2015 22:32:37 GMT
+      Server:
+      - nginx
+      Content-Length:
+      - '104'
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "error": {
+            "code": 401,
+            "message": "Invalid OAuth session",
+            "type": "Unauthorized"
+          }
+        }
+    http_version: 
+  recorded_at: Wed, 04 Nov 2015 22:32:37 GMT
+recorded_with: VCR 2.9.3

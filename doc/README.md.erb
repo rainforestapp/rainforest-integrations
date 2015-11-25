@@ -70,31 +70,12 @@ Events come with a payload that is specific to the event. The
 following events are currently supported, with the corresponding keys
 in the payload:
 
-
-#### `run_completion`
-  
-- **run:** id, environment, result, description, time_taken, total_tests, total_passed_tests, total_failed_tests, total_no_result_tests
-  
-
-#### `run_error`
-  
-- **run:** id, description, error_reason
-  
-
-#### `webhook_timeout`
-  
-- **run:** id, description
-  
-
-#### `run_test_failure`
-  
-- **run:** id, description, environment
-  
-- **failed_test:** id, title, frontend_url
-  
-- **browser:** full_name
-  
-
+<% @events.each do |event_type, data_hashes| %>
+#### `<%= event_type %>`
+  <% data_hashes.each do |key, data| %>
+- **<%= key %>:** <%= data.join(', ') %>
+  <% end %>
+<% end %>
 
 
 ## Adding integrations
