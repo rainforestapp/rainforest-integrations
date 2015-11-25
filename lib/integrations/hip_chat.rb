@@ -1,5 +1,3 @@
-require "integrations/base"
-
 module Integrations
   class HipChat < Base
     # NOTE: HipChat integration development still underway

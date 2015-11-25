@@ -1,5 +1,3 @@
-require "integrations/base"
-
 class Integrations::Slack < Integrations::Base
   SUPPORTED_EVENTS = %w(run_completion run_error webhook_timeout run_test_failure).freeze
 
