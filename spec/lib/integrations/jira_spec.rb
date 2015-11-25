@@ -51,7 +51,7 @@ describe Integrations::Jira do
         settings[2][:value] = 'https://rainforest-integration-testing.atlassian.net'
 
         VCR.use_cassette('jira/authentication-error') do
-          expect { send_event }.to raise_error(Integrations::UserConfigurationError, 'Authentication failed. Wrong username and/or password. Keep in mind that your JIRA username is NOT your email address.')
+          expect { send_event }.to raise_error(Integrations::Error)
         end
       end
     end
@@ -59,7 +59,7 @@ describe Integrations::Jira do
     context 'when there the JIRA base URL is wrong' do
       it 'raises a Integrations::UserConfigurationError' do
         VCR.use_cassette('jira/wrong-base-url') do
-          expect { send_event }.to raise_error(Integrations::UserConfigurationError, 'This JIRA URL does exist.')
+          expect { send_event }.to raise_error(Integrations::Error)
         end
       end
     end
@@ -69,7 +69,7 @@ describe Integrations::Jira do
         mock_response = double('mock response')
         allow(mock_response).to receive(:code).and_return(500)
         allow(HTTParty).to receive(:post).and_return(mock_response)
-        expect { send_event }.to raise_error(Integrations::MisconfiguredIntegrationError, 'Invalid request to the JIRA API.')
+        expect { send_event }.to raise_error(Integrations::Error)
       end
     end
 

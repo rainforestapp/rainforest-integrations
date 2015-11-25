@@ -71,7 +71,7 @@ describe Integrations::PivotalTracker do
 
       it "returns a user configuration error" do
         VCR.use_cassette('pivotal_tracker_wrong_id') do
-          expect{ subject.send_event }.to raise_error Integrations::UserConfigurationError
+          expect{ subject.send_event }.to raise_error Integrations::Error
         end
       end
     end
@@ -83,7 +83,7 @@ describe Integrations::PivotalTracker do
 
       it "returns a user configuration error" do
         VCR.use_cassette('pivotal_tracker_wrong_auth_token') do
-          expect{ subject.send_event }.to raise_error Integrations::UserConfigurationError
+          expect{ subject.send_event }.to raise_error Integrations::Error
         end
       end
     end

@@ -22,14 +22,8 @@ class EventsController < ApplicationController
       render json: { status: 'ok' }, status: :created
     rescue MultiJson::ParseError
       invalid_request('unable to parse request', type: 'parse_error')
-    rescue Integrations::UnsupportedIntegrationError => e
-      invalid_request e.message, type: 'unsupported_integration'
-    rescue Integrations::UnsupportedEventError => e
-      invalid_request e.message, type: 'unsupported_event'
-    rescue Integrations::MisconfiguredIntegrationError => e
-      invalid_request e.message, type: 'misconfigured_integration'
-    rescue Integrations::UserConfigurationError => e
-      invalid_request e.message, type: 'user configuration error'
+    rescue Integrations::Error => e
+      invalid_request(e.message, type: e.type)
     rescue PayloadValidator::InvalidPayloadError => e
       invalid_request e.message, type: 'invalid payload'
     end

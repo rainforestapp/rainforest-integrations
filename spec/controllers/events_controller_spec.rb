@@ -86,10 +86,10 @@ describe EventsController, type: :controller do
 
       context 'with an unsupported integration' do
         before do
-          allow(Integrations).to receive(:send_event).and_raise Integrations::UnsupportedIntegrationError.new('yo')
+          allow(Integrations).to receive(:send_event).and_raise Integrations::Error.new('unsupported_integration', "Integration 'yo' is not supported")
         end
 
-        let(:integrations) { [{ key: 'yo', settings: {} }]}
+        let(:integrations) { [{ key: 'yo', settings: [] }]}
 
         it 'returns a 400 with a useful error message' do
           post :create, payload
@@ -101,7 +101,7 @@ describe EventsController, type: :controller do
 
       context 'with a misconfigured integration' do
         before do
-          allow(Integrations).to receive(:send_event).and_raise Integrations::MisconfiguredIntegrationError.new('ERROR!')
+          allow(Integrations).to receive(:send_event).and_raise Integrations::Error.new('misconfigured_integration', 'ERROR!')
         end
 
         it 'returns a 400 with a useful error message' do

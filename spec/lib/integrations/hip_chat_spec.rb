@@ -64,7 +64,7 @@ describe Integrations::HipChat do
 
       it "returns a user configuration error" do
         VCR.use_cassette('hip_chat_wrong_room_id') do
-          expect{ subject.send_event }.to raise_error Integrations::UserConfigurationError
+          expect{ subject.send_event }.to raise_error Integrations::Error
         end
       end
     end
@@ -76,7 +76,7 @@ describe Integrations::HipChat do
 
       it "returns a user configuration error" do
         VCR.use_cassette('hip_chat_wrong_auth_token') do
-          expect{ subject.send_event }.to raise_error Integrations::UserConfigurationError
+          expect{ subject.send_event }.to raise_error Integrations::Error
         end
       end
     end

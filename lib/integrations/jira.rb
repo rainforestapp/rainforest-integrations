@@ -50,11 +50,11 @@ module Integrations
         # yay, that worked!
         true
       when 401
-        raise Integrations::UserConfigurationError.new('Authentication failed. Wrong username and/or password. Keep in mind that your JIRA username is NOT your email address.')
+        raise Integrations::Error.new('user_configuration_error', 'Authentication failed. Wrong username and/or password. Keep in mind that your JIRA username is NOT your email address.')
       when 404
-        raise Integrations::UserConfigurationError.new('This JIRA URL does exist.')
+        raise Integrations::Error.new('user_configuration_error', 'This JIRA URL does exist.')
       else
-        raise Integrations::MisconfiguredIntegrationError.new('Invalid request to the JIRA API.')
+        raise Integrations::Error.new('misconfigured_integration', 'Invalid request to the JIRA API.')
       end
     end
 

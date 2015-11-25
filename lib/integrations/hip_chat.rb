@@ -29,11 +29,11 @@ module Integrations
       if response.nil?
         true
       elsif response.code == 404
-        raise Integrations::UserConfigurationError.new('The room provided is was not found.')
+        raise Integrations::Error.new('user_configuration_error', 'The room provided is was not found.')
       elsif response.code == 401
-        raise Integrations::UserConfigurationError.new('The authorization token is invalid.')
+        raise Integrations::Error.new('user_configuration_error', 'The authorization token is invalid.')
       elsif response.code != 200
-        raise Integrations::MisconfiguredIntegrationError.new('Invalid request to the HipChat API.')
+        raise Integrations::Error.new('misconfigured_integration', 'Invalid request to the HipChat API.')
       end
     end
 

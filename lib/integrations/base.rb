@@ -34,7 +34,7 @@ module Integrations
       missing_settings = required_settings - supplied_settings
 
       unless missing_settings.empty?
-        raise Integrations::MisconfiguredIntegrationError, "Required settings '#{missing_settings.join(", ")}' were not supplied to #{self.class.key}"
+        raise Integrations::Error.new('misconfigured_integration', "Required settings '#{missing_settings.join(", ")}' were not supplied to #{self.class.key}")
       end
     end
   end

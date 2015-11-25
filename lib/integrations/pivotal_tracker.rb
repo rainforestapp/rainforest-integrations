@@ -26,11 +26,11 @@ module Integrations
       )
 
       if response.code == 404
-        raise Integrations::UserConfigurationError.new('The project ID provided is was not found.')
+        raise Integrations::Error.new('user_configuration_error', 'The project ID provided is was not found.')
       elsif response.code == 403
-        raise Integrations::UserConfigurationError.new('The authorization token is invalid.')
+        raise Integrations::Error.new('user_configuration_error', 'The authorization token is invalid.')
       elsif response.code != 200
-        raise Integrations::MisconfiguredIntegrationError.new('Invalid request to the Pivotal Tracker API.')
+        raise Integrations::Error.new('user_configuration_error', 'Invalid request to the Pivotal Tracker API.')
       end
     end
 

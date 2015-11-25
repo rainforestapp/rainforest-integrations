@@ -22,11 +22,11 @@ class Integrations::Slack < Integrations::Base
     )
 
     if response.code == 500 && response.parsed_response == 'no_text'
-      raise Integrations::MisconfiguredIntegrationError.new('Invalid request to the Slack API (maybe the JSON structure is wrong?).')
+      raise Integrations::Error.new('user_configuration_error', 'Invalid request to the Slack API (maybe the JSON structure is wrong?).')
     elsif response.code == 404 && response.parsed_response == 'Bad token'
-      raise Integrations::UserConfigurationError.new('The provided Slack URL is invalid.')
+      raise Integrations::Error.new('user_configuration_error', 'The provided Slack URL is invalid.')
     elsif response.code != 200
-      raise Integrations::MisconfiguredIntegrationError.new('Invalid request to the Slack API.')
+      raise Integrations::Error.new('user_configuration_error', 'Invalid request to the Slack API.')
     end
   end
 

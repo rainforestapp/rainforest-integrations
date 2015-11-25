@@ -47,7 +47,7 @@ describe Integrations::Slack do
       let(:settings) { [] }
 
       it 'raises a MisconfiguredIntegrationError' do
-        expect { subject }.to raise_error Integrations::MisconfiguredIntegrationError
+        expect { subject }.to raise_error Integrations::Error
       end
     end
   end

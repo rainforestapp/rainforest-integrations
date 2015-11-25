@@ -23,7 +23,7 @@ describe Integrations do
       let(:integrations) { [{ key: 'yo', settings: [] }] }
 
       it 'raises an UnsupportedIntegrationError' do
-        expect { subject }.to raise_error(Integrations::UnsupportedIntegrationError)
+        expect { subject }.to raise_error(Integrations::Error)
       end
     end
 
