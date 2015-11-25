@@ -8,6 +8,9 @@ Rainforest.
 Rainforest will post events to this endpoint (see below for details
 and the format).
 
+`GET /events`
+Return a list of schema for all supported events.
+
 `GET /integrations/:key`
 Return the schema of settings for a particular integration (see below
 for the format).
@@ -99,7 +102,7 @@ There are two steps to adding a new integration:
 
 1. Add an integration class to the `lib/integrations` directory. This
    should inherit from the `Integrations::Base` class and should
-   overwrite the `send_event` method. If the integration post is
+   overwrite the `.key`, `#send_event` methods. If the integration post is
    unsuccessful, you should raise `Integrations::Error.new(type, message)`
    where `type` is either `user_configuration_error` or `misconfigured_integration`
    depending on the cause and `message` is a custom message to describe the error.
