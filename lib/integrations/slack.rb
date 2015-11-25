@@ -26,7 +26,7 @@ class Integrations::Slack < Integrations::Base
     elsif response.code == 404 && response.parsed_response == 'Bad token'
       raise Integrations::Error.new('user_configuration_error', 'The provided Slack URL is invalid.')
     elsif response.code != 200
-      raise Integrations::Error.new('user_configuration_error', 'Invalid request to the Slack API.')
+      raise Integrations::Error.new('misconfigured_integration', 'Invalid request to the Slack API.')
     end
   end
 
