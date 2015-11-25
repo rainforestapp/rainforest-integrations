@@ -38,11 +38,12 @@ class Integrations::Slack < Integrations::Base
       color: message_color
     }
 
-    if event_type == 'run_completion'
+    case event_type
+    when 'run_completion'
       attachment[:fields] = run_completion_fields
-    elsif event_type == 'run_error'
+    when 'run_error'
       attachment[:fields] = run_error_fields
-    elsif event_type == 'run_test_failure'
+    when 'run_test_failure'
       attachment[:fields] = run_test_failure_fields
     end
 
@@ -53,33 +54,21 @@ class Integrations::Slack < Integrations::Base
   # it's laid out better in slack's table-format that way
   def run_completion_fields
     [
+      { title: "Result", value: run[:result].capitalize, short: true },
       {
-        title: "Result",
-        value: run[:result].capitalize,
-        short: true
-      },
-      {
-        title: "Passed Tests: #{run[:total_passed_tests]} - #{test_percentage(run[:total_passed_tests])}%",
+        title: "Tests Passed: #{run[:total_passed_tests]} - #{test_percentage(run[:total_passed_tests])}%",
         value: "<#{payload[:frontend_url]}?expandedGroups%5B%5D=passed | View all Passed tests>",
         short: true
       },
+      { title: "Duration", value: humanize_secs(run[:time_taken]), short: true },
       {
-        title: "Duration",
-        value: humanize_secs(run[:time_taken]),
-        short: true
-      },
-      {
-        title: "Failed Tests: #{run[:total_failed_tests]} - #{test_percentage(run[:total_failed_tests])}%",
+        title: "Tests Failed: #{run[:total_failed_tests]} - #{test_percentage(run[:total_failed_tests])}%",
         value: "<#{payload[:frontend_url]}?expandedGroups%5B%5D=failed | View all Failed tests>",
         short: true
       },
+      { title: "Environment", value: run[:environment][:name], short: true },
       {
-        title: "Environment",
-        value: run[:environment][:name],
-        short: true
-      },
-      {
-        title: "Incomplete Tests: #{run[:total_no_result_tests]} - #{test_percentage(run[:total_no_result_tests])}%",
+        title: "Other Results: #{run[:total_no_result_tests]} - #{test_percentage(run[:total_no_result_tests])}%",
         value: "<#{payload[:frontend_url]}?expandedGroups%5B%5D=no_result | View all tests with no result>",
         short: true
       }
@@ -90,13 +79,7 @@ class Integrations::Slack < Integrations::Base
     if run[:error_reason].nil? || run[:error_reason].empty?
       run[:error_reason] = "Error reason was unspecified (please contact help@rainforestqa.com if you'd like help debugging this)"
     end
-    [
-      {
-        title: "Error Reason",
-        value: run[:error_reason],
-        short: false
-      }
-    ]
+    [{ title: "Error Reason", value: run[:error_reason], short: false }]
   end
 
   def run_test_failure_fields
@@ -107,16 +90,8 @@ class Integrations::Slack < Integrations::Base
         value: "<#{failed_test[:frontend_url]} | Test ##{failed_test[:id]}: #{failed_test[:title]}>",
         short: true
       },
-      {
-        title: "Environment",
-        value: run[:environment][:name],
-        short: true
-      },
-      {
-        title: "Browser",
-        value: payload[:browser][:full_name],
-        short: true
-      }
+      { title: "Environment", value: run[:environment][:name], short: true },
+      { title: "Browser", value: payload[:browser][:full_name], short: true }
     ]
   end
 
