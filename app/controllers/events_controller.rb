@@ -3,7 +3,7 @@ require 'payload_validator'
 
 class EventsController < ApplicationController
   SIGNING_KEY = ENV.fetch('INTEGRATIONS_SIGNING_KEY').freeze
-  EVENTS = YAML.load File.read(Rails.root.join('data', 'events.yml')).freeze
+  EVENTS = YAML.load(File.read(Rails.root.join('data', 'events.yml'))).freeze
 
   before_action :verify_signature, only: [:create]
 

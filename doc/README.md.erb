@@ -15,7 +15,7 @@ for the format).
 `GET /integrations`
 Return a list of schemas for all supported integrations.
 
-### General flow
+## General flow
 Rainforest will check the API endpoint for the required settings keys
 for each integration. Every event will be posted to the `events`
 endpoint (Rainforest will determine which events to post based on user

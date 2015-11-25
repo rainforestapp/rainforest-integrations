@@ -10,7 +10,7 @@ class Integration
   class NotFound < StandardError
   end
 
-  def self.find key
+  def self.find(key)
     data = INTEGRATIONS.fetch(key) do
       raise NotFound, %(Integration "#{key}" is not supported)
     end
@@ -18,12 +18,12 @@ class Integration
     { 'key' => key }.merge data
   end
 
-  def self.exists? key
+  def self.exists?(key)
     INTEGRATIONS.key? key
   end
 
   def self.keys
-    INTEGRATIONS.keys.freeze
+    INTEGRATIONS.keys
   end
 
   def self.supported_integrations

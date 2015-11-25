@@ -1,6 +1,4 @@
 module Integrations
-  Integration.keys.each { |i| require "integrations/#{i}" }
-
   class UnsupportedIntegrationError < StandardError
     def initialize(integration_name)
       super "Integration '#{integration_name}' is not supported"
