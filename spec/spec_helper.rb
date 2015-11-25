@@ -2,6 +2,8 @@ require 'simplecov'
 require 'webmock/rspec'
 require 'vcr'
 
+require_relative './support/controller_macros'
+
 SimpleCov.start
 
 RSpec.configure do |config|
@@ -15,6 +17,8 @@ RSpec.configure do |config|
 
   config.order = :random
   Kernel.srand config.seed
+
+  config.include ControllerMacros, type: :controller
 end
 
 VCR.configure do |config|

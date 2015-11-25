@@ -171,13 +171,4 @@ describe EventsController, type: :controller do
       end
     end
   end
-
-  def sign(payload, key)
-    digest = OpenSSL::Digest.new('sha256')
-    OpenSSL::HMAC.hexdigest(digest, key, payload)
-  end
-
-  def json
-    JSON.parse(response.body)
-  end
 end
