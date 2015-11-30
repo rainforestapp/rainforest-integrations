@@ -38,6 +38,3 @@ jira:
     - key: "jira_base_url"
       title: "URL to your JIRA integration"
       required: true
-    - key: 'labels'
-      title: 'Labels, separated by commas'
-      required: false

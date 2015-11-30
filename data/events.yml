@@ -4,7 +4,7 @@ run_completion:
 run_error:
   run: [id, description, error_reason]
 webhook_timeout:
-  run: [id, description]
+  run: [id, description, environment]
 run_test_failure:
   run: [id, description, environment]
   failed_test: [id, title, frontend_url]

@@ -43,6 +43,8 @@ class Integrations::Slack < Integrations::Base
       attachment[:fields] = run_error_fields
     when 'run_test_failure'
       attachment[:fields] = run_test_failure_fields
+    when 'webhook_timeout'
+      attachment[:fields] = webhook_timeout_fields
     end
 
     return [attachment]
@@ -91,6 +93,10 @@ class Integrations::Slack < Integrations::Base
       { title: "Environment", value: run[:environment][:name], short: true },
       { title: "Browser", value: payload[:browser][:full_name], short: true }
     ]
+  end
+
+  def webhook_timeout_fields
+    [{ title: "Environment", value: run[:environment][:name], short: false }]
   end
 
   def test_percentage(test_quantity)
