@@ -91,7 +91,7 @@ class Integrations::Slack < Integrations::Base
         short: true
       },
       { title: "Environment", value: run[:environment][:name], short: true },
-      { title: "Browser", value: payload[:browser][:full_name], short: true }
+      { title: "Browser", value: payload[:browser][:description], short: true }
     ]
   end
 
