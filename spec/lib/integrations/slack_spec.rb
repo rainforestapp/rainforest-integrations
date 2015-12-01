@@ -129,7 +129,10 @@ describe Integrations::Slack do
       let(:payload) do
         {
           run: {
-            id: 7
+            id: 7,
+            environment: {
+              name: "Foobar"
+            }
           },
           frontend_url: 'http://www.example.com'
         }

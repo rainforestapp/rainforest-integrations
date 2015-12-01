@@ -4,42 +4,35 @@ require 'integrations'
 describe Integrations::Jira do
   subject { described_class.new(event_type, payload, settings) }
 
-  let(:event_type) { 'run_failure' }
+  let(:event_type) { 'run_test_failure' }
+  let(:mock_response) { double('mock response') }
   let(:payload) do
     {
       run: {
         id: 3,
-        status: 'failed'
+        status: 'failed',
+        description: 'Contains a test that always fails',
+        environment: {
+          name: 'Testing Env'
+        }
       },
-      failed_tests: [failed_test]
+      failed_test: failed_test,
+      frontend_url: "http://www.rainforestqa.com/"
     }
   end
   let(:settings) do
     [
-      {
-        key: 'username',
-        value: 'admin'
-      },
-      {
-        key: 'password',
-        value: 'something'
-      },
-      {
-        key: 'jira_base_url',
-        value: 'http://example.com'
-      },
-      {
-        key: 'project_key',
-        value: 'ABC'
-      }
+      { key: 'username', value: 'admin' },
+      { key: 'password', value: 'something' },
+      { key: 'jira_base_url', value: 'http://example.com' },
+      { key: 'project_key', value: 'ABC' }
     ]
   end
 
   let(:failed_test) do
     {
       id: "20",
-      name: "Always fails",
-      url: "http://www.rainforestqa.com/"
+      title: "Always fails"
     }
   end
 
@@ -47,26 +40,29 @@ describe Integrations::Jira do
     let(:send_event) { subject.send_event }
 
     context 'when there is an authentication error' do
-      it 'raises a Integrations::UserConfigurationError' do
-        settings[2][:value] = 'https://rainforest-integration-testing.atlassian.net'
+      before do
+        allow(mock_response).to receive(:code).and_return(401)
+      end
 
-        VCR.use_cassette('jira/authentication-error') do
-          expect { send_event }.to raise_error(Integrations::Error)
-        end
+      it 'raises a Integrations::Error' do
+        expect(HTTParty).to receive(:post).and_return(mock_response)
+        expect { send_event }.to raise_error(Integrations::Error)
       end
     end
 
     context 'when there the JIRA base URL is wrong' do
-      it 'raises a Integrations::UserConfigurationError' do
-        VCR.use_cassette('jira/wrong-base-url') do
-          expect { send_event }.to raise_error(Integrations::Error)
-        end
+      before do
+        allow(mock_response).to receive(:code).and_return(404)
+      end
+
+      it 'raises an error' do
+        expect(HTTParty).to receive(:post).and_return(mock_response)
+        expect { send_event }.to raise_error(Integrations::Error)
       end
     end
 
     context 'for any other error' do
-      it 'raises Integrations::MisconfiguredIntegrationError' do
-        mock_response = double('mock response')
+      it 'raises an error' do
         allow(mock_response).to receive(:code).and_return(500)
         allow(HTTParty).to receive(:post).and_return(mock_response)
         expect { send_event }.to raise_error(Integrations::Error)
@@ -74,137 +70,42 @@ describe Integrations::Jira do
     end
 
     context 'when the event has one or more failed test' do
-      let(:settings) do
-        [
-          {
-            key: 'username',
-            value: 'admin'
-          },
-          {
-            key: 'password',
-            value: 'eizEcahrGBQAfT9BBhgoLvYikbpxZZ2LjvJVojevfpRWBBbFgj'
-          },
-          {
-            key: 'jira_base_url',
-            value: 'https://rainforest-integration-testing.atlassian.net'
-          },
-          {
-            key: 'project_key',
-            value: 'MVBP'
-          }
-        ]
-      end
-
-      let(:payload) do
-        {
-          run: {
-            id: 9,
-            status: "failed",
-            description: "rainforest run",
-            time_taken: 750
-          },
-          frontend_url: "http://www.rainforestqa.com/"
-        }
-      end
-
-      context 'when there is no failed tests' do
-        it 'does nothing and return false' do
-          expect(HTTParty).not_to receive(:post)
-          expect(send_event).to eq(false)
-        end
-      end
-
-      context 'when there are multiple failed tests' do
-        before do
-          payload[:failed_tests] = [failed_test, failed_test]
-        end
-
-        it 'creates on issue per failed test' do
-          expect(HTTParty).to receive(:post).twice.and_call_original
-          VCR.use_cassette('jira/create-issue-with-three-failed-tests') do
-            send_event
-          end
-        end
-      end
-
-      context 'when there is a single failed test' do
+      context 'run_test_failure' do
         before do
           payload[:failed_test] = failed_test
+          allow(mock_response).to receive(:code).and_return(201)
         end
 
-        it 'creates on issue per failed test' do
-          expect(HTTParty).to receive(:post).once.and_call_original
-          VCR.use_cassette('jira/create-issue-with-one-failed-test') do
-            send_event
-          end
-        end
-      end
-
-      describe 'issue content' do
-        before do
-          payload[:failed_test] = failed_test
-        end
-
-        it 'has a useful summary and description' do
+        it 'has a useful information' do
           allow(HTTParty).to receive(:post) do |url, post_payload|
-            json_body = JSON.parse(post_payload[:body])
+            fields = JSON.parse(post_payload[:body])['fields']
 
-            expect(json_body['fields']['summary']).to eq "Rainforest found a bug in 'Always fails'"
-            expect(json_body['fields']['description']).to eq "Failed test name: Always fails\nhttp://www.rainforestqa.com/"
-          end.and_call_original
+            expect(fields['summary']).to eq "Rainforest found a bug in 'Always fails'"
+            expect(fields['description']).to eq "Failed test name: Always fails\nhttp://www.rainforestqa.com/"
+            expect(fields['environment']).to eq payload[:run][:environment][:name]
+          end.and_return(mock_response)
 
-          VCR.use_cassette('jira/create-issue-with-summary-and-description') do
-            send_event
-          end
+          send_event
+        end
+      end
+
+      context 'webhook_timeout' do
+        let(:event_type) { 'webhook_timeout' }
+
+        before do
+          allow(mock_response).to receive(:code).and_return(201)
         end
 
-        context 'when a label is configured' do
-          it 'adds the label to the issue' do
-            settings.push( { key: 'labels', value: '    rainforest ' })
+        it 'has a useful information' do
+          allow(HTTParty).to receive(:post) do |url, post_payload|
+            fields = JSON.parse(post_payload[:body])['fields']
 
-            allow(HTTParty).to receive(:post) do |url, post_payload|
-              json_body = JSON.parse(post_payload[:body])
+            expect(fields['summary']).to eq "Your Rainforest webhook has timed out"
+            expect(fields['description']).to include payload[:run][:description]
+            expect(fields['environment']).to eq payload[:run][:environment][:name]
+          end.and_return(mock_response)
 
-              expect(json_body['fields']['labels']).to eq ['rainforest']
-            end.and_call_original
-
-            VCR.use_cassette('jira/create-issue-with-one-label') do
-              send_event
-            end
-          end
-        end
-
-        context 'when multiple labels are configured' do
-          it 'adds the labels to the issue' do
-            settings.push({key: 'labels', value: '    rainforest  ,    bug ' })
-
-            allow(HTTParty).to receive(:post) do |url, post_payload|
-              json_body = JSON.parse(post_payload[:body])
-
-              expect(json_body['fields']['labels']).to eq ['rainforest', 'bug']
-            end.and_call_original
-
-            VCR.use_cassette('jira/create-issue-with-label') do
-              send_event
-            end
-          end
-        end
-
-        context 'when there are no label configured' do
-          ['    ', nil].each do |empty_configuration|
-            it 'does not add a label to the issue' do
-              settings.push({ key: 'label', value: empty_configuration })
-              allow(HTTParty).to receive(:post) do |url, post_payload|
-                json_body = JSON.parse(post_payload[:body])
-
-                expect(json_body['fields']['labels']).to eq []
-              end.and_call_original
-
-              VCR.use_cassette('jira/create-issue-with-no-label') do
-              send_event
-            end
-            end
-          end
+          send_event
         end
       end
     end

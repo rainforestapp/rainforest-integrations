@@ -5,8 +5,9 @@ http_interactions:
     uri: https://api.hipchat.com/v2/room/Rainforestqafakeroom/notification
     body:
       encoding: UTF-8
-      string: '{"color":"red","message":"Your Rainforest Run (\u003ca href=\"http://www.rainforestqa.com/\"\u003eRun
-        #9: rainforest run\u003c/a\u003e) failed. Time to finish: 12 minutes 30 seconds","notify":true,"message_format":"html"}'
+      string: '{"from":"Rainforest QA","color":"red","message":"Your Rainforest Run
+        (\u003ca href=\"http://www.rainforestqa.com/\"\u003eRun #9: rainforest run\u003c/a\u003e)
+        is complete!","notify":true,"message_format":"html"}'
     headers:
       Authorization:
       - Bearer SFLaaWu13VxCd7ew4FqNnNJeCcoAZ8MF4kofX3GZ
@@ -21,20 +22,22 @@ http_interactions:
     headers:
       Access-Control-Allow-Origin:
       - "*"
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-Backoff
       Content-Type:
       - application/json
       Date:
-      - Wed, 04 Nov 2015 22:32:36 GMT
+      - Tue, 01 Dec 2015 00:36:43 GMT
       Server:
       - nginx
       X-Ratelimit-Limit:
       - '100'
       X-Ratelimit-Remaining:
-      - '96'
+      - '99'
       X-Ratelimit-Reset:
-      - '1446676496'
+      - '1448930503'
       Content-Length:
-      - '94'
+      - '117'
       Connection:
       - keep-alive
     body:
@@ -43,10 +46,10 @@ http_interactions:
         {
           "error": {
             "code": 404,
-            "message": "Room not found",
+            "message": "Room 'Rainforestqafakeroom' not found",
             "type": "Not Found"
           }
         }
     http_version: 
-  recorded_at: Wed, 04 Nov 2015 22:32:36 GMT
+  recorded_at: Tue, 01 Dec 2015 00:36:43 GMT
 recorded_with: VCR 2.9.3

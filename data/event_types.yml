@@ -1,8 +1,16 @@
-- title: "Run Completion"
-  type: "run_completion"
-- title: "Run Error"
-  type: "run_error"
-- title: "Webhook Timeout"
-  type: "webhook_timeout"
-- title: "Test Failure"
-  type: "run_test_failure"
+- title: Run Completion
+  description: Receive notification when any of your runs complete.
+  type: run_completion
+  integrations: [slack]
+- title: Run Error
+  description: Receive notification when there is an error in any of your runs.
+  type: run_error
+  integrations: [slack]
+- title: Webhook Timeout
+  description: Receive a notification when your webhook times out.
+  type: webhook_timeout
+  integrations: [slack, jira]
+- title: Test Failure
+  description: Receive a notificaiton when any of your tests fail.
+  type: run_test_failure
+  integrations: [slack, jira]

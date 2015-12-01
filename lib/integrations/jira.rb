@@ -1,38 +1,21 @@
 module Integrations
   class Jira < Base
-    # NOTE: Jira integration development still underway
+    SUPPORTED_EVENTS = %(webhook_timeout run_test_failure).freeze
+
     def self.key
       'jira'
     end
 
     def send_event
-      return false unless has_failed_tests?
-      if payload[:failed_test]
-        return create_issue(payload[:failed_test])
+      return unless SUPPORTED_EVENTS.include?(event_type)
+
+      post_data = case event_type
+      when 'webhook_timeout' then create_webhook_timeout_issue
+      when 'run_test_failure' then create_test_failure_issue
       end
 
-      if payload[:failed_tests]
-        payload[:failed_tests].each do |test|
-          create_issue(test)
-        end
-      end
-    end
-
-    private
-
-    def create_issue(test)
-      response = HTTParty.post(url,
-        body: {
-          fields: {
-            project: { key: settings[:project_key] },
-            summary: "Rainforest found a bug in '#{test[:title]}'",
-            description: "Failed test name: #{test[:title]}\n#{test[:frontend_url]}",
-            issuetype: {
-              name: "Bug"
-            },
-            labels: configured_labels
-          }
-        }.to_json,
+      response = HTTParty.post("#{jira_base_url}/rest/api/2/issue/",
+        body: post_data.to_json,
         headers: {
           'Content-Type' => 'application/json',
           'Accept' => 'application/json'
@@ -56,28 +39,41 @@ module Integrations
       end
     end
 
-    def url
-      "#{jira_base_url}/rest/api/2/issue/"
+    private
+
+    def create_test_failure_issue
+      test = payload[:failed_test]
+      {
+        fields: {
+          project: { key: settings[:project_key] },
+          summary: "Rainforest found a bug in '#{test[:title]}'",
+          description: "Failed test name: #{test[:title]}\n#{payload[:frontend_url]}",
+          issuetype: {
+            name: "Bug"
+          },
+          environment: run[:environment][:name]
+        }
+      }
+    end
+
+    def create_webhook_timeout_issue
+      {
+        fields: {
+          project: { key: settings[:project_key] },
+          summary: "Your Rainforest webhook has timed out",
+          description: "Your webhook has timed out for you run (#{run[:description]}). If you need help debugging, please contact us at help@rainforestqa.com",
+          issuetype: {
+            name: "Bug"
+          },
+          environment: run[:environment][:name]
+        }
+      }
     end
 
     def jira_base_url
       # MAKE SURE IT DOESN'T HAVE A TRAILING SLASH
       base_url = settings[:jira_base_url]
       base_url.last == "/" ? base_url.chop : base_url
-    end
-
-    def has_failed_tests?
-      !!(payload[:failed_test] || payload[:failed_tests])
-    end
-
-    def configured_labels
-      if settings[:labels]
-        labels = settings[:labels].to_s.split(',')
-
-        labels.map(&:strip).reject(&:empty?).reject(&:nil?)
-      else
-        []
-      end
     end
   end
 end
