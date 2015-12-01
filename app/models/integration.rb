@@ -5,7 +5,7 @@ class Integration
   EVENT_TYPES = YAML.load(File.read(Rails.root.join('data', 'event_types.yml'))).freeze
 
   # NOTE: Temporarily obscure integrations that aren't ready yet
-  INCOMPLETE_INTEGRATIONS = %w(hip_chat jira pivotal_tracker).freeze
+  INCOMPLETE_INTEGRATIONS = %w(hip_chat pivotal_tracker).freeze
 
   class NotFound < StandardError
   end

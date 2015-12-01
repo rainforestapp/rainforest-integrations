@@ -6,8 +6,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"name":"Your Rainforest Run (Run #9: rainforest run - http://www.rainforestqa.com/)
-        failed. Time to finish: 12 minutes 30 seconds","description":"Failed Tests:\nAlways
-        fails: http://www.rainforestqa.com/\n","story_type":"bug","labels":[{"name":"rainforest"}]}'
+        is complete!","description":"Failed Tests:\n: \n","story_type":"bug","labels":[{"name":"rainforest"}]}'
     headers:
       X-Trackertoken:
       - 8537292c903ca580bcd10b800709a136
@@ -29,17 +28,17 @@ http_interactions:
       Cache-Control:
       - no-cache
       Date:
-      - Thu, 10 Sep 2015 23:59:16 GMT
+      - Tue, 01 Dec 2015 00:36:37 GMT
       X-Request-Id:
-      - 3773dd5e5a74b57e2c74e932afebcb54
+      - 2e3262fda250728ceb32329f5a6945fb
       X-Ua-Compatible:
       - IE=Edge,chrome=1
       X-Runtime:
-      - '0.044297'
+      - '0.034321'
       X-Rack-Cache:
       - invalidate, pass
       X-Powered-By:
-      - Phusion Passenger
+      - Phusion Passenger Enterprise
       Server:
       - nginx + Phusion Passenger
     body:
@@ -51,5 +50,5 @@ http_interactions:
         to access the wrong project, or the project API access is disabled, or someone
         listed as the project''s Owner needs to change your membership type."}'
     http_version: 
-  recorded_at: Thu, 10 Sep 2015 23:59:16 GMT
+  recorded_at: Tue, 01 Dec 2015 00:36:37 GMT
 recorded_with: VCR 2.9.3
