@@ -6,8 +6,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"name":"Your Rainforest Run (Run #9: rainforest run - http://www.rainforestqa.com/)
-        failed. Time to finish: 12 minutes 30 seconds","description":"Failed Tests:\nAlways
-        fails: http://www.rainforestqa.com/\n","story_type":"bug","labels":[{"name":"rainforest"}]}'
+        is complete!","description":"Failed Tests:\n: \n","story_type":"bug","labels":[{"name":"rainforest"}]}'
     headers:
       X-Trackertoken:
       - 8537292c903ca580bcd10b800709a136
@@ -29,21 +28,21 @@ http_interactions:
       Cache-Control:
       - max-age=0, private, must-revalidate
       Date:
-      - Thu, 10 Sep 2015 23:59:15 GMT
+      - Tue, 01 Dec 2015 00:36:37 GMT
       X-Tracker-Project-Version:
-      - '50'
+      - '52'
       X-Request-Id:
-      - a81ed71d2a410592374e49059225b7a4
+      - 847c8348019b63b72a252b399521bc4a
       X-Ua-Compatible:
       - IE=Edge,chrome=1
       Etag:
-      - '"027f68b55f27535fdca91c98605055c6"'
+      - '"6fe1282cbd32b7cfcdb6e87afbd776e2"'
       X-Runtime:
-      - '0.283595'
+      - '0.266362'
       X-Rack-Cache:
       - invalidate, pass
       X-Powered-By:
-      - Phusion Passenger
+      - Phusion Passenger Enterprise
       Server:
       - nginx + Phusion Passenger
       Access-Control-Allow-Origin:
@@ -58,10 +57,9 @@ http_interactions:
       - '12'
     body:
       encoding: UTF-8
-      string: '{"kind":"story","id":103152926,"project_id":1141528,"name":"Your Rainforest
-        Run (Run #9: rainforest run - http://www.rainforestqa.com/) failed. Time to
-        finish: 12 minutes 30 seconds","description":"Failed Tests:\nAlways fails:
-        http://www.rainforestqa.com/\n","story_type":"bug","current_state":"unscheduled","requested_by_id":1408618,"owner_ids":[],"labels":[{"kind":"label","id":9144470,"project_id":1141528,"name":"rainforest","created_at":"2014-08-07T20:36:35Z","updated_at":"2014-08-07T20:36:35Z"}],"created_at":"2015-09-10T23:59:15Z","updated_at":"2015-09-10T23:59:15Z","url":"https://www.pivotaltracker.com/story/show/103152926"}'
+      string: '{"kind":"story","id":109222286,"project_id":1141528,"name":"Your Rainforest
+        Run (Run #9: rainforest run - http://www.rainforestqa.com/) is complete!","description":"Failed
+        Tests:\n: \n","story_type":"bug","current_state":"unscheduled","requested_by_id":1408618,"owner_ids":[],"labels":[{"kind":"label","id":9144470,"project_id":1141528,"name":"rainforest","created_at":"2014-08-07T20:36:35Z","updated_at":"2014-08-07T20:36:35Z"}],"created_at":"2015-12-01T00:36:36Z","updated_at":"2015-12-01T00:36:36Z","url":"https://www.pivotaltracker.com/story/show/109222286"}'
     http_version: 
-  recorded_at: Thu, 10 Sep 2015 23:59:15 GMT
+  recorded_at: Tue, 01 Dec 2015 00:36:37 GMT
 recorded_with: VCR 2.9.3

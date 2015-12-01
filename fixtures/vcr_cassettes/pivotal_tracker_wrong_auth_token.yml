@@ -6,8 +6,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"name":"Your Rainforest Run (Run #9: rainforest run - http://www.rainforestqa.com/)
-        failed. Time to finish: 12 minutes 30 seconds","description":"Failed Tests:\nAlways
-        fails: http://www.rainforestqa.com/\n","story_type":"bug","labels":[{"name":"rainforest"}]}'
+        is complete!","description":"Failed Tests:\n: \n","story_type":"bug","labels":[{"name":"rainforest"}]}'
     headers:
       X-Trackertoken:
       - foobar
@@ -29,17 +28,17 @@ http_interactions:
       Cache-Control:
       - no-cache
       Date:
-      - Thu, 10 Sep 2015 23:59:16 GMT
+      - Tue, 01 Dec 2015 00:36:37 GMT
       X-Request-Id:
-      - 242ae4d57321aa0810adf6fae1d8d5b2
+      - 91532bbf062b6366ba1de8b394d1e16a
       X-Ua-Compatible:
       - IE=Edge,chrome=1
       X-Runtime:
-      - '0.033714'
+      - '0.014367'
       X-Rack-Cache:
       - invalidate, pass
       X-Powered-By:
-      - Phusion Passenger
+      - Phusion Passenger Enterprise
       Server:
       - nginx + Phusion Passenger
     body:
@@ -48,5 +47,5 @@ http_interactions:
         credentials were presented.","possible_fix":"Verify that your token value
         matches what''s shown on your Profile page in Tracker."}'
     http_version: 
-  recorded_at: Thu, 10 Sep 2015 23:59:16 GMT
+  recorded_at: Tue, 01 Dec 2015 00:36:37 GMT
 recorded_with: VCR 2.9.3

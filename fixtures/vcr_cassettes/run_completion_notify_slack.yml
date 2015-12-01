@@ -6,9 +6,13 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"attachments":[{"text":"Your Rainforest Run (\u003chttp://example.com
-        | Run #123\u003e) failed. Time to finish: 25 minutes 3 seconds","fallback":"Your
-        Rainforest Run (\u003chttp://example.com | Run #123\u003e) failed. Time to
-        finish: 25 minutes 3 seconds","color":"danger"}]}'
+        | Run #123\u003e) is complete!","color":"danger","fields":[{"title":"Result","value":"Failed","short":true},{"title":"Tests
+        Passed: 8 - 80%","value":"\u003chttp://example.com?expandedGroups%5B%5D=passed
+        | View all Passed tests\u003e","short":true},{"title":"Duration","value":"25
+        minutes, 3 seconds","short":true},{"title":"Tests Failed: 2 - 20%","value":"\u003chttp://example.com?expandedGroups%5B%5D=failed
+        | View all Failed tests\u003e","short":true},{"title":"Environment","value":"QA
+        Environment","short":true},{"title":"Other Results: 0 - 0%","value":"\u003chttp://example.com?expandedGroups%5B%5D=no_result
+        | View all tests with no result\u003e","short":true}]}]}'
     headers:
       Content-Type:
       - application/json
@@ -21,10 +25,12 @@ http_interactions:
     headers:
       Access-Control-Allow-Origin:
       - "*"
+      Content-Security-Policy:
+      - referrer no-referrer;
       Content-Type:
       - text/html
       Date:
-      - Thu, 10 Sep 2015 23:59:12 GMT
+      - Tue, 01 Dec 2015 00:36:43 GMT
       Server:
       - Apache
       Strict-Transport-Security:
@@ -39,5 +45,5 @@ http_interactions:
       encoding: UTF-8
       string: ok
     http_version: 
-  recorded_at: Thu, 10 Sep 2015 23:59:13 GMT
+  recorded_at: Tue, 01 Dec 2015 00:36:43 GMT
 recorded_with: VCR 2.9.3

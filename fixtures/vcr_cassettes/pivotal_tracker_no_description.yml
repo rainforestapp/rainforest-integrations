@@ -6,7 +6,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"name":"Your Rainforest Run (Run #9: rainforest run - http://www.rainforestqa.com/)
-        errored: This is a test error.","description":null,"story_type":"bug","labels":[{"name":"rainforest"}]}'
+        has encountered an error!","description":null,"story_type":"bug","labels":[{"name":"rainforest"}]}'
     headers:
       X-Trackertoken:
       - 8537292c903ca580bcd10b800709a136
@@ -28,21 +28,21 @@ http_interactions:
       Cache-Control:
       - max-age=0, private, must-revalidate
       Date:
-      - Thu, 10 Sep 2015 23:59:16 GMT
+      - Tue, 01 Dec 2015 00:36:38 GMT
       X-Tracker-Project-Version:
-      - '51'
+      - '53'
       X-Request-Id:
-      - f3d1eebb89a2d3e4d46bdc6c2d6b5430
+      - cf15e2c826666c7740e81ad97e353157
       X-Ua-Compatible:
       - IE=Edge,chrome=1
       Etag:
-      - '"2803b7fdeb262f4717ed2a3f30e41251"'
+      - '"f00bb2fa3351eccda06c601a4adf48dc"'
       X-Runtime:
-      - '0.252698'
+      - '0.258597'
       X-Rack-Cache:
       - invalidate, pass
       X-Powered-By:
-      - Phusion Passenger
+      - Phusion Passenger Enterprise
       Server:
       - nginx + Phusion Passenger
       Access-Control-Allow-Origin:
@@ -57,9 +57,9 @@ http_interactions:
       - '12'
     body:
       encoding: UTF-8
-      string: '{"kind":"story","id":103152928,"project_id":1141528,"name":"Your Rainforest
-        Run (Run #9: rainforest run - http://www.rainforestqa.com/) errored: This
-        is a test error.","story_type":"bug","current_state":"unscheduled","requested_by_id":1408618,"owner_ids":[],"labels":[{"kind":"label","id":9144470,"project_id":1141528,"name":"rainforest","created_at":"2014-08-07T20:36:35Z","updated_at":"2014-08-07T20:36:35Z"}],"created_at":"2015-09-10T23:59:16Z","updated_at":"2015-09-10T23:59:16Z","url":"https://www.pivotaltracker.com/story/show/103152928"}'
+      string: '{"kind":"story","id":109222290,"project_id":1141528,"name":"Your Rainforest
+        Run (Run #9: rainforest run - http://www.rainforestqa.com/) has encountered
+        an error!","story_type":"bug","current_state":"unscheduled","requested_by_id":1408618,"owner_ids":[],"labels":[{"kind":"label","id":9144470,"project_id":1141528,"name":"rainforest","created_at":"2014-08-07T20:36:35Z","updated_at":"2014-08-07T20:36:35Z"}],"created_at":"2015-12-01T00:36:37Z","updated_at":"2015-12-01T00:36:37Z","url":"https://www.pivotaltracker.com/story/show/109222290"}'
     http_version: 
-  recorded_at: Thu, 10 Sep 2015 23:59:16 GMT
+  recorded_at: Tue, 01 Dec 2015 00:36:38 GMT
 recorded_with: VCR 2.9.3

@@ -42,11 +42,12 @@ module Integrations
     private
 
     def create_test_failure_issue
+      test = payload[:failed_test]
       {
         fields: {
           project: { key: settings[:project_key] },
           summary: "Rainforest found a bug in '#{test[:title]}'",
-          description: "Failed test name: #{test[:title]}\n#{test[:frontend_url]}",
+          description: "Failed test name: #{test[:title]}\n#{payload[:frontend_url]}",
           issuetype: {
             name: "Bug"
           },

@@ -6,9 +6,8 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"attachments":[{"text":"Your Rainforest Run (\u003chttp://example.com
-        | Run #123\u003e) errored: We were unable to create social account(s).","fallback":"Your
-        Rainforest Run (\u003chttp://example.com | Run #123\u003e) errored: We were
-        unable to create social account(s).","color":"danger"}]}'
+        | Run #123\u003e) has encountered an error!","color":"danger","fields":[{"title":"Error
+        Reason","value":"We were unable to create social account(s)","short":false}]}]}'
     headers:
       Content-Type:
       - application/json
@@ -21,10 +20,12 @@ http_interactions:
     headers:
       Access-Control-Allow-Origin:
       - "*"
+      Content-Security-Policy:
+      - referrer no-referrer;
       Content-Type:
       - text/html
       Date:
-      - Thu, 10 Sep 2015 23:59:15 GMT
+      - Tue, 01 Dec 2015 00:36:44 GMT
       Server:
       - Apache
       Strict-Transport-Security:
@@ -39,5 +40,5 @@ http_interactions:
       encoding: UTF-8
       string: ok
     http_version: 
-  recorded_at: Thu, 10 Sep 2015 23:59:15 GMT
+  recorded_at: Tue, 01 Dec 2015 00:36:44 GMT
 recorded_with: VCR 2.9.3
