@@ -54,7 +54,7 @@ class Integrations::Slack < Integrations::Base
   # it's laid out better in slack's table-format that way
   def run_completion_fields
     [
-      { title: "Result", value: run[:result].capitalize, short: true },
+      { title: "Result", value: run[:result].humanize, short: true },
       {
         title: "Tests Passed: #{run[:total_passed_tests]} - #{test_percentage(run[:total_passed_tests])}%",
         value: "<#{payload[:frontend_url]}?expandedGroups%5B%5D=passed | View all Passed tests>",
