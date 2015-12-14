@@ -36,15 +36,18 @@ module Integrations
     private
 
     def update_issue(issue_id)
-      params = {
-        body: {
-          update: { labels: [{ add: 'RepeatedFailures' }] },
-          fields: { priority: { name: 'High' } }
-        }.to_json
-      }
+      params = {}
+      params[:update] = { labels: [{ add: repeated_issue_tag }] } if repeated_issue_tag
+      params[:fields] = { priority: { name: repeated_issue_priority } } if repeated_issue_priority
 
-      response = HTTParty.put("#{jira_base_url}/rest/api/2/issue/#{issue_id}", params.merge(headers))
-      validate_response(response)
+      unless params.empty?
+        response = HTTParty.put(
+          "#{jira_base_url}/rest/api/2/issue/#{issue_id}",
+          { body: params.to_json }.merge(headers)
+        )
+
+        validate_response(response)
+      end
     end
 
     def create_issue
@@ -117,6 +120,16 @@ module Integrations
         basic_auth: { username: settings[:username], password: settings[:password] },
         headers: { 'Content-Type' => 'application/json', 'Accept' => 'application/json' }
       }
+    end
+
+    def repeated_issue_tag
+      # Hard coded until custom values are in place
+      'RepeatedFailures'
+    end
+
+    def repeated_issue_priority
+      # Hard coded until custom values are in place
+      'High'
     end
   end
 end
