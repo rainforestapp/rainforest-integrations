@@ -40,7 +40,8 @@ module Integrations
           "#{n.to_i} #{name}"
         end
       end.compact.reverse.join(', ')
-      time_string.empty? ? 'Not Applicable' : time_string
+      # Fallback in case seconds == 0
+      time_string.empty? ? 'Error/Unknown' : time_string
     end
   end
 end
