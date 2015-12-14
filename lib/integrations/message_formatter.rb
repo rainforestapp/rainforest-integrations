@@ -12,8 +12,7 @@ module Integrations
     end
 
     def run_description
-      description = run[:description]
-      (description && description.length > 0) ? ": #{description}" : ""
+      run[:description].present? ? ": #{run[:description]}" : ""
     end
 
     def run_completion_message
