@@ -4,18 +4,6 @@ require 'integrations'
 describe Integrations::Slack do
   shared_examples_for "Slack notification" do |expected_text|
     it "expects a specific text" do
-        expected_params = {:body => {
-            :attachments => [{
-              :text => expected_text,
-              :fallback => expected_text,
-              :color => 'danger'
-            }]
-          }.to_json,
-          :headers => {
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json'
-          }
-        }
         response = double('response')
         allow(response).to receive(:code).and_return(200)
 
@@ -33,10 +21,7 @@ describe Integrations::Slack do
     let(:event_type) { 'run_failure' }
     let(:payload) do
       {
-        run: {
-          id: 3,
-          status: 'failed'
-        }
+        run: { id: 3, status: 'failed'}
       }
     end
 
@@ -63,6 +48,7 @@ describe Integrations::Slack do
     end
 
     context "notify of run_completion" do
+      let(:expected_text) { 'Your Rainforest Run (Run#123) has failed.' }
       let(:event_type) { "run_completion" }
       let(:payload) do
         {
@@ -98,6 +84,14 @@ describe Integrations::Slack do
         end
 
         it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123: some description>) is complete!"
+      end
+
+      context 'when the description is an empty string' do
+        before do
+          payload[:run][:description] = ''
+        end
+
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123>) is complete!"
       end
     end
 

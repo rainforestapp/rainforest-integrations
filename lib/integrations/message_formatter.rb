@@ -12,7 +12,7 @@ module Integrations
     end
 
     def run_description
-      run[:description] ? ": #{run[:description]}" : ""
+      run[:description].present? ? ": #{run[:description]}" : ""
     end
 
     def run_completion_message
@@ -33,12 +33,14 @@ module Integrations
 
     def humanize_secs(seconds)
       secs = seconds.to_i
-      [[60, :seconds], [60, :minutes], [24, :hours], [1000, :days]].map do |count, name|
+      time_string = [[60, :seconds], [60, :minutes], [24, :hours], [1000, :days]].map do |count, name|
         if secs > 0
           secs, n = secs.divmod(count)
           "#{n.to_i} #{name}"
         end
       end.compact.reverse.join(', ')
+      # Fallback in case seconds == 0
+      time_string.empty? ? 'Error/Unknown' : time_string
     end
   end
 end
