@@ -1,4 +1,6 @@
 class IntegrationsController < ApplicationController
+  before_action :cors_preflight_check, only: :index
+
   def show
     begin
       render json: Integration.find(params[:id])
