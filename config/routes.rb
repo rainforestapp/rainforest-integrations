@@ -4,5 +4,5 @@ Rails.application.routes.draw do
 
   # OAuth Routes
   post '/oauth/request-token', to: 'oauth#request_token'
-  post '/oauth/access-token', to: 'oauth#access_token'
+  get '/oauth/access-token', to: 'oauth#access_token'
 end
