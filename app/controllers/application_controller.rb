@@ -13,11 +13,11 @@ class ApplicationController < ActionController::Base
 
   def cors_preflight_check
     if request.method == 'OPTIONS'
-      puts ALLOWED_ORIGINS
       if ALLOWED_ORIGINS.include?(request.headers['HTTP_ORIGIN'])
         headers['Access-Control-Allow-Origin'] = request.headers['HTTP_ORIGIN']
         headers['Access-Control-Allow-Credentials'] = 'true'
         headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, OPTIONS'
+        headers['Access-Control-Allow-Headers'] = 'accept,content-type'
       end
 
       render :text => '', :content_type => 'text/plain'
