@@ -5,7 +5,14 @@ class OauthController < ApplicationController
   def request_token
     settings = params[:oauth_settings]
     consumer = create_consumer(settings)
-    request_token = consumer.get_request_token(oauth_callback: "#{oauth_access_token_url}/?instance_id=#{params[:instance_id]}")
+
+    returned_params = {
+      instance_id: params[:instance_id],
+      consumer_key: settings[:consumer_key],
+      signature_method: settings[:signature_method]
+    }
+
+    request_token = consumer.get_request_token(oauth_callback: "#{oauth_access_token_url}/?#{returned_params.to_query}")
 
     session[:oauth] = settings.to_hash
     session[:oauth][:oauth_token] = request_token.token
@@ -23,7 +30,10 @@ class OauthController < ApplicationController
     returned_params = {
       access_token: access_token.token,
       access_secret: access_token.secret,
-      instance_id: params[:instance_id]
+      consumer_key: params[:consumer_key],
+      signature_method: params[:signature_method],
+      instance_id: params[:instance_id],
+      callback_type: 'oauth_token'
     }
 
     # Return the authentication information needed for future OAuth Access

@@ -26,9 +26,7 @@ pivotal_tracker:
 jira:
   title: 'JIRA'
   settings:
-    - key: access_token
-      title: Jira OAuth Access Token
-      required: true
+    - key: oauth_settings
       oauth_version: 1
     - key: 'project_key'
       title: 'Project Key'
@@ -36,3 +34,4 @@ jira:
     - key: "jira_base_url"
       title: "URL to your JIRA integration"
       required: true
+...
