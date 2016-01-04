@@ -4,39 +4,32 @@ slack:
   settings:
     - key: 'url'
       title: 'Slack webhook URL'
-      type: text
       required: true
 hip_chat:
   title: 'HipChat'
   settings:
     - key: 'room_id'
       title: 'HipChat Room id'
-      type: text
       required: true
     - key: 'room_token'
       title: 'HipChat Room Notification Token'
-      type: text
       required: true
 pivotal_tracker:
   title: "Pivotal Tracker"
   settings:
     - key: "project_id"
       title: "Project ID for new stories to be posted"
-      type: text
       required: true
     - key: "api_token"
       title: "Pivotal Tracker API token"
-      type: text
       required: "true"
-
 jira:
   title: 'JIRA'
-  oauth: 1
   settings:
     - key: access_token
       title: Jira OAuth Access Token
       required: true
-      oauth_token: true
+      oauth_version: 1
     - key: 'project_key'
       title: 'Project Key'
       required: true

@@ -105,6 +105,7 @@ GEM
     notiffany (0.0.6)
       nenv (~> 0.1)
       shellany (~> 0.0)
+    oauth (0.4.7)
     pry (0.10.1)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -209,6 +210,7 @@ DEPENDENCIES
   guard-rspec
   httparty
   multi_json
+  oauth
   puma
   rails (= 4.2.1)
   rspec-rails

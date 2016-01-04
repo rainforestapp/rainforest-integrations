@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
-  resources :events, only: %i(index create)
-  resources :integrations, only: %i(index show)
+  match '/*all', to: 'application#cors_preflight_check', via: [:options]
+  resources :integrations, only: %i(show index)
+
+  # OAuth Routes
+  post '/oauth/request-token', to: 'oauth#request_token'
+  get '/oauth/access-token', to: 'oauth#access_token'
 end
