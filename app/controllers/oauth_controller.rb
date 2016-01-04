@@ -1,10 +1,11 @@
 class OauthController < ApplicationController
+  FRONTEND_URL = ENV['FRONTEND_URL'].freeze
   skip_after_action :cors_set_access_control_headers, only: :access_token
 
   def request_token
     settings = params[:oauth_settings]
     consumer = create_consumer(settings)
-    request_token = consumer.get_request_token(oauth_callback: oauth_access_token_url)
+    request_token = consumer.get_request_token(oauth_callback: "#{oauth_access_token_url}/?instance_id=#{params[:instance_id]}")
 
     session[:oauth] = settings.to_hash
     session[:oauth][:oauth_token] = request_token.token
@@ -18,12 +19,15 @@ class OauthController < ApplicationController
     consumer = create_consumer(settings)
     request_token = OAuth::RequestToken.new(consumer, settings[:oauth_token], settings[:oauth_token_secret])
     access_token = request_token.get_access_token(oauth_verifier: params[:oauth_verifier])
-    render json: {
+
+    returned_params = {
       access_token: access_token.token,
       access_secret: access_token.secret,
-      request_token: request_token.token,
-      request_secret: request_token.secret
+      instance_id: params[:instance_id]
     }
+
+    # Return the authentication information needed for future OAuth Access
+    redirect_to "#{FRONTEND_URL}/settings/integrations?#{returned_params.to_query}"
   end
 
   private
