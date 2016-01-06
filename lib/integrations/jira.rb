@@ -20,7 +20,6 @@ module Integrations
       validate_response(response)
 
       parsed_response = MultiJson.load(response.body, symbolize_keys: true)
-      puts parsed_response
       issues = parsed_response[:issues]
 
       if issues.length > 0
@@ -43,7 +42,7 @@ module Integrations
           OpenSSL::PKey::RSA.new(oauth_settings[:consumer_secret]),
           { signature_method: oauth_settings[:signature_method] }
         )
-        @oauth_access_token = OAuth::AccessToken.new(consumer, oauth_settings[:oauth_token], oauth_settings[:oauth_token_secret])
+        @oauth_access_token = OAuth::AccessToken.new(consumer, oauth_settings[:access_token], oauth_settings[:access_secret])
       end
       @oauth_access_token
     end
