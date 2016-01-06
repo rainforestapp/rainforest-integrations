@@ -14,22 +14,19 @@ module Integrations
       when 'run_test_failure' then "RfTest#{payload[:failed_test][:id]}"
       end
 
-      body = {
-        jql: "status != Done AND project = #{settings[:project_key]} AND labels = #{label}",
-        maxResults: 1,
-        fields: ['status']
-      }.to_json
+      body = { jql: "status != 'Done'" }.to_json
 
       response = oauth_access_token.post("#{jira_base_url}/rest/api/2/search", body, 'Content-Type' => 'application/json')
       validate_response(response)
 
       parsed_response = MultiJson.load(response.body, symbolize_keys: true)
+      puts parsed_response
       issues = parsed_response[:issues]
 
       if issues.length > 0
+        puts issues
         # issue = issues.first
         # update_issue(issue['id'])
-        puts issues
       else
         puts "No Issues"
         # create_issue
@@ -81,8 +78,6 @@ module Integrations
     end
 
     def validate_response(response)
-      puts response.code
-      puts response.body
       case response.code.to_i
       when 201, 200
         true
