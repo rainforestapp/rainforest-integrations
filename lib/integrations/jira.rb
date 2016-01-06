@@ -21,7 +21,6 @@ class Integrations::Jira < Integrations::Base
 
     response = oauth_access_token.post("#{jira_base_url}/rest/api/2/search", body, 'Content-Type' => 'application/json')
     validate_response(response)
-
     parsed_response = MultiJson.load(response.body, symbolize_keys: true)
     issues = parsed_response[:issues]
 
