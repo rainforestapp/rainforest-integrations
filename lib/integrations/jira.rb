@@ -14,7 +14,10 @@ module Integrations
       when 'run_test_failure' then "RfTest#{payload[:failed_test][:id]}"
       end
 
-      body = { jql: "status != 'Done'" }.to_json
+      body = {
+        jql: "status != Done AND project = #{settings[:project_key]} and labels = #{label}" ,
+        maxResults: 1
+      }.to_json
 
       response = oauth_access_token.post("#{jira_base_url}/rest/api/2/search", body, 'Content-Type' => 'application/json')
       validate_response(response)
@@ -23,12 +26,10 @@ module Integrations
       issues = parsed_response[:issues]
 
       if issues.length > 0
-        puts issues
-        # issue = issues.first
-        # update_issue(issue['id'])
+        issue = issues.first
+        update_issue(issue[:id])
       else
-        puts "No Issues"
-        # create_issue
+        create_issue
       end
     end
 
@@ -53,9 +54,10 @@ module Integrations
       params[:fields] = { priority: { name: repeated_issue_priority } } if repeated_issue_priority
 
       unless params.empty?
-        response = HTTParty.put(
+        response = oauth_access_token.put(
           "#{jira_base_url}/rest/api/2/issue/#{issue_id}",
-          { body: params.to_json }.merge(headers)
+          params.to_json,
+          'Content-Type' => 'application/json'
         )
 
         validate_response(response)
@@ -68,17 +70,17 @@ module Integrations
       when 'run_test_failure' then create_test_failure_issue
       end
 
-      params = { body: post_data.to_json }
-      response = HTTParty.post(
+      response = oauth_access_token.post(
         "#{jira_base_url}/rest/api/2/issue/",
-        params.merge(headers)
+        post_data.to_json,
+        'Content-Type' => 'application/json'
       )
       validate_response(response)
     end
 
     def validate_response(response)
       case response.code.to_i
-      when 201, 200
+      when 200, 201, 204
         true
       when 401
         raise Integrations::Error.new('user_configuration_error', 'Authentication failed. Wrong username and/or password. Keep in mind that your JIRA username is NOT your email address.')
