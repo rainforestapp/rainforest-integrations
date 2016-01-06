@@ -14,26 +14,42 @@ module Integrations
       when 'run_test_failure' then "RfTest#{payload[:failed_test][:id]}"
       end
 
-      params = {
-        body: {
-          jql: "labels = #{label} AND status != 'Done' AND project = #{settings[:project_key]}"
-        }.to_json
-      }
+      body = {
+        jql: "status != Done AND project = #{settings[:project_key]} AND labels = #{label}",
+        maxResults: 1,
+        fields: ['status']
+      }.to_json
 
-      response = HTTParty.post("#{jira_base_url}/rest/api/2/search/", params.merge(headers))
+      response = oauth_access_token.post("#{jira_base_url}/rest/api/2/search", body, 'Content-Type' => 'application/json')
       validate_response(response)
 
-      issues = response['issues']
+      parsed_response = MultiJson.load(response.body, symbolize_keys: true)
+      issues = parsed_response[:issues]
 
       if issues.length > 0
-        issue = issues.first
-        update_issue(issue['id'])
+        # issue = issues.first
+        # update_issue(issue['id'])
+        puts issues
       else
-        create_issue
+        puts "No Issues"
+        # create_issue
       end
     end
 
     private
+
+    def oauth_access_token
+      if @oauth_access_token.nil?
+        oauth_settings = settings[:oauth_settings].with_indifferent_access
+        consumer = OAuth::Consumer.new(
+          oauth_settings[:consumer_key],
+          OpenSSL::PKey::RSA.new(oauth_settings[:consumer_secret]),
+          { signature_method: oauth_settings[:signature_method] }
+        )
+        @oauth_access_token = OAuth::AccessToken.new(consumer, oauth_settings[:oauth_token], oauth_settings[:oauth_token_secret])
+      end
+      @oauth_access_token
+    end
 
     def update_issue(issue_id)
       params = {}
@@ -65,8 +81,9 @@ module Integrations
     end
 
     def validate_response(response)
-      return true if response.nil?
-      case response.code
+      puts response.code
+      puts response.body
+      case response.code.to_i
       when 201, 200
         true
       when 401
@@ -113,13 +130,6 @@ module Integrations
       # MAKE SURE IT DOESN'T HAVE A TRAILING SLASH
       base_url = settings[:jira_base_url]
       base_url.last == "/" ? base_url.chop : base_url
-    end
-
-    def headers
-      {
-        basic_auth: { username: settings[:username], password: settings[:password] },
-        headers: { 'Content-Type' => 'application/json', 'Accept' => 'application/json' }
-      }
     end
 
     def repeated_issue_tag

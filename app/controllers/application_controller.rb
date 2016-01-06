@@ -7,9 +7,13 @@ class ApplicationController < ActionController::Base
   after_action :cors_set_access_control_headers
 
   def cors_set_access_control_headers
-    headers['Access-Control-Allow-Origin'] = request.headers['HTTP_ORIGIN']
-    headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, OPTIONS'
-    headers['Access-Control-Allow-Credentials'] = 'true'
+    http_origin = request.headers['HTTP_ORIGIN']
+
+    if http_origin
+      headers['Access-Control-Allow-Origin'] = http_origin
+      headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, OPTIONS'
+      headers['Access-Control-Allow-Credentials'] = 'true'
+    end
   end
 
   def cors_preflight_check

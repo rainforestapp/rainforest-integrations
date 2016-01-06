@@ -51,8 +51,7 @@ class OauthController < ApplicationController
         signature_method: settings[:signature_method],
         request_token_path: settings[:request_token_path],
         access_token_path: settings[:access_token_path],
-        authorize_path: settings[:authorize_path],
-        signature_method: settings[:signature_method]
+        authorize_path: settings[:authorize_path]
       }
     )
   end
