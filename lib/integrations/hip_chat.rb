@@ -12,7 +12,7 @@ module Integrations
         body: {
           from: "Rainforest QA",
           color: message_color,
-          message: self.message_text,
+          message: message_text,
           notify: true,
           message_format: 'html'
         }.to_json,
@@ -52,11 +52,6 @@ module Integrations
       }
 
       color_hash[event_type]
-    end
-
-    def self.message_text
-      return fallback_text if payload[:run] && payload[:run][:state] == 'failed'
-      message_text
     end
 
     def run_href

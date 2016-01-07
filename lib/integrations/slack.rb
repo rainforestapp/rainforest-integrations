@@ -41,19 +41,17 @@ class Integrations::Slack < Integrations::Base
       attachment = run_test_failure_fields
     when 'webhook_timeout'
       attachment = webhook_timeout_fields
-    else
-      attachment = {
-        text: fallback_text
-      }
     end
 
+    attachment[:fallback] << fallback_text
+    
     return [attachment]
   end
 
   # The order here intentionally 'alternates' between run info and tests info because
   # it's laid out better in slack's table-format that way
   def run_completion_fields
-    attachment = {
+     {
       text: message_text,
       color: "good",
       fields: [
@@ -83,7 +81,7 @@ class Integrations::Slack < Integrations::Base
     if run[:error_reason].nil? || run[:error_reason].empty?
       run[:error_reason] = "Error reason was unspecified (please contact help@rainforestqa.com if you'd like help debugging this)"
     end
-    attachment = {
+    {
       text: message_text,
       color: "danger",
       fields: [{ title: "Error Reason", value: run[:error_reason], short: false }]
@@ -93,7 +91,7 @@ class Integrations::Slack < Integrations::Base
 
   def run_test_failure_fields
     failed_test = payload[:failed_test]
-    attachment = {
+    {
       text: message_text,
       color: "danger",
       fields: [
@@ -109,7 +107,7 @@ class Integrations::Slack < Integrations::Base
   end
 
   def webhook_timeout_fields
-    attachment = {
+    {
       text: message_text,
       color: "danger",
       fields: [{ title: "Environment", value: run[:environment][:name], short: false }]
