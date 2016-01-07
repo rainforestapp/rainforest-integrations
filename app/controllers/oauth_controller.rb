@@ -23,6 +23,7 @@ class OauthController < ApplicationController
     request_token = OAuth::RequestToken.new(consumer, settings[:oauth_token], settings[:oauth_token_secret])
     access_token = request_token.get_access_token(oauth_verifier: params[:oauth_verifier])
 
+    # Can't return consumer secret because it's too long for the query string
     returned_params = {
       access_token: access_token.token,
       access_secret: access_token.secret,
