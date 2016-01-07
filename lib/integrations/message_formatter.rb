@@ -31,10 +31,6 @@ module Integrations
       "has a failed a test!"
     end
 
-    def fallback_text
-      "retreat!"
-    end
-
     def humanize_secs(seconds)
       secs = seconds.to_i
       time_string = [[60, :seconds], [60, :minutes], [24, :hours], [1000, :days]].map do |count, name|

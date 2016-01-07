@@ -1,8 +1,6 @@
 class Integrations::Slack < Integrations::Base
   SUPPORTED_EVENTS = %w(run_completion run_error webhook_timeout run_test_failure).freeze
 
-  include Integrations::MessageFormatter
-
   def self.key
     'slack'
   end
@@ -42,8 +40,6 @@ class Integrations::Slack < Integrations::Base
     when 'webhook_timeout'
       attachment = webhook_timeout_fields
     end
-
-    attachment.merge!(fallback: fallback_text)
     
     return [attachment]
   end
@@ -52,6 +48,7 @@ class Integrations::Slack < Integrations::Base
   # it's laid out better in slack's table-format that way
   def run_completion_fields
      {
+      fallback: message_text(fallback: true),
       text: message_text,
       color: "good",
       fields: [
@@ -82,6 +79,7 @@ class Integrations::Slack < Integrations::Base
       run[:error_reason] = "Error reason was unspecified (please contact help@rainforestqa.com if you'd like help debugging this)"
     end
     {
+      fallback: message_text(fallback: true),
       text: message_text,
       color: "danger",
       fields: [{ title: "Error Reason", value: run[:error_reason], short: false }]
@@ -92,6 +90,7 @@ class Integrations::Slack < Integrations::Base
   def run_test_failure_fields
     failed_test = payload[:failed_test]
     {
+      fallback: message_text(fallback: true),
       text: message_text,
       color: "danger",
       fields: [
@@ -108,18 +107,60 @@ class Integrations::Slack < Integrations::Base
 
   def webhook_timeout_fields
     {
+      fallback: message_text(fallback: true),
       text: message_text,
       color: "danger",
       fields: [{ title: "Environment", value: run[:environment][:name], short: false }]
     }
   end
 
+  def message_text(fallback = false)
+    message = self.send(event_type.dup.concat("_message").to_sym)
+    if fallback
+      "Your Rainforest Run #{message}"
+    else
+      "Your Rainforest Run (#{run_href}) #{message}"
+    end 
+  end
+
+  def run_completion_message
+    "is complete!"
+  end
+
+  def run_error_message
+    "has encountered an error!"
+  end
+
+  def webhook_timeout_message
+    "has timed out due to a webhook failure!\nIf you need a hand debugging it, please let us know via email at help@rainforestqa.com."
+  end
+
+  def run_test_failure_message
+    "has a failed a test!"
+  end
+
   def test_percentage(test_quantity)
     ((test_quantity.to_f / run[:total_tests].to_f).round(2) * 100).to_i
+  end
+
+  def run_description
+    run[:description].present? ? ": #{run[:description]}" : ""
   end
 
   # overwriting generic format for slack hyperlink format
   def run_href
     "<#{payload[:frontend_url]} | Run ##{run[:id]}#{run_description}>"
+  end
+
+  def humanize_secs(seconds)
+    secs = seconds.to_i
+    time_string = [[60, :seconds], [60, :minutes], [24, :hours], [1000, :days]].map do |count, name|
+      if secs > 0
+        secs, n = secs.divmod(count)
+        "#{n.to_i} #{name}"
+      end
+    end.compact.reverse.join(', ')
+    # Fallback in case seconds == 0
+    time_string.empty? ? 'Error/Unknown' : time_string
   end
 end
