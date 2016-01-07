@@ -43,7 +43,7 @@ class Integrations::Slack < Integrations::Base
       attachment = webhook_timeout_fields
     end
 
-    attachment[:fallback] << fallback_text
+    attachment.merge!(fallback: fallback_text)
     
     return [attachment]
   end

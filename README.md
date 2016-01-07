@@ -83,7 +83,7 @@ in the payload:
 
 #### `webhook_timeout`
   
-- **run:** id, description
+- **run:** id, description, environment
   
 
 #### `run_test_failure`
@@ -92,7 +92,7 @@ in the payload:
   
 - **failed_test:** id, title, frontend_url
   
-- **browser:** full_name
+- **browser:** description
   
 
 
