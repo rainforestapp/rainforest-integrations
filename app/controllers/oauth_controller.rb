@@ -6,13 +6,7 @@ class OauthController < ApplicationController
     settings = params[:oauth_settings]
     consumer = create_consumer(settings)
 
-    returned_params = {
-      instance_id: params[:instance_id],
-      consumer_key: settings[:consumer_key],
-      signature_method: settings[:signature_method]
-    }
-
-    request_token = consumer.get_request_token(oauth_callback: "#{oauth_access_token_url}/?#{returned_params.to_query}")
+    request_token = consumer.get_request_token(oauth_callback: "#{oauth_access_token_url}/?instance_id=#{params[:instance_id]}")
 
     session[:oauth] = settings.to_hash
     session[:oauth][:oauth_token] = request_token.token
@@ -23,6 +17,8 @@ class OauthController < ApplicationController
 
   def access_token
     settings = session[:oauth].to_hash.with_indifferent_access
+    session[:oauth] = nil
+
     consumer = create_consumer(settings)
     request_token = OAuth::RequestToken.new(consumer, settings[:oauth_token], settings[:oauth_token_secret])
     access_token = request_token.get_access_token(oauth_verifier: params[:oauth_verifier])
@@ -30,8 +26,8 @@ class OauthController < ApplicationController
     returned_params = {
       access_token: access_token.token,
       access_secret: access_token.secret,
-      consumer_key: params[:consumer_key],
-      signature_method: params[:signature_method],
+      consumer_key: settings[:consumer_key],
+      signature_method: settings[:signature_method],
       instance_id: params[:instance_id],
       callback_type: 'oauth_token'
     }
