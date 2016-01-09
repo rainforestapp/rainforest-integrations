@@ -29,7 +29,6 @@ class Integrations::Slack < Integrations::Base
   private
 
   def attachments
-
     case event_type
     when 'run_completion'
       attachment = run_completion_fields
@@ -41,6 +40,11 @@ class Integrations::Slack < Integrations::Base
       attachment = webhook_timeout_fields
     end
     
+    attachment.merge!(
+      fallback: message_text(fallback: true),
+      text: message_text
+    )
+
     return [attachment]
   end
 
@@ -48,8 +52,6 @@ class Integrations::Slack < Integrations::Base
   # it's laid out better in slack's table-format that way
   def run_completion_fields
      {
-      fallback: message_text(fallback: true),
-      text: message_text,
       color: "good",
       fields: [
         { title: "Result", value: run[:result].humanize, short: true },
@@ -79,8 +81,6 @@ class Integrations::Slack < Integrations::Base
       run[:error_reason] = "Error reason was unspecified (please contact help@rainforestqa.com if you'd like help debugging this)"
     end
     {
-      fallback: message_text(fallback: true),
-      text: message_text,
       color: "danger",
       fields: [{ title: "Error Reason", value: run[:error_reason], short: false }]
     }
@@ -90,8 +90,6 @@ class Integrations::Slack < Integrations::Base
   def run_test_failure_fields
     failed_test = payload[:failed_test]
     {
-      fallback: message_text(fallback: true),
-      text: message_text,
       color: "danger",
       fields: [
         {
@@ -107,8 +105,6 @@ class Integrations::Slack < Integrations::Base
 
   def webhook_timeout_fields
     {
-      fallback: message_text(fallback: true),
-      text: message_text,
       color: "danger",
       fields: [{ title: "Environment", value: run[:environment][:name], short: false }]
     }
