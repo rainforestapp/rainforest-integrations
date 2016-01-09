@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'integrations'
 
 describe Integrations::Slack do
-  shared_examples_for "Slack notification" do |expected_text|
+  shared_examples_for "Slack notification" do |expected_text, expected_color|
     it "expects a specific text" do
         response = double('response')
         allow(response).to receive(:code).and_return(200)
@@ -11,6 +11,19 @@ describe Integrations::Slack do
           expect(url).to eq settings.first[:value]
           text = JSON.parse(options[:body])['attachments'].first['text']
           expect(text).to eq expected_text
+        end.and_return(response)
+
+        described_class.new(event_type, payload, settings).send_event
+    end
+
+    it "expects a specific color" do
+        response = double('response')
+        allow(response).to receive(:code).and_return(200)
+
+        expect(HTTParty).to receive(:post) do |url, options|
+          expect(url).to eq settings.first[:value]
+          color = JSON.parse(options[:body])['attachments'].first['color']
+          expect(color).to eq expected_color
         end.and_return(response)
 
         described_class.new(event_type, payload, settings).send_event
@@ -75,7 +88,7 @@ describe Integrations::Slack do
       end
 
       describe 'run result inclusion in text' do
-        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123>) is complete!"
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123>) is complete!", "good"
       end
 
       context 'when there is a description' do
@@ -83,7 +96,7 @@ describe Integrations::Slack do
           payload[:run][:description] = 'some description'
         end
 
-        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123: some description>) is complete!"
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123: some description>) is complete!", "good"
       end
 
       context 'when the description is an empty string' do
@@ -91,7 +104,7 @@ describe Integrations::Slack do
           payload[:run][:description] = ''
         end
 
-        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123>) is complete!"
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123>) is complete!", "good"
       end
     end
 
@@ -114,7 +127,7 @@ describe Integrations::Slack do
       end
 
       describe 'message text' do
-        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123>) has encountered an error!"
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://example.com | Run #123>) has encountered an error!", "danger"
       end
     end
 
@@ -139,7 +152,7 @@ describe Integrations::Slack do
       end
 
       describe 'message text' do
-        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://www.example.com | Run #7>) has timed out due to a webhook failure!\nIf you need a hand debugging it, please let us know via email at help@rainforestqa.com."
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://www.example.com | Run #7>) has timed out due to a webhook failure!\nIf you need a hand debugging it, please let us know via email at help@rainforestqa.com.", "danger"
       end
     end
 
@@ -171,7 +184,7 @@ describe Integrations::Slack do
       end
 
       describe "message text" do
-        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://www.example.com | Run #666>) has a failed a test!"
+        it_should_behave_like "Slack notification", "Your Rainforest Run (<http://www.example.com | Run #666>) has a failed a test!", "danger"
       end
     end
   end
