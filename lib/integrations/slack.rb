@@ -6,14 +6,8 @@ class Integrations::Slack < Integrations::Base
     if fallback
       "Your Rainforest Run #{message}"
     else
-      "Your Rainforest #{run_href} #{message}"
+      "Your Rainforest Run (<#{payload[:frontend_url]} | Run ##{run[:id]}#{run_description}>) #{message}"
     end 
-  end
-
-  def run_href
-    # Should be overridden with properly formatted hyperlink if that is
-    # supported by your integration
-    "Run (<#{payload[:frontend_url]} | Run ##{run[:id]}#{run_description}>)"
   end
 
   def run_description

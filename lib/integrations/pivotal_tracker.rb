@@ -4,13 +4,7 @@ module Integrations
 
     def message_text
       message = self.send(event_type.dup.concat("_message").to_sym)
-      "Your Rainforest Run (#{run_href}) #{message}"
-    end
-
-    def run_href
-      # Should be overridden with properly formatted hyperlink if that is
-      # supported by your integration
-      "Run ##{run[:id]}#{run_description} - #{payload[:frontend_url]}"
+      "Your Rainforest Run ##{run[:id]}#{run_description} - #{payload[:frontend_url]}) #{message}"
     end
 
     def run_description
