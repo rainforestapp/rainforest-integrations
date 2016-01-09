@@ -4,7 +4,7 @@ module Integrations
 
     def message_text
       message = self.send(event_type.dup.concat("_message").to_sym)
-      "Your Rainforest Run ##{run[:id]}#{run_description} - #{payload[:frontend_url]} #{message}"
+      "Your Rainforest Run (<a href=\"#{payload[:frontend_url]}\">Run ##{run[:id]}#{run_description}</a>) #{message}"
     end
 
     def run_description
@@ -88,10 +88,6 @@ module Integrations
       }
 
       color_hash[event_type]
-    end
-
-    def run_href
-      "<a href=\"#{payload[:frontend_url]}\">Run ##{run[:id]}#{run_description}</a>"
     end
 
     def test_href
