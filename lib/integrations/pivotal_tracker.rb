@@ -4,11 +4,7 @@ module Integrations
 
     def message_text
       message = self.send(event_type.dup.concat("_message").to_sym)
-      "Your Rainforest Run ##{run[:id]}#{run_description} - #{payload[:frontend_url]}) #{message}"
-    end
-
-    def run_description
-      run[:description].present? ? ": #{run[:description]}" : ""
+      "Your Rainforest Run ##{run[:id]}#{run[:description].present? ? ": #{run[:description]}" : ""} - #{payload[:frontend_url]}) #{message}"
     end
 
     def run_completion_message

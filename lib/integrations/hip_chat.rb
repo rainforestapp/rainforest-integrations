@@ -3,12 +3,8 @@ module Integrations
     # NOTE: HipChat integration development still underway
 
     def message_text
-      
-      "Your Rainforest Run (<a href=\"#{payload[:frontend_url]}\">Run ##{run[:id]}#{run_description}</a>) #{message}"
-    end
-
-    def run_description
-      run[:description].present? ? ": #{run[:description]}" : ""
+      message = self.send(event_type.dup.concat("_message").to_sym
+      "Your Rainforest Run (<a href=\"#{payload[:frontend_url]}\">Run ##{run[:id]}#{run[:description].present? ? ": #{run[:description]}" : ""}</a>) #{message}"
     end
 
     def run_completion_message
@@ -36,7 +32,7 @@ module Integrations
         body: {
           from: "Rainforest QA",
           color: message_color,
-          message: "Your Rainforest Run (<a href=\"#{payload[:frontend_url]}\">Run ##{run[:id]}#{run_description}</a>) #{self.send(event_type.dup.concat("_message").to_sym)}",
+          message: message_text,
           notify: true,
           message_format: 'html'
         }.to_json,
