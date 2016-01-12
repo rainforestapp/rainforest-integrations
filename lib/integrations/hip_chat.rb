@@ -3,8 +3,9 @@ module Integrations
     # NOTE: HipChat integration development still underway
 
     def message_text
-      message = self.send(event_type.dup.concat("_message").to_sym
-      "Your Rainforest Run (<a href=\"#{payload[:frontend_url]}\">Run ##{run[:id]}#{run[:description].present? ? ": #{run[:description]}" : ""}</a>) #{message}"
+      message = self.send(event_type.dup.concat("_message").to_sym)
+      run_description = run[:description].present? ? ": #{run[:description]}" : ""
+      "Your Rainforest Run (<a href=\"#{payload[:frontend_url]}\">Run ##{run[:id]}#{run_description}</a>) #{message}"
     end
 
     def run_completion_message
