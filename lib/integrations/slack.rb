@@ -2,12 +2,7 @@ class Integrations::Slack < Integrations::Base
   SUPPORTED_EVENTS = %w(run_completion run_error webhook_timeout run_test_failure).freeze
 
   def message_text(fallback = false)
-    message = self.send(event_type.dup.concat("_message").to_sym)
-    if fallback
-      "Your Rainforest Run #{message}"
-    else
-      "Your Rainforest Run (<#{payload[:frontend_url]} | Run ##{run[:id]}#{run_description}>) #{message}"
-    end 
+    
   end
 
   def run_description
@@ -33,19 +28,7 @@ class Integrations::Slack < Integrations::Base
   def test_percentage(test_quantity)
     ((test_quantity.to_f / run[:total_tests].to_f).round(2) * 100).to_i
   end
-
-  def humanize_secs(seconds)
-    secs = seconds.to_i
-    time_string = [[60, :seconds], [60, :minutes], [24, :hours], [1000, :days]].map do |count, name|
-      if secs > 0
-        secs, n = secs.divmod(count)
-        "#{n.to_i} #{name}"
-      end
-    end.compact.reverse.join(', ')
-    # Fallback in case seconds == 0
-    time_string.empty? ? 'Error/Unknown' : time_string
-  end
-
+  
   def self.key
     'slack'
   end

@@ -3,7 +3,7 @@ module Integrations
     # NOTE: HipChat integration development still underway
 
     def message_text
-      message = self.send(event_type.dup.concat("_message").to_sym)
+      
       "Your Rainforest Run (<a href=\"#{payload[:frontend_url]}\">Run ##{run[:id]}#{run_description}</a>) #{message}"
     end
 
@@ -27,18 +27,6 @@ module Integrations
       "has a failed a test!"
     end
 
-    def humanize_secs(seconds)
-      secs = seconds.to_i
-      time_string = [[60, :seconds], [60, :minutes], [24, :hours], [1000, :days]].map do |count, name|
-        if secs > 0
-          secs, n = secs.divmod(count)
-          "#{n.to_i} #{name}"
-        end
-      end.compact.reverse.join(', ')
-      # Fallback in case seconds == 0
-      time_string.empty? ? 'Error/Unknown' : time_string
-    end
-
     def self.key
       "hip_chat"
     end
@@ -48,7 +36,7 @@ module Integrations
         body: {
           from: "Rainforest QA",
           color: message_color,
-          message: message_text,
+          message: "Your Rainforest Run (<a href=\"#{payload[:frontend_url]}\">Run ##{run[:id]}#{run_description}</a>) #{self.send(event_type.dup.concat("_message").to_sym)}",
           notify: true,
           message_format: 'html'
         }.to_json,
