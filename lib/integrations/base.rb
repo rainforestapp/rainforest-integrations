@@ -21,6 +21,18 @@ module Integrations
       raise 'send_event must be defined in the child class'
     end
 
+    def humanize_secs(seconds)
+      secs = seconds.to_i
+      time_string = [[60, :seconds], [60, :minutes], [24, :hours], [1000, :days]].map do |count, name|
+        if secs > 0
+          secs, n = secs.divmod(count)
+          "#{n.to_i} #{name}"
+        end
+      end.compact.reverse.join(', ')
+      # Fallback in case seconds == 0
+      time_string.empty? ? 'Error/Unknown' : time_string
+    end
+
     protected
 
     def self.required_settings

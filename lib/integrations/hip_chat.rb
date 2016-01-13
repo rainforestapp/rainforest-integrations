@@ -1,7 +1,28 @@
 module Integrations
   class HipChat < Base
     # NOTE: HipChat integration development still underway
-    include Integrations::MessageFormatter
+
+    def message_text
+      message = self.send(event_type.dup.concat("_message").to_sym)
+      run_description = run[:description].present? ? ": #{run[:description]}" : ""
+      "Your Rainforest Run (<a href=\"#{payload[:frontend_url]}\">Run ##{run[:id]}#{run_description}</a>) #{message}"
+    end
+
+    def run_completion_message
+      "is complete!"
+    end
+
+    def run_error_message
+      "has encountered an error!"
+    end
+
+    def webhook_timeout_message
+      "has timed out due to a webhook failure!\nIf you need a hand debugging it, please let us know via email at help@rainforestqa.com."
+    end
+
+    def run_test_failure_message
+      "has a failed a test!"
+    end
 
     def self.key
       "hip_chat"
@@ -52,10 +73,6 @@ module Integrations
       }
 
       color_hash[event_type]
-    end
-
-    def run_href
-      "<a href=\"#{payload[:frontend_url]}\">Run ##{run[:id]}#{run_description}</a>"
     end
 
     def test_href
