@@ -26,15 +26,12 @@ pivotal_tracker:
 jira:
   title: 'JIRA'
   settings:
-    - key: 'username'
-      title: 'JIRA username (NOT your email)'
-      required: true
-    - key: 'password'
-      title: 'JIRA password'
-      required: true
+    - key: oauth_settings
+      oauth_version: 1
     - key: 'project_key'
       title: 'Project Key'
       required: true
     - key: "jira_base_url"
       title: "URL to your JIRA integration"
       required: true
+...

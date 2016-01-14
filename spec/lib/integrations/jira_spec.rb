@@ -1,11 +1,10 @@
 require 'rails_helper'
-require 'integrations'
 
 describe Integrations::Jira do
   subject { described_class.new(event_type, payload, settings) }
 
   let(:event_type) { 'run_test_failure' }
-  let(:issue_response) { double('mock response') }
+  let(:access_token) { double('access_token') }
   let(:base_url) { 'http://example.com' }
   let(:payload) do
     {
@@ -23,8 +22,7 @@ describe Integrations::Jira do
   end
   let(:settings) do
     [
-      { key: 'username', value: 'admin' },
-      { key: 'password', value: 'something' },
+      { key: 'oauth_settings', value: { consumer_token: 'foo' } },
       { key: 'jira_base_url', value: base_url },
       { key: 'project_key', value: 'ABC' }
     ]
@@ -36,99 +34,96 @@ describe Integrations::Jira do
     }
   end
   let(:issues_queried) { [] }
-  let(:query_response) { OpenStruct.new({'issues' => issues_queried, :code => 200 }) }
 
   before do
-    allow(issue_response).to receive(:code).and_return(201)
+    allow_any_instance_of(Integrations::Oauth).to receive(:oauth_access_token).and_return(access_token)
   end
 
   describe '#send_event' do
+    let(:send_event) { subject.send_event }
+    let(:query_response) { instance_double('query_response', code: 200, body: {issues: issues_queried}.to_json) }
+    let(:final_response) { instance_double('query_response', code: 200) }
+
     before do
-      allow(query_response).to receive(:[]).with('issues').and_return(issues_queried)
-      allow(query_response).to receive(:code).and_return(200)
-      expect(HTTParty).to receive(:post).with("#{base_url}/rest/api/2/search/", instance_of(Hash))
-        .and_return(query_response)
+      expect(access_token).to receive(:post).with(
+        "#{base_url}/rest/api/2/search",
+        instance_of(String),
+        {'Content-Type' => 'application/json'}
+      ).and_return(query_response)
     end
 
-    let(:send_event) { subject.send_event }
-
     context 'when there is an authentication error' do
-      before do
-        allow(issue_response).to receive(:code).and_return(401)
-      end
+      let(:query_response) { instance_double('query_response', code: 401) }
 
       it 'raises a Integrations::Error' do
-        expect(HTTParty).to receive(:post).and_return(issue_response)
         expect { send_event }.to raise_error(Integrations::Error)
       end
     end
 
     context 'when there the JIRA base URL is wrong' do
-      before do
-        allow(issue_response).to receive(:code).and_return(404)
-      end
+      let(:query_response) { instance_double('query_response', code: 404) }
 
-      it 'raises an error' do
-        expect(HTTParty).to receive(:post).and_return(issue_response)
+      it 'raises a Integrations::Error' do
         expect { send_event }.to raise_error(Integrations::Error)
       end
     end
 
     context 'for any other error' do
-      it 'raises an error' do
-        allow(issue_response).to receive(:code).and_return(500)
-        allow(HTTParty).to receive(:post).and_return(issue_response)
+      let(:query_response) { instance_double('query_response', code: 500) }
+
+      it 'raises a Integrations::Error' do
         expect { send_event }.to raise_error(Integrations::Error)
       end
     end
 
-    context 'run_test_failure' do
-      it 'has a useful information' do
-        allow(HTTParty).to receive(:post) do |url, post_payload|
-          fields = JSON.parse(post_payload[:body])['fields']
+    context 'when no matching issues are found' do
+      let(:final_response) { instance_double('query_response', code: 201) }
 
-          expect(fields['summary']).to eq "Rainforest found a bug in 'Always fails'"
-          expect(fields['description']).to eq "Failed test name: Always fails\nhttp://www.rainforestqa.com/"
-          expect(fields['environment']).to eq payload[:run][:environment][:name]
-        end.and_return(issue_response)
+      context 'run_test_failure' do
+        it 'posts useful information' do
+          allow(access_token).to receive(:post) do |url, post_json, _|
+            fields = JSON.parse(post_json)['fields']
 
-        send_event
+            expect(fields['summary']).to eq "Rainforest found a bug in 'Always fails'"
+            expect(fields['description']).to eq "Failed test name: Always fails\nhttp://www.rainforestqa.com/"
+            expect(fields['environment']).to eq payload[:run][:environment][:name]
+          end.and_return(final_response)
+
+          send_event
+        end
       end
-    end
 
-    context 'webhook_timeout' do
-      let(:event_type) { 'webhook_timeout' }
+      context 'webhook_timeout' do
+        let(:event_type) { 'webhook_timeout' }
 
-      it 'has a useful information' do
-        allow(HTTParty).to receive(:post) do |url, post_payload|
-          fields = JSON.parse(post_payload[:body])['fields']
+        it 'posts useful information' do
+          allow(access_token).to receive(:post) do |url, post_json, _|
+            fields = JSON.parse(post_json)['fields']
 
-          expect(fields['summary']).to eq "Your Rainforest webhook has timed out"
-          expect(fields['description']).to include payload[:run][:description]
-          expect(fields['environment']).to eq payload[:run][:environment][:name]
-        end.and_return(issue_response)
+            expect(fields['summary']).to eq "Your Rainforest webhook has timed out"
+            expect(fields['description']).to include payload[:run][:description]
+            expect(fields['environment']).to eq payload[:run][:environment][:name]
+          end.and_return(final_response)
 
-        send_event
+          send_event
+        end
       end
     end
 
     context "with an existing identical issue" do
       let(:issues_queried) { [{ 'id' => '101' }] }
+      let(:final_response) { instance_double('query_response', code: 204) }
 
       it 'edits the existing issue' do
-        expect(HTTParty).to receive(:put) do |url, put_payload|
+        expect(access_token).to receive(:put) do |url, put_json, _|
           expect(url).to include('101')
-          payload = JSON.parse(put_payload[:body]).with_indifferent_access
+          payload = JSON.parse(put_json).with_indifferent_access
 
           expect(payload).to include({
-            update: {
-              labels: [{ add: 'RepeatedFailures' }]
-            },
-            fields: {
-              priority: { name: 'High' }
-            }
+            update: { labels: [{ add: 'RepeatedFailures' }] },
+            fields: { priority: { name: 'High' } }
           })
-        end.and_return(issue_response)
+        end.and_return(final_response)
 
         send_event
       end

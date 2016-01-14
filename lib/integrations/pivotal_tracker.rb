@@ -1,7 +1,27 @@
 module Integrations
   class PivotalTracker < Base
     # NOTE: Pivotal Tracker integration development still underway
-    include Integrations::MessageFormatter
+
+    def message_text
+      message = self.send(event_type.dup.concat("_message").to_sym)
+      "Your Rainforest Run ##{run[:id]}#{run[:description].present? ? ": #{run[:description]}" : ""} - #{payload[:frontend_url]}) #{message}"
+    end
+
+    def run_completion_message
+      "is complete!"
+    end
+
+    def run_error_message
+      "has encountered an error!"
+    end
+
+    def webhook_timeout_message
+      "has timed out due to a webhook failure!\nIf you need a hand debugging it, please let us know via email at help@rainforestqa.com."
+    end
+
+    def run_test_failure_message
+      "has a failed a test!"
+    end
 
     def self.key
       'pivotal_tracker'
