@@ -11,8 +11,7 @@ class ApplicationController < ActionController::Base
 
     if http_origin
       headers['Access-Control-Allow-Origin'] = http_origin
-      headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, OPTIONS'
-      headers['Access-Control-Allow-Credentials'] = 'true'
+      headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
     end
   end
 
@@ -20,12 +19,11 @@ class ApplicationController < ActionController::Base
     if request.method == 'OPTIONS'
       if ALLOWED_ORIGINS.include?(request.headers['HTTP_ORIGIN'])
         headers['Access-Control-Allow-Origin'] = request.headers['HTTP_ORIGIN']
-        headers['Access-Control-Allow-Credentials'] = 'true'
-        headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, OPTIONS'
+        headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
         headers['Access-Control-Allow-Headers'] = 'accept,content-type'
       end
 
-      render :text => '', :content_type => 'text/plain'
+      render :text => ''
     end
   end
 end
