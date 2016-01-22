@@ -85,7 +85,7 @@ describe Integrations::Jira do
             fields = JSON.parse(post_json)['fields']
 
             expect(fields['summary']).to eq "Rainforest found a bug in 'Always fails'"
-            expect(fields['description']).to eq "Failed test name: Always fails\nhttp://www.rainforestqa.com/"
+            expect(fields['description']).to eq "Failed test title: Always fails\nhttp://www.rainforestqa.com/"
             expect(fields['environment']).to eq payload[:run][:environment][:name]
           end.and_return(final_response)
 

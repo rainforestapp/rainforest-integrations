@@ -83,7 +83,7 @@ class Integrations::Jira < Integrations::Base
       fields: {
         project: { key: settings[:project_key] },
         summary: "Rainforest found a bug in '#{test[:title]}'",
-        description: "Failed test name: #{test[:title]}\n#{payload[:frontend_url]}",
+        description: "Failed test title: #{test[:title]}\n#{payload[:frontend_url]}",
         issuetype: {
           name: "Bug"
         },
@@ -94,11 +94,14 @@ class Integrations::Jira < Integrations::Base
   end
 
   def create_webhook_timeout_issue
+    run_info = "Run ##{run[:id]}"
+    run_info += " (#{run[:description]})" if run[:description].present?
+
     {
       fields: {
         project: { key: settings[:project_key] },
         summary: "Your Rainforest webhook has timed out",
-        description: "Your webhook has timed out for you run (#{run[:description]}). If you need help debugging, please contact us at help@rainforestqa.com",
+        description: "Your webhook has timed out for #{run_info}. If you need help debugging, please contact us at help@rainforestqa.com",
         issuetype: {
           name: "Bug"
         },
