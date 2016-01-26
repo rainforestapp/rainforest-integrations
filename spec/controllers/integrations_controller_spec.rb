@@ -49,7 +49,6 @@ describe IntegrationsController, type: :controller do
       body = JSON.parse(response.body)
       expect(body).to be_a Hash
       expect(body['integrations'].count).to eq Integration.public_integrations.count
-      expect(body['event_types'].count). to eq Integration.supported_event_types.count
     end
   end
 end

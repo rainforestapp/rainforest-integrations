@@ -2,7 +2,6 @@ require 'yaml'
 
 class Integration
   INTEGRATIONS = YAML.load(File.read(Rails.root.join('data', 'integrations.yml'))).freeze
-  EVENT_TYPES = YAML.load(File.read(Rails.root.join('data', 'event_types.yml'))).freeze
 
   # NOTE: Temporarily obscure integrations that aren't ready yet
   INCOMPLETE_INTEGRATIONS = %w(pivotal_tracker).freeze
@@ -31,10 +30,6 @@ class Integration
   end
 
   def self.public_integrations
-    supported_integrations.reject { |int| INCOMPLETE_INTEGRATIONS.include?(int['key']) }
-  end
-
-  def self.supported_event_types
-    EVENT_TYPES
+    supported_integrations.select { |key, _| INCOMPLETE_INTEGRATIONS.exclude?(key) }
   end
 end
