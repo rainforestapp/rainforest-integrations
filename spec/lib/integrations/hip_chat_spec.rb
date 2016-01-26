@@ -47,37 +47,32 @@ describe Integrations::HipChat do
         }
       }
     end
+    let(:fake_room) { instance_double('HipChat::Room') }
 
     subject { described_class.new(event_type, payload, settings) }
 
-    it "sends a correctly formatted request" do
-      expect(HTTParty).to receive(:post).with(expected_url, hash_including(:body, :headers)).and_call_original
-      VCR.use_cassette('generic_hip_chat_notification') do
-        expect(subject.send_event).to be_truthy
-      end
+    before do
+      allow(HipChat::Room).to receive(:new).and_return(fake_room)
+      allow(fake_room).to receive(:send).and_return(true)
+    end
+
+    it "sets up room with all the proper options" do
+      expect(HipChat::Room).to receive(:new).with(
+        settings.last[:value],
+        room_id: settings.first[:value],
+        api_version: 'v2',
+        server_url: 'https://api.hipchat.com'
+      ).and_return(fake_room)
+      expect(subject.send_event).to be_truthy
     end
 
     context "with room ID" do
       before do
-        settings.first[:value] = "Rainforestqafakeroom"
+        expect(fake_room).to receive(:send).and_raise(HipChat::ServiceError)
       end
 
       it "returns a user configuration error" do
-        VCR.use_cassette('hip_chat_wrong_room_id') do
-          expect{ subject.send_event }.to raise_error Integrations::Error
-        end
-      end
-    end
-
-    context "with invalid authorization token" do
-      before do
-        settings.last[:value] = "foobar"
-      end
-
-      it "returns a user configuration error" do
-        VCR.use_cassette('hip_chat_wrong_auth_token') do
-          expect{ subject.send_event }.to raise_error Integrations::Error
-        end
+        expect{ subject.send_event }.to raise_error(Integrations::Error)
       end
     end
   end

@@ -12,8 +12,16 @@ class Integrations::HipChat < Integrations::Base
       server_url: 'https://api.hipchat.com' # TODO: Make this configurable
     )
 
+
     # TODO: make notify configurable
-    room.send('Rainforest QA', message, notify: true, color: color)
+    begin
+      room.send('Rainforest QA', message, notify: true, color: color)
+    rescue HipChat::ServiceError => e
+      # ServiceError is the parent class for all of HipChat's errors. For
+      # greater specificity, please see:
+      # https://github.com/hipchat/hipchat-rb/blob/master/lib/hipchat/errors.rb
+      raise Integrations::Error.new('service_error', e.message)
+    end
   end
 
   private
