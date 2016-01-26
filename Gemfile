@@ -11,6 +11,7 @@ gem 'multi_json'
 gem 'httparty'
 gem 'sentry-raven'
 gem 'oauth'
+gem 'hipchat'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
