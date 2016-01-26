@@ -1,3 +1,11 @@
+GIT
+  remote: git://github.com/hipchat/hipchat-rb.git
+  revision: d37c6378d094d355c6876b19ceed01e1ee3d7a02
+  specs:
+    hipchat (1.5.2)
+      httparty
+      mimemagic
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -94,6 +102,7 @@ GEM
       mime-types (>= 1.16, < 3)
     method_source (0.8.2)
     mime-types (2.6.1)
+    mimemagic (0.3.1)
     mini_portile (0.6.2)
     minitest (5.7.0)
     multi_json (1.11.1)
@@ -208,6 +217,7 @@ DEPENDENCIES
   dotenv-rails
   guard
   guard-rspec
+  hipchat!
   httparty
   multi_json
   oauth

@@ -81,7 +81,7 @@ describe Integrations::Slack do
           frontend_url: 'http://example.com',
           run: {
             id: 123,
-            result: 'failed',
+            result: 'passed',
             time_taken: (25.minutes + 3.seconds).to_i,
             total_tests: 10,
             total_passed_tests: 8,
@@ -101,7 +101,7 @@ describe Integrations::Slack do
       end
 
       describe 'run result inclusion in text' do
-        it_should_behave_like "Slack notification", 
+        it_should_behave_like "Slack notification",
         "Your Rainforest Run (<http://example.com | Run #123>) is complete!",
         "good",
         "Your Rainforest Run is complete!"
@@ -112,8 +112,8 @@ describe Integrations::Slack do
           payload[:run][:description] = 'some description'
         end
 
-        it_should_behave_like "Slack notification", 
-        "Your Rainforest Run (<http://example.com | Run #123: some description>) is complete!", 
+        it_should_behave_like "Slack notification",
+        "Your Rainforest Run (<http://example.com | Run #123: some description>) is complete!",
         "good",
         "Your Rainforest Run is complete!"
       end
@@ -123,9 +123,20 @@ describe Integrations::Slack do
           payload[:run][:description] = ''
         end
 
-        it_should_behave_like "Slack notification", 
-        "Your Rainforest Run (<http://example.com | Run #123>) is complete!", 
+        it_should_behave_like "Slack notification",
+        "Your Rainforest Run (<http://example.com | Run #123>) is complete!",
         "good",
+        "Your Rainforest Run is complete!"
+      end
+
+      context 'when the run fails' do
+        before do
+          payload[:run][:result] = 'failed'
+        end
+
+        it_should_behave_like "Slack notification",
+        "Your Rainforest Run (<http://example.com | Run #123>) is complete!",
+        "danger",
         "Your Rainforest Run is complete!"
       end
     end
@@ -149,8 +160,8 @@ describe Integrations::Slack do
       end
 
       describe 'message text' do
-        it_should_behave_like "Slack notification", 
-        "Your Rainforest Run (<http://example.com | Run #123>) has encountered an error!", 
+        it_should_behave_like "Slack notification",
+        "Your Rainforest Run (<http://example.com | Run #123>) has encountered an error!",
         "danger",
         "Your Rainforest Run has encountered an error!"
       end
@@ -177,8 +188,8 @@ describe Integrations::Slack do
       end
 
       describe 'message text' do
-        it_should_behave_like "Slack notification", 
-        "Your Rainforest Run (<http://www.example.com | Run #7>) has timed out due to a webhook failure!\nIf you need a hand debugging it, please let us know via email at help@rainforestqa.com.", 
+        it_should_behave_like "Slack notification",
+        "Your Rainforest Run (<http://www.example.com | Run #7>) has timed out due to a webhook failure!\nIf you need a hand debugging it, please let us know via email at help@rainforestqa.com.",
         "danger",
         "Your Rainforest Run has timed out due to a webhook failure!\nIf you need a hand debugging it, please let us know via email at help@rainforestqa.com."
       end
@@ -212,8 +223,8 @@ describe Integrations::Slack do
       end
 
       describe "message text" do
-        it_should_behave_like "Slack notification", 
-        "Your Rainforest Run (<http://www.example.com | Run #666>) has a failed a test!", 
+        it_should_behave_like "Slack notification",
+        "Your Rainforest Run (<http://www.example.com | Run #666>) has a failed a test!",
         "danger",
         "Your Rainforest Run has a failed a test!"
       end

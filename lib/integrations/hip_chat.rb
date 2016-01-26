@@ -1,83 +1,68 @@
-module Integrations
-  class HipChat < Base
-    # NOTE: HipChat integration development still underway
 
-    def message_text
-      message = self.send(event_type.dup.concat("_message").to_sym)
-      run_description = run[:description].present? ? ": #{run[:description]}" : ""
-      "Your Rainforest Run (<a href=\"#{payload[:frontend_url]}\">Run ##{run[:id]}#{run_description}</a>) #{message}"
+class Integrations::HipChat < Integrations::Base
+  def self.key
+    "hip_chat"
+  end
+
+  def send_event
+    room = HipChat::Room.new(
+      settings[:room_token],
+      room_id: settings[:room_id],
+      api_version: 'v2',
+      server_url: 'https://api.hipchat.com' # TODO: Make this configurable
+    )
+
+
+    # TODO: make notify configurable
+    begin
+      room.send('Rainforest QA', message, notify: true, color: color)
+    rescue HipChat::ServiceError => e
+      # ServiceError is the parent class for all of HipChat's errors. For
+      # greater specificity, please see:
+      # https://github.com/hipchat/hipchat-rb/blob/master/lib/hipchat/errors.rb
+      raise Integrations::Error.new('service_error', e.message)
     end
+  end
 
-    def run_completion_message
-      "is complete!"
+  private
+
+  def color
+    case event_type
+    when 'run_completion' then run[:result] == 'passed' ? 'green' : 'red'
+    when 'run_error', 'run_test_failure', 'webhook' then 'red'
     end
+  end
 
-    def run_error_message
-      "has encountered an error!"
-    end
+  def message
+    self.send(:"#{event_type}_message")
+  end
 
-    def webhook_timeout_message
-      "has timed out due to a webhook failure!\nIf you need a hand debugging it, please let us know via email at help@rainforestqa.com."
-    end
+  def run_test_failure_message
+    failed_test = payload[:failed_test]
+    <<-HTML
+Rainforest <a href="#{payload[:frontend_url]}">Run ##{run[:id]}</a> has a failed test!
+Failed Test: <a href="#{failed_test[:frontend_url]}">#{failed_test[:title]}</a>
+    HTML
+  end
 
-    def run_test_failure_message
-      "has a failed a test!"
-    end
+  def run_completion_message
+    <<-HTML
+Rainforest <a href="#{payload[:frontend_url]}">Run ##{run[:id]}</a> is complete!
+Result: <b>#{run[:result]}</b>
+    HTML
+  end
 
-    def self.key
-      "hip_chat"
-    end
+  def run_error_message
+    <<-HTML
+Rainforest <a href="#{payload[:frontend_url]}">Run ##{run[:id]}</a> has encountered an error!
+Please contact #{CUSTOMER_SERVICE_EMAIL} for more details.
+    HTML
+  end
 
-    def send_event
-      response = HTTParty.post(url,
-        body: {
-          from: "Rainforest QA",
-          color: message_color,
-          message: message_text,
-          notify: true,
-          message_format: 'html'
-        }.to_json,
-        headers: {
-          "Authorization" => "Bearer #{settings[:room_token]}",
-          "Content-Type" => "application/json",
-          "Accept" => "application/json"
-        }
-      )
-
-      # HipChat returns nil for successful notifications for some reason
-      if response.nil?
-        true
-      elsif response.code == 404
-        raise Integrations::Error.new('user_configuration_error', 'The room provided is was not found.')
-      elsif response.code == 401
-        raise Integrations::Error.new('user_configuration_error', 'The authorization token is invalid.')
-      elsif response.code != 200
-        raise Integrations::Error.new('misconfigured_integration', 'Invalid request to the HipChat API.')
-      end
-    end
-
-    private
-
-    def url
-      "https://api.hipchat.com/v2/room/#{settings[:room_id]}/notification"
-    end
-
-    def message_color
-      return 'red' if payload[:run] && payload[:run][:state] == 'failed'
-
-      color_hash = {
-        'run_completion' => "green",
-        'run_error' => "yellow",
-        'webhook_timeout' => "yellow",
-        'run_test_failure' => "red",
-      }
-
-      color_hash[event_type]
-    end
-
-    def test_href
-      failed_test = payload[:failed_test]
-      "<a href=\"#{failed_test[:frontend_url]}\">Test ##{failed_test[:id]}: #{failed_test[:title]}</a> (#{payload[:browser]})"
-    end
+  def webhook_timeout_message
+    <<-HTML
+Rainforest <a href="#{payload[:frontend_url]}">Run ##{run[:id]}</a> has has timed out!
+Please contact #{CUSTOMER_SERVICE_EMAIL} if you need help debugging this problem.
+    HTML
   end
 end
