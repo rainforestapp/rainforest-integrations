@@ -30,6 +30,6 @@ class Integration
   end
 
   def self.public_integrations
-    supported_integrations.select { |key, _| INCOMPLETE_INTEGRATIONS.exclude?(key) }
+    supported_integrations.reject { |int| INCOMPLETE_INTEGRATIONS.include?(int['key']) }
   end
 end
