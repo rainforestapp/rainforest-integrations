@@ -7,7 +7,7 @@ class Integrations::Slack < Integrations::Base
       "Your Rainforest Run #{message}"
     else
       "Your Rainforest Run (<#{payload[:frontend_url]} | Run ##{run[:id]}#{run[:description].present? ? ": #{run[:description]}" : ""}>) #{message}"
-    end 
+    end
   end
 
   def run_completion_message
@@ -68,7 +68,7 @@ class Integrations::Slack < Integrations::Base
     when 'webhook_timeout'
       attachment = webhook_timeout_fields
     end
-    
+
     attachment.merge!(
       fallback: message_text(fallback: true),
       text: message_text
@@ -80,8 +80,9 @@ class Integrations::Slack < Integrations::Base
   # The order here intentionally 'alternates' between run info and tests info because
   # it's laid out better in slack's table-format that way
   def run_completion_fields
-     {
-      color: "good",
+    color = run[:result] == 'passed' ? 'good' : 'danger'
+    {
+      color: color,
       fields: [
         { title: "Result", value: run[:result].humanize, short: true },
         {
@@ -113,7 +114,7 @@ class Integrations::Slack < Integrations::Base
       color: "danger",
       fields: [{ title: "Error Reason", value: run[:error_reason], short: false }]
     }
-    
+
   end
 
   def run_test_failure_fields
