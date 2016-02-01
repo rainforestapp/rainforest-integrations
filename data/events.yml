@@ -1,11 +1,22 @@
----
 run_completion:
-  run: [id, environment, result, description, time_taken, total_tests, total_passed_tests, total_failed_tests, total_no_result_tests]
+  title: Run Completion
+  description: Receive notification when any of your runs complete.
+  payload:
+    run: [id, environment, result, description, time_taken, total_tests, total_passed_tests, total_failed_tests, total_no_result_tests]
 run_error:
-  run: [id, description, error_reason]
+  title: Run Error
+  description: Receive notification when there is an error in any of your runs.
+  payload:
+    run: [id, description, error_reason]
 webhook_timeout:
-  run: [id, description, environment]
+  title: Webhook Timeout
+  description: Receive a notification when your webhook times out.
+  payload:
+    run: [id, description, environment]
 run_test_failure:
-  run: [id, description, environment]
-  failed_test: [id, title, frontend_url]
-  browser: [description]
+  title: Test Failure
+  description: Receive a notification when any of your tests fail.
+  payload:
+    run: [id, description, environment]
+    failed_test: [id, title, frontend_url]
+    browser: [description]

@@ -1,12 +1,22 @@
 ---
 slack:
   title: 'Slack'
+  events:
+    - run_completion
+    - run_error
+    - webhook_timeout
+    - run_test_failure
   settings:
     - key: 'url'
       title: 'Slack webhook URL'
       required: true
 hip_chat:
   title: 'HipChat'
+  events:
+    - run_completion
+    - run_error
+    - webhook_timeout
+    - run_test_failure
   settings:
     - key: 'room_id'
       title: 'HipChat Room id'
@@ -16,6 +26,9 @@ hip_chat:
       required: true
 pivotal_tracker:
   title: "Pivotal Tracker"
+  events:
+    - webhook_timeout
+    - run_test_failure
   settings:
     - key: "project_id"
       title: "Project ID for new stories to be posted"
@@ -25,6 +38,9 @@ pivotal_tracker:
       required: "true"
 jira:
   title: 'JIRA'
+  events:
+    - webhook_timeout
+    - run_test_failure
   settings:
     - key: oauth_settings
       oauth_version: 1
