@@ -57,7 +57,7 @@ describe Integration do
       ]
     end
 
-    subject { Integration.supported_integrations }
+    subject { Integration.all }
 
     before do
       stub_const 'Integration::INTEGRATIONS', all_integrations

@@ -1,4 +1,3 @@
-
 class Integrations::HipChat < Integrations::Base
   def self.key
     "hip_chat"
