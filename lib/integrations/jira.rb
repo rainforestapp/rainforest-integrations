@@ -8,21 +8,7 @@ class Integrations::Jira < Integrations::Base
 
   def send_event
     return unless SUPPORTED_EVENTS.include?(event_type)
-
-    label = case event_type
-    when 'webhook_timeout' then "RfRun#{run[:id]}"
-    when 'run_test_failure' then "RfTest#{payload[:failed_test][:id]}"
-    end
-
-    body = {
-      jql: "status != Done AND project = #{settings[:project_key]} and labels = #{label}" ,
-      maxResults: 1
-    }.to_json
-
-    response = oauth_access_token.post("#{jira_base_url}/rest/api/2/search", body, 'Content-Type' => 'application/json')
-    validate_response(response)
-    parsed_response = MultiJson.load(response.body, symbolize_keys: true)
-    issues = parsed_response[:issues]
+    issues = search_for_existing_issues
 
     if issues.length > 0
       issue = issues.first
@@ -33,6 +19,23 @@ class Integrations::Jira < Integrations::Base
   end
 
   private
+
+  def search_for_existing_issues
+    label = case event_type
+            when 'webhook_timeout' then "RfRun#{run[:id]}"
+            when 'run_test_failure' then "RfTest#{payload[:failed_test][:id]}"
+            end
+
+    body = {
+      jql: "status != Done AND project = #{settings[:project_key]} and labels = #{label}" ,
+      maxResults: 1
+    }.to_json
+
+    response = oauth_access_token.post("#{jira_base_url}/rest/api/2/search", body, 'Content-Type' => 'application/json')
+    validate_response(response)
+    parsed_response = MultiJson.load(response.body, symbolize_keys: true)
+    parsed_response[:issues]
+  end
 
   def update_issue(issue_id)
     params = {}
@@ -52,9 +55,9 @@ class Integrations::Jira < Integrations::Base
 
   def create_issue
     post_data = case event_type
-    when 'webhook_timeout' then create_webhook_timeout_issue
-    when 'run_test_failure' then create_test_failure_issue
-    end
+                when 'webhook_timeout' then create_webhook_timeout_issue
+                when 'run_test_failure' then create_test_failure_issue
+                end
 
     response = oauth_access_token.post(
       "#{jira_base_url}/rest/api/2/issue/",
