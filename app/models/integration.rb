@@ -3,9 +3,6 @@ require 'yaml'
 class Integration
   INTEGRATIONS = YAML.load(File.read(Rails.root.join('data', 'integrations.yml'))).freeze
 
-  # NOTE: Temporarily obscure integrations that aren't ready yet
-  INCOMPLETE_INTEGRATIONS = %w(pivotal_tracker).freeze
-
   class NotFound < StandardError
   end
 
@@ -25,11 +22,7 @@ class Integration
     INTEGRATIONS.keys
   end
 
-  def self.supported_integrations
+  def self.all
     INTEGRATIONS.map {|key, data| { 'key' => key }.merge data }
-  end
-
-  def self.public_integrations
-    supported_integrations.reject { |int| INCOMPLETE_INTEGRATIONS.include?(int['key']) }
   end
 end

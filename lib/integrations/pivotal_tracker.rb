@@ -1,69 +1,115 @@
-module Integrations
-  class PivotalTracker < Base
-    # NOTE: Pivotal Tracker integration development still underway
+class Integrations::PivotalTracker < Integrations::Base
+  include HTTParty
 
-    def message_text
-      message = self.send(event_type.dup.concat("_message").to_sym)
-      "Your Rainforest Run ##{run[:id]}#{run[:description].present? ? ": #{run[:description]}" : ""} - #{payload[:frontend_url]}) #{message}"
+  PIVOTAL_API_URL = 'https://www.pivotaltracker.com/services/v5'.freeze
+  SUPPORTED_EVENTS = %(webhook_timeout run_test_failure).freeze
+
+  def self.key
+    'pivotal_tracker'
+  end
+
+  def initialize(event_type, payload, settings)
+    super(event_type, payload, settings)
+    self.class.base_uri "#{PIVOTAL_API_URL}/projects/#{@settings[:project_id]}"
+  end
+
+  def send_event
+    return unless SUPPORTED_EVENTS.include?(event_type)
+    stories = search_for_existing_stories
+
+    if stories.length > 0
+      story = stories.first
+      update_story(story[:id])
+    else
+      create_story
     end
+  end
 
-    def run_completion_message
-      "is complete!"
+  private
+
+  def search_for_existing_stories
+    response = request(:get, '/search', query: {query: "label:#{story_label} -state:delivered"})
+    validate_response!(response)
+    parsed_response = MultiJson.load(response.body, symbolize_keys: true)
+    parsed_response[:stories][:stories]
+  end
+
+  def update_story(story_id)
+    params = {}
+    params[:labels] = [story_label, repeated_issue_label] if repeated_issue_label
+
+    unless params.empty?
+      response = request(:put, "/stories/#{story_id}", body: params)
+      validate_response!(response)
     end
+  end
 
-    def run_error_message
-      "has encountered an error!"
+  def create_story
+    post_data = case event_type
+                when 'webhook_timeout' then create_webhook_timeout_story
+                when 'run_test_failure' then create_test_failure_story
+                end
+
+    response = request(:post, '/stories', body: post_data)
+    validate_response!(response)
+  end
+
+  def create_webhook_timeout_story
+    run_info = "Run ##{run[:id]}"
+    run_info += " (#{run[:description]})" if run[:description].present?
+
+    {
+      name: "Your Rainforest webhook has timed out",
+      description: "Your webhook has timed out for #{run_info}. If you need help debugging, please contact us at help@rainforestqa.com",
+      story_type: 'bug',
+      labels: [story_label],
+      comments: [{text: "Environment: #{run[:environment][:name]}"}]
+    }
+  end
+
+  def create_test_failure_story
+    test = payload[:failed_test]
+
+    {
+      name: "Rainforest found a bug in '#{test[:title]}'",
+      description: "Failed test title: #{test[:title]}\n#{payload[:frontend_url]}",
+      story_type: 'bug',
+      labels: [story_label],
+      comments: [{text: "Environment: #{run[:environment][:name]}"}]
+    }
+  end
+
+  def validate_response!(response)
+    if response.code == 404
+      raise Integrations::Error.new('user_configuration_error', 'The project ID provided was not found.')
+    elsif response.code == 403
+      raise Integrations::Error.new('user_configuration_error', 'The authorization token is invalid.')
+    elsif response.code != 200
+      raise Integrations::Error.new('user_configuration_error', 'Invalid request to the Pivotal Tracker API.')
     end
+  end
 
-    def webhook_timeout_message
-      "has timed out due to a webhook failure!\nIf you need a hand debugging it, please let us know via email at help@rainforestqa.com."
-    end
-
-    def run_test_failure_message
-      "has a failed a test!"
-    end
-
-    def self.key
-      'pivotal_tracker'
-    end
-
-    def send_event
-      # send it to the integration
-      response = HTTParty.post(url,
-        :body => {
-          name: message_text,
-          description: event_description,
-          story_type: "bug",
-          labels: [{ name: "rainforest" }]
-        }.to_json,
-        :headers => {
-          'X-TrackerToken' => settings[:api_token],
-          'Content-Type' => 'application/json',
-          'Accept' => 'application/json'
+  def request(method, path, options = {})
+    self.class.send(
+      method,
+      path,
+      options.merge(
+        headers: {
+          'X-TrackerToken' => settings[:api_token]
         }
       )
+    )
+  end
 
-      if response.code == 404
-        raise Integrations::Error.new('user_configuration_error', 'The project ID provided is was not found.')
-      elsif response.code == 403
-        raise Integrations::Error.new('user_configuration_error', 'The authorization token is invalid.')
-      elsif response.code != 200
-        raise Integrations::Error.new('user_configuration_error', 'Invalid request to the Pivotal Tracker API.')
-      end
+  def story_label
+    case event_type
+    when 'webhook_timeout' then "RfRun#{run[:id]}"
+    when 'run_test_failure' then "RfTest#{payload[:failed_test][:id]}"
     end
+  end
 
-    private
-
-    def url
-      "https://www.pivotaltracker.com/services/v5/projects/#{settings[:project_id]}/stories"
-    end
-
-    def event_description
-      if event_type == "run_completion" && payload[:failed_tests].any?
-        txt = "Failed Tests:\n"
-        payload[:failed_tests].each { |test| txt += "#{test[:title]}: #{test[:frontend_url]}\n" }
-        txt
-      end
-    end
+  def repeated_issue_label
+    # Hard coded until custom values are in place
+    'RepeatedFailures'
   end
 end
