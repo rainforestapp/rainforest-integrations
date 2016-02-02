@@ -48,7 +48,7 @@ describe IntegrationsController, type: :controller do
     it 'returns a list of schemas for all supported integrations' do
       body = JSON.parse(response.body)
       expect(body).to be_a Array
-      expect(body.count).to eq Integration.public_integrations.count
+      expect(body.count).to eq Integration.all.count
     end
   end
 end

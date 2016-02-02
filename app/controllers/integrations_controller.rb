@@ -8,6 +8,6 @@ class IntegrationsController < ApplicationController
   end
 
   def index
-    render json: Integration.public_integrations
+    render json: Integration.all
   end
 end
