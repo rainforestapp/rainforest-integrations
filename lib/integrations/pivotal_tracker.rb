@@ -1,6 +1,7 @@
 class Integrations::PivotalTracker < Integrations::Base
   include HTTParty
 
+  PIVOTAL_API_URL = 'https://www.pivotaltracker.com/services/v5'.freeze
   SUPPORTED_EVENTS = %(webhook_timeout run_test_failure).freeze
 
   def self.key
@@ -9,7 +10,7 @@ class Integrations::PivotalTracker < Integrations::Base
 
   def initialize(event_type, payload, settings)
     super(event_type, payload, settings)
-    self.class.base_uri "https://www.pivotaltracker.com/services/v5/projects/#{@settings[:project_id]}"
+    self.class.base_uri "#{PIVOTAL_API_URL}/projects/#{@settings[:project_id]}"
   end
 
   def send_event
@@ -92,7 +93,11 @@ class Integrations::PivotalTracker < Integrations::Base
     self.class.send(
       method,
       path,
-      options.merge(headers: {'X-TrackerToken' => settings[:api_token]})
+      options.merge(
+        headers: {
+          'X-TrackerToken' => settings[:api_token]
+        }
+      )
     )
   end
 
