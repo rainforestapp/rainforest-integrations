@@ -39,6 +39,17 @@ describe Integrations::Jira do
     allow_any_instance_of(Integrations::Oauth).to receive(:oauth_access_token).and_return(access_token)
   end
 
+  context "with an unsupported event type" do
+    let(:event_type) { 'run_completion' }
+
+    it 'returns without doing anything' do
+      expect(access_token).to_not receive(:post)
+      expect_any_instance_of(described_class).to_not receive(:create_issue)
+      expect_any_instance_of(described_class).to_not receive(:update_issue)
+      subject.send_event
+    end
+  end
+
   describe '#send_event' do
     let(:send_event) { subject.send_event }
     let(:query_response) { instance_double('query_response', code: 200, body: {issues: issues_queried}.to_json) }
