@@ -1,6 +1,6 @@
 class Integrations::Jira < Integrations::Base
   include Integrations::Oauth
-  SUPPORTED_EVENTS = %(webhook_timeout run_test_failure).freeze
+  SUPPORTED_EVENTS = %w(webhook_timeout run_test_failure).freeze
 
   def self.key
     'jira'

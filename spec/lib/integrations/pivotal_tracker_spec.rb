@@ -49,6 +49,16 @@ describe Integrations::PivotalTracker do
         .to_return(query_response)
     end
 
+    context "with an unsupported event type" do
+      let(:event_type) { 'run_completion' }
+
+      it 'returns without doing anything' do
+        expect_any_instance_of(described_class).to_not receive(:create_story)
+        expect_any_instance_of(described_class).to_not receive(:update_story)
+        subject.send_event
+      end
+    end
+
     context 'when there is an authentication error' do
       let(:query_response) { {status: 403} }
 
