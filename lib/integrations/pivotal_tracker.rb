@@ -2,7 +2,8 @@ class Integrations::PivotalTracker < Integrations::Base
   include HTTParty
 
   PIVOTAL_API_URL = 'https://www.pivotaltracker.com/services/v5'.freeze
-  SUPPORTED_EVENTS = %(webhook_timeout run_test_failure).freeze
+  SUPPORTED_EVENTS = %w(webhook_timeout run_test_failure).freeze
+  FINAL_STORY_STATES = %w(delivered accepted).freeze
 
   def self.key
     'pivotal_tracker'
@@ -28,7 +29,7 @@ class Integrations::PivotalTracker < Integrations::Base
   private
 
   def search_for_existing_stories
-    response = request(:get, '/search', query: {query: "label:#{story_label} -state:delivered"})
+    response = request(:get, '/search', query: {query: "label:#{story_label} -state:#{FINAL_STORY_STATES.join(',')}"})
     validate_response!(response)
     parsed_response = MultiJson.load(response.body, symbolize_keys: true)
     parsed_response[:stories][:stories]
