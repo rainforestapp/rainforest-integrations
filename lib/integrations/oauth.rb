@@ -1,5 +1,5 @@
 module Integrations::Oauth
-  REQUIRED_KEYS = %w(consumer_key consumer_secret signature_method access_token access_secret).freeze
+  REQUIRED_KEYS = %i(consumer_key consumer_secret signature_method access_token access_secret).freeze
 
   def oauth_access_token
     if @oauth_access_token.nil?
