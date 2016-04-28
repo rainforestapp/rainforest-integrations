@@ -13,7 +13,11 @@ module Integrations
     end
 
     def keys
-      setting = settings.map { |s| s[:key] }
+      settings.each_with_object([]) { |s, key_arr| key_arr.push(s[:key]) if s[:value].present? }
+    end
+
+    def to_s
+      settings.inspect
     end
   end
 end
