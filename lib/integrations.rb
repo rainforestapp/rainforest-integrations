@@ -18,7 +18,7 @@ module Integrations
 
       klass_name = "Integrations::#{integration_name.classify}".constantize
       integration_object = klass_name.new(event_type, payload, integration[:settings])
-      integration_object.send_event
+      integration_object.send_event if integration_object.valid?
     end
   end
 end
