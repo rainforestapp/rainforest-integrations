@@ -43,26 +43,6 @@ describe Integrations::Slack do
     end
   end
 
-  describe '#initialize' do
-    let(:event_type) { 'run_failure' }
-    let(:payload) do
-      {
-        run: { id: 3, status: 'failed'}
-      }
-    end
-
-
-    subject { described_class.new(event_type, payload, settings) }
-
-    context 'without a valid integration url' do
-      let(:settings) { [] }
-
-      it 'raises a MisconfiguredIntegrationError' do
-        expect { subject }.to raise_error Integrations::Error
-      end
-    end
-  end
-
   describe "send to Slack" do
     let(:settings) do
       [

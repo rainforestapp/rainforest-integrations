@@ -8,7 +8,6 @@ module Integrations
       @payload = payload
       @run = payload[:run] || {}
       @settings = Integrations::Settings.new(settings)
-      validate_settings
     end
 
     # this key should match the key used to identify the integration in integrations.yml
@@ -34,6 +33,19 @@ module Integrations
       time_string.empty? ? 'Error/Unknown' : time_string
     end
 
+    def valid?
+      supplied_settings = settings.keys
+      required_settings = self.class.required_settings
+      missing_settings = required_settings - supplied_settings
+
+      unless missing_settings.empty?
+        log_error("Required settings were missing. Event Type: #{event_type}, Payload: #{payload}, Settings: #{settings}")
+        false
+      else
+        true
+      end
+    end
+
     protected
 
     def self.required_settings
@@ -44,14 +56,8 @@ module Integrations
       end.compact
     end
 
-    def validate_settings
-      supplied_settings = settings.keys
-      required_settings = self.class.required_settings
-      missing_settings = required_settings - supplied_settings
-
-      unless missing_settings.empty?
-        raise Integrations::Error.new('misconfigured_integration', "Required settings '#{missing_settings.join(", ")}' were not supplied to #{self.class.key}")
-      end
+    def log_error(msg)
+      Rails.logger.error(msg)
     end
   end
 end
