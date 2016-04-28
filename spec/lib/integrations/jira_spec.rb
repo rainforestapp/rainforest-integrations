@@ -96,8 +96,7 @@ describe Integrations::Jira do
             fields = JSON.parse(post_json)['fields']
 
             expect(fields['summary']).to eq "Rainforest found a bug in 'Always fails'"
-            expect(fields['description']).to eq "Failed test title: Always fails\nhttp://www.rainforestqa.com/"
-            expect(fields['environment']).to eq payload[:run][:environment][:name]
+            expect(fields['description']).to include(failed_test[:title], payload[:run][:environment][:name])
           end.and_return(final_response)
 
           send_event
@@ -112,8 +111,7 @@ describe Integrations::Jira do
             fields = JSON.parse(post_json)['fields']
 
             expect(fields['summary']).to eq "Your Rainforest webhook has timed out"
-            expect(fields['description']).to include payload[:run][:description]
-            expect(fields['environment']).to eq payload[:run][:environment][:name]
+            expect(fields['description']).to include(payload[:run][:description], payload[:run][:environment][:name])
           end.and_return(final_response)
 
           send_event
