@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 describe Integrations::Oauth do
   class Klass
     include Integrations::Oauth
@@ -19,9 +20,9 @@ describe Integrations::Oauth do
 
   context 'with blank oauth settings' do
     it 'raises Integrations::Error with missing keys' do
-      expect {
+      expect do
         subject.oauth_access_token
-      }.to raise_error(Integrations::Error, a_string_including(*required_keys.map(&:to_s)))
+      end.to raise_error(Integrations::Error, a_string_including(*required_keys.map(&:to_s)))
     end
   end
 
@@ -39,9 +40,9 @@ describe Integrations::Oauth do
     end
 
     it 'raises Integrations::Error with missing keys' do
-      expect {
+      expect do
         subject.oauth_access_token
-      }.to raise_error(Integrations::Error, a_string_including(*missing_keys.map(&:to_s)))
+      end.to raise_error(Integrations::Error, a_string_including(*missing_keys.map(&:to_s)))
     end
   end
 
@@ -57,9 +58,9 @@ describe Integrations::Oauth do
     end
 
     it 'does not raise an error' do
-      expect {
+      expect do
         subject.oauth_access_token
-      }.not_to raise_error
+      end.not_to raise_error
     end
   end
 end

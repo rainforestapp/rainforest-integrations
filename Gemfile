@@ -1,6 +1,6 @@
+# frozen_string_literal: true
 source 'https://rubygems.org'
-ruby "2.2.3"
-
+ruby '2.2.3'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.1'
@@ -27,6 +27,8 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'guard'
   gem 'guard-rspec'
+
+  gem 'rf-stylez'
 end
 
 group :test do

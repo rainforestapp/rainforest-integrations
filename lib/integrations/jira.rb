@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Integrations::Jira < Integrations::Base
   include Integrations::Oauth
   SUPPORTED_EVENTS = %w(webhook_timeout run_test_failure).freeze
@@ -27,7 +28,7 @@ class Integrations::Jira < Integrations::Base
             end
 
     body = {
-      jql: "status != Done AND project = #{settings[:project_key]} and labels = #{label}" ,
+      jql: "status != Done AND project = #{settings[:project_key]} and labels = #{label}",
       maxResults: 1
     }.to_json
 
@@ -88,7 +89,7 @@ class Integrations::Jira < Integrations::Base
         summary: "Rainforest found a bug in '#{test[:title]}'",
         description: "Failed test title: #{test[:title]}\n#{payload[:frontend_url]} on #{run[:environment][:name]}",
         issuetype: {
-          name: "Bug"
+          name: 'Bug'
         },
         labels: ["RfTest#{test[:id]}"]
       }
@@ -102,10 +103,10 @@ class Integrations::Jira < Integrations::Base
     {
       fields: {
         project: { key: settings[:project_key] },
-        summary: "Your Rainforest webhook has timed out",
+        summary: 'Your Rainforest webhook has timed out',
         description: "Your webhook has timed out for #{run_info} on #{run[:environment][:name]}. If you need help debugging, please contact us at help@rainforestqa.com",
         issuetype: {
-          name: "Bug"
+          name: 'Bug'
         },
         labels: ["RfRun#{run[:id]}"]
       }
@@ -115,7 +116,7 @@ class Integrations::Jira < Integrations::Base
   def jira_base_url
     # MAKE SURE IT DOESN'T HAVE A TRAILING SLASH
     base_url = settings[:jira_base_url]
-    base_url.last == "/" ? base_url.chop : base_url
+    base_url.last == '/' ? base_url.chop : base_url
   end
 
   def repeated_issue_tag

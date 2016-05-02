@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 describe Integrations::PivotalTracker do
@@ -18,7 +19,7 @@ describe Integrations::PivotalTracker do
         }
       },
       failed_test: failed_test,
-      frontend_url: "http://www.rainforestqa.com/"
+      frontend_url: 'http://www.rainforestqa.com/'
     }
   end
   let(:settings) do
@@ -29,8 +30,8 @@ describe Integrations::PivotalTracker do
   end
   let(:failed_test) do
     {
-      id: "20",
-      title: "Always fails"
+      id: '20',
+      title: 'Always fails'
     }
   end
   let(:stories_queried) { [] }
@@ -49,7 +50,7 @@ describe Integrations::PivotalTracker do
         .to_return(query_response)
     end
 
-    context "with an unsupported event type" do
+    context 'with an unsupported event type' do
       let(:event_type) { 'run_completion' }
 
       it 'returns without doing anything' do
@@ -123,9 +124,9 @@ describe Integrations::PivotalTracker do
       end
     end
 
-    context "with an existing identical issue" do
+    context 'with an existing identical issue' do
       let(:stories_queried) { [{ 'id' => '101' }] }
-      let(:story_url) { "#{base_url}/stories/#{101}" }
+      let(:story_url) { "#{base_url}/stories/101" }
       before do
         stub_request(:put, story_url)
           .with(body: instance_of(String))

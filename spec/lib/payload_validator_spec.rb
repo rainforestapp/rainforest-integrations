@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 describe PayloadValidator do
@@ -9,7 +10,7 @@ describe PayloadValidator do
           id: 3,
           status: 'failed'
         },
-        frontend_url: "http://www.rainforestqa.com/",
+        frontend_url: 'http://www.rainforestqa.com/',
         failed_tests: []
       }
     end
