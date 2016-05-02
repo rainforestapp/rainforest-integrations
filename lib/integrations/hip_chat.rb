@@ -1,6 +1,7 @@
+# frozen_string_literal: true
 class Integrations::HipChat < Integrations::Base
   def self.key
-    "hip_chat"
+    'hip_chat'
   end
 
   def send_event
@@ -10,7 +11,6 @@ class Integrations::HipChat < Integrations::Base
       api_version: 'v2',
       server_url: 'https://api.hipchat.com' # TODO: Make this configurable
     )
-
 
     # TODO: make notify configurable
     begin

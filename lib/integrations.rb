@@ -1,15 +1,16 @@
+# frozen_string_literal: true
 module Integrations
   class Error < StandardError
     attr_reader :type, :message
 
-    def initialize(type="unknown_error", message="Unknown Error")
+    def initialize(type='unknown_error', message='Unknown Error')
       @type = type
       @message = message
       super message
     end
   end
 
-  def self.send_event(event_type: , integrations: , payload: )
+  def self.send_event(event_type:, integrations:, payload:)
     PayloadValidator.new(event_type, integrations, payload).validate!
 
     integrations.each do |integration|

@@ -1,8 +1,9 @@
+# frozen_string_literal: true
 class Integrations::Slack < Integrations::Base
   SUPPORTED_EVENTS = %w(run_completion run_error webhook_timeout run_test_failure).freeze
 
   def message_text(fallback = false)
-    message = self.send(event_type.dup.concat("_message").to_sym)
+    message = self.send(event_type.dup.concat('_message').to_sym)
     if fallback
       "Your Rainforest Run #{message}"
     else
@@ -11,11 +12,11 @@ class Integrations::Slack < Integrations::Base
   end
 
   def run_completion_message
-    "is complete!"
+    'is complete!'
   end
 
   def run_error_message
-    "has encountered an error!"
+    'has encountered an error!'
   end
 
   def webhook_timeout_message
@@ -23,7 +24,7 @@ class Integrations::Slack < Integrations::Base
   end
 
   def run_test_failure_message
-    "has a failed a test!"
+    'has a failed a test!'
   end
 
   def test_percentage(test_quantity)
@@ -37,14 +38,14 @@ class Integrations::Slack < Integrations::Base
   def send_event
     return unless SUPPORTED_EVENTS.include?(event_type)
     response = HTTParty.post(settings[:url],
-      :body => {
-        :attachments => attachments
-      }.to_json,
-      :headers => {
-        'Content-Type' => 'application/json',
-        'Accept' => 'application/json'
-      }
-    )
+                             body: {
+                               attachments: attachments
+                             }.to_json,
+                             headers: {
+                               'Content-Type' => 'application/json',
+                               'Accept' => 'application/json'
+                             }
+                            )
 
     if response.code == 500 && response.parsed_response == 'no_text'
       raise Integrations::Error.new('user_configuration_error', 'Invalid request to the Slack API (maybe the JSON structure is wrong?).')
@@ -84,19 +85,19 @@ class Integrations::Slack < Integrations::Base
     {
       color: color,
       fields: [
-        { title: "Result", value: run[:result].humanize, short: true },
+        { title: 'Result', value: run[:result].humanize, short: true },
         {
           title: "Tests Passed: #{run[:total_passed_tests]} - #{test_percentage(run[:total_passed_tests])}%",
           value: "<#{payload[:frontend_url]}?expandedGroups%5B%5D=passed | View all Passed tests>",
           short: true
         },
-        { title: "Duration", value: humanize_secs(run[:time_taken]), short: true },
+        { title: 'Duration', value: humanize_secs(run[:time_taken]), short: true },
         {
           title: "Tests Failed: #{run[:total_failed_tests]} - #{test_percentage(run[:total_failed_tests])}%",
           value: "<#{payload[:frontend_url]}?expandedGroups%5B%5D=failed | View all Failed tests>",
           short: true
         },
-        { title: "Environment", value: run[:environment][:name], short: true },
+        { title: 'Environment', value: run[:environment][:name], short: true },
         {
           title: "Other Results: #{run[:total_no_result_tests]} - #{test_percentage(run[:total_no_result_tests])}%",
           value: "<#{payload[:frontend_url]}?expandedGroups%5B%5D=no_result | View all tests with no result>",
@@ -111,8 +112,8 @@ class Integrations::Slack < Integrations::Base
       run[:error_reason] = "Error reason was unspecified (please contact help@rainforestqa.com if you'd like help debugging this)"
     end
     {
-      color: "danger",
-      fields: [{ title: "Error Reason", value: run[:error_reason], short: false }]
+      color: 'danger',
+      fields: [{ title: 'Error Reason', value: run[:error_reason], short: false }]
     }
 
   end
@@ -120,23 +121,23 @@ class Integrations::Slack < Integrations::Base
   def run_test_failure_fields
     failed_test = payload[:failed_test]
     {
-      color: "danger",
+      color: 'danger',
       fields: [
         {
-          title: "Failed Test",
+          title: 'Failed Test',
           value: "<#{failed_test[:frontend_url]} | Test ##{failed_test[:id]}: #{failed_test[:title]}>",
           short: true
         },
-        { title: "Environment", value: run[:environment][:name], short: true },
-        { title: "Browser", value: payload[:browser][:description], short: true }
+        { title: 'Environment', value: run[:environment][:name], short: true },
+        { title: 'Browser', value: payload[:browser][:description], short: true }
       ]
     }
   end
 
   def webhook_timeout_fields
     {
-      color: "danger",
-      fields: [{ title: "Environment", value: run[:environment][:name], short: false }]
+      color: 'danger',
+      fields: [{ title: 'Environment', value: run[:environment][:name], short: false }]
     }
   end
 end

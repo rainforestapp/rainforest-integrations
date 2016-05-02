@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class IntegrationsController < ApplicationController
   def show
     begin

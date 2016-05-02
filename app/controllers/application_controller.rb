@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class ApplicationController < ActionController::Base
   ALLOWED_ORIGINS = ENV.fetch('ALLOWED_ORIGINS').split(',').freeze
   # Prevent CSRF attacks by raising an exception.
@@ -23,7 +24,7 @@ class ApplicationController < ActionController::Base
         headers['Access-Control-Allow-Headers'] = 'accept,content-type'
       end
 
-      render :text => ''
+      render text: ''
     end
   end
 end

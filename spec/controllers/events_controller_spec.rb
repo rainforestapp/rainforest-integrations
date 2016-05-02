@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 describe EventsController, type: :controller do
@@ -32,13 +33,13 @@ describe EventsController, type: :controller do
     @request.headers['Content-Type'] = 'application/json'
   end
 
-  describe "POST create" do
-    let(:key) { "fakefakefake" }
+  describe 'POST create' do
+    let(:key) { 'fakefakefake' }
     before do
       stub_const('EventsController::SIGNING_KEY', key)
     end
 
-    context "with a valid HMAC signature" do
+    context 'with a valid HMAC signature' do
       before do
         @request.headers['X-SIGNATURE'] = sign(payload, key)
         allow(Integrations).to receive(:send_event) { 201 }

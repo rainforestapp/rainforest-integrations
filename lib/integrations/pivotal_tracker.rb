@@ -1,7 +1,8 @@
+# frozen_string_literal: true
 class Integrations::PivotalTracker < Integrations::Base
   include HTTParty
 
-  PIVOTAL_API_URL = 'https://www.pivotaltracker.com/services/v5'.freeze
+  PIVOTAL_API_URL = 'https://www.pivotaltracker.com/services/v5'
   SUPPORTED_EVENTS = %w(webhook_timeout run_test_failure).freeze
   FINAL_STORY_STATES = %w(delivered accepted).freeze
 
@@ -60,7 +61,7 @@ class Integrations::PivotalTracker < Integrations::Base
     run_info += " (#{run[:description]})" if run[:description].present?
 
     {
-      name: "Your Rainforest webhook has timed out",
+      name: 'Your Rainforest webhook has timed out',
       description: "Your webhook has timed out for #{run_info}. If you need help debugging, please contact us at help@rainforestqa.com",
       story_type: 'bug',
       labels: [story_label],

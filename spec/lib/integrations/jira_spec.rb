@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 describe Integrations::Jira do
@@ -17,7 +18,7 @@ describe Integrations::Jira do
         }
       },
       failed_test: failed_test,
-      frontend_url: "http://www.rainforestqa.com/"
+      frontend_url: 'http://www.rainforestqa.com/'
     }
   end
   let(:settings) do
@@ -29,8 +30,8 @@ describe Integrations::Jira do
   end
   let(:failed_test) do
     {
-      id: "20",
-      title: "Always fails"
+      id: '20',
+      title: 'Always fails'
     }
   end
   let(:issues_queried) { [] }
@@ -39,7 +40,7 @@ describe Integrations::Jira do
     allow_any_instance_of(Integrations::Oauth).to receive(:oauth_access_token).and_return(access_token)
   end
 
-  context "with an unsupported event type" do
+  context 'with an unsupported event type' do
     let(:event_type) { 'run_completion' }
 
     it 'returns without doing anything' do
@@ -92,7 +93,7 @@ describe Integrations::Jira do
 
       context 'run_test_failure' do
         it 'posts useful information' do
-          allow(access_token).to receive(:post) do |url, post_json, _|
+          allow(access_token).to receive(:post) do |_url, post_json, _|
             fields = JSON.parse(post_json)['fields']
 
             expect(fields['summary']).to eq "Rainforest found a bug in 'Always fails'"
@@ -107,10 +108,10 @@ describe Integrations::Jira do
         let(:event_type) { 'webhook_timeout' }
 
         it 'posts useful information' do
-          allow(access_token).to receive(:post) do |url, post_json, _|
+          allow(access_token).to receive(:post) do |_url, post_json, _|
             fields = JSON.parse(post_json)['fields']
 
-            expect(fields['summary']).to eq "Your Rainforest webhook has timed out"
+            expect(fields['summary']).to eq 'Your Rainforest webhook has timed out'
             expect(fields['description']).to include(payload[:run][:description], payload[:run][:environment][:name])
           end.and_return(final_response)
 
@@ -119,7 +120,7 @@ describe Integrations::Jira do
       end
     end
 
-    context "with an existing identical issue" do
+    context 'with an existing identical issue' do
       let(:issues_queried) { [{ 'id' => '101' }] }
       let(:final_response) { instance_double('query_response', code: 204) }
 
@@ -129,9 +130,9 @@ describe Integrations::Jira do
           payload = JSON.parse(put_json).with_indifferent_access
 
           expect(payload).to include({
-            update: { labels: [{ add: 'RepeatedFailures' }] },
-            fields: { priority: { name: 'High' } }
-          })
+                                       update: { labels: [{ add: 'RepeatedFailures' }] },
+                                       fields: { priority: { name: 'High' } }
+                                     })
         end.and_return(final_response)
 
         send_event

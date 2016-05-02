@@ -1,6 +1,7 @@
+# frozen_string_literal: true
 module Integrations
   class Base
-    CUSTOMER_SERVICE_EMAIL = 'help@rainforestqa.com'.freeze
+    CUSTOMER_SERVICE_EMAIL = 'help@rainforestqa.com'
     attr_reader :event_type, :payload, :settings, :run
 
     def initialize(event_type, payload, settings)

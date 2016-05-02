@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Integrations
   class Settings
     attr_reader :settings
@@ -7,7 +8,7 @@ module Integrations
     end
 
     def [](key)
-      setting = settings.detect{ |s| s[:key] == key.to_s }
+      setting = settings.detect { |s| s[:key] == key.to_s }
       return nil if setting.nil?
       setting.fetch(:value)
     end
