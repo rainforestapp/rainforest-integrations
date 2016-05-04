@@ -26,11 +26,12 @@ class Integrations::Jira < Integrations::Base
     }.to_json
 
     response = oauth_access_token.post("#{jira_base_url}/rest/api/2/search", body, 'Content-Type' => 'application/json')
+    response_code = response.code.to_i
 
-    if [401, 404].include?(response.code) || response.code >= 500
+    if [401, 404].include?(response_code) || response_code >= 500
       # Either URL, credentials, or something else is wrong, so error out
       validate_response(response)
-    elsif response.code >= 300
+    elsif response_code >= 300
       # Just create a new issue if you can't search because of some Jira setting.
       log_info("JIRA search failed: #{response.body}. Attempting to post a new issue.")
       return true
@@ -55,7 +56,7 @@ class Integrations::Jira < Integrations::Base
   end
 
   def validate_response(response)
-    log_error("JIRA API Error: #{response.body}") unless response.code.between?(200, 299)
+    log_error("JIRA API Error: #{response.body}") unless response.code.to_i.between?(200, 299)
 
     case response.code.to_i
     when 200, 201, 204
