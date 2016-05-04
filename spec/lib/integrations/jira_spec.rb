@@ -46,7 +46,6 @@ describe Integrations::Jira do
     it 'returns without doing anything' do
       expect(access_token).to_not receive(:post)
       expect_any_instance_of(described_class).to_not receive(:create_issue)
-      expect_any_instance_of(described_class).to_not receive(:update_issue)
       subject.send_event
     end
   end
@@ -54,7 +53,6 @@ describe Integrations::Jira do
   describe '#send_event' do
     let(:send_event) { subject.send_event }
     let(:query_response) { instance_double('query_response', code: 200, body: {issues: issues_queried}.to_json) }
-    let(:final_response) { instance_double('query_response', code: 200) }
 
     before do
       expect(access_token).to receive(:post).with(
@@ -65,7 +63,7 @@ describe Integrations::Jira do
     end
 
     context 'when there is an authentication error' do
-      let(:query_response) { instance_double('query_response', code: 401) }
+      let(:query_response) { instance_double('query_response', code: 401, body: {error: 'error'}.to_json) }
 
       it 'raises a Integrations::Error' do
         expect { send_event }.to raise_error(Integrations::Error)
@@ -73,7 +71,7 @@ describe Integrations::Jira do
     end
 
     context 'when there the JIRA base URL is wrong' do
-      let(:query_response) { instance_double('query_response', code: 404) }
+      let(:query_response) { double('query_response', code: 404, body: { error: 'error' }.to_json) }
 
       it 'raises a Integrations::Error' do
         expect { send_event }.to raise_error(Integrations::Error)
@@ -81,7 +79,7 @@ describe Integrations::Jira do
     end
 
     context 'for any other error' do
-      let(:query_response) { instance_double('query_response', code: 500) }
+      let(:query_response) { instance_double('query_response', code: 500, body: {error: 'error'}.to_json) }
 
       it 'raises a Integrations::Error' do
         expect { send_event }.to raise_error(Integrations::Error)
@@ -121,20 +119,12 @@ describe Integrations::Jira do
     end
 
     context 'with an existing identical issue' do
-      let(:issues_queried) { [{ 'id' => '101' }] }
+      let(:issues_queried) { [{ 'foo' => 'bar' }] }
       let(:final_response) { instance_double('query_response', code: 204) }
 
-      it 'edits the existing issue' do
-        expect(access_token).to receive(:put) do |url, put_json, _|
-          expect(url).to include('101')
-          payload = JSON.parse(put_json).with_indifferent_access
-
-          expect(payload).to include({
-                                       update: { labels: [{ add: 'RepeatedFailures' }] },
-                                       fields: { priority: { name: 'High' } }
-                                     })
-        end.and_return(final_response)
-
+      it 'returns without doing anything' do
+        expect(access_token).to_not receive(:post)
+        expect_any_instance_of(described_class).to_not receive(:create_issue)
         send_event
       end
     end
