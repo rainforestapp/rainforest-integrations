@@ -33,7 +33,13 @@ class Integrations::Jira < Integrations::Base
     }.to_json
 
     response = oauth_access_token.post("#{jira_base_url}/rest/api/2/search", body, 'Content-Type' => 'application/json')
-    validate_response(response)
+
+    unless response.code.between?(200, 299)
+      # Just create a new issue if you can't search because of some Jira setting.
+      log_error("JIRA search failed: #{response.body}")
+      return
+    end
+
     parsed_response = MultiJson.load(response.body, symbolize_keys: true)
     parsed_response[:issues]
   end
@@ -69,11 +75,15 @@ class Integrations::Jira < Integrations::Base
   end
 
   def validate_response(response)
+    log_error("JIRA API Error: #{response.body}") unless response.code.between(200, 299)
+
     case response.code.to_i
     when 200, 201, 204
       true
     when 401
-      raise Integrations::Error.new('user_configuration_error', 'Authentication failed. Wrong username and/or password. Keep in mind that your JIRA username is NOT your email address.')
+      raise Integrations::Error.new('user_configuration_error',
+                                    "Authentication failed. Wrong username and/or password. \
+                                    Keep in mind that your JIRA username is NOT your email address.")
     when 404
       raise Integrations::Error.new('user_configuration_error', 'This JIRA URL does exist.')
     else
@@ -104,7 +114,8 @@ class Integrations::Jira < Integrations::Base
       fields: {
         project: { key: settings[:project_key] },
         summary: 'Your Rainforest webhook has timed out',
-        description: "Your webhook has timed out for #{run_info} on #{run[:environment][:name]}. If you need help debugging, please contact us at help@rainforestqa.com",
+        description: "Your webhook has timed out for #{run_info} on #{run[:environment][:name]}. \
+                      If you need help debugging, please contact us at help@rainforestqa.com",
         issuetype: {
           name: 'Bug'
         },
