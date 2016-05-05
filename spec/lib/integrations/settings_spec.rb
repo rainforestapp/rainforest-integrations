@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 describe Integrations::Settings do
   subject { described_class.new(settings_array) }
   let(:settings_array) { [{key: 'foo', value: 'bar'}] }

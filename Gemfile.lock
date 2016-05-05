@@ -152,6 +152,7 @@ GEM
     rb-fsevent (0.9.4)
     rb-inotify (0.9.5)
       ffi (>= 0.5.0)
+    rf-stylez (0.2.1)
     rspec (3.2.0)
       rspec-core (~> 3.2.0)
       rspec-expectations (~> 3.2.0)
@@ -223,6 +224,7 @@ DEPENDENCIES
   oauth
   puma
   rails (= 4.2.1)
+  rf-stylez
   rspec-rails
   sentry-raven
   simplecov

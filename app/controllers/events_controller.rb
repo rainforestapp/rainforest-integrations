@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'integrations'
 require 'payload_validator'
 

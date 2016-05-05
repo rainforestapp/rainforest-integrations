@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Integrations::Oauth
   REQUIRED_KEYS = %i(consumer_key consumer_secret signature_method access_token access_secret).freeze
 

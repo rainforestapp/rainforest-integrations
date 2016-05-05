@@ -1,20 +1,21 @@
+# frozen_string_literal: true
 require 'rails_helper'
 require 'integrations'
 
 describe Integrations::HipChat do
   describe '#send_event' do
-    let(:event_type) { "run_completion" }
+    let(:event_type) { 'run_completion' }
     let(:payload) do
       {
         run: {
           id: 9,
-          state: "failed",
-          description: "rainforest run",
+          state: 'failed',
+          description: 'rainforest run',
           time_taken: 750
         },
-        frontend_url: "http://www.rainforestqa.com/",
+        frontend_url: 'http://www.rainforestqa.com/',
         failed_tests: {
-          name: "Always fails"
+          name: 'Always fails'
         }
       }
     end
@@ -30,20 +31,20 @@ describe Integrations::HipChat do
         }
       ]
     end
-    let(:expected_message) { "Your Rainforest Run (<a href=\"http://www.rainforestqa.com/\">Run #9: rainforest run</a>) failed. Time to finish: 12 minutes 30 seconds" }
+    let(:expected_message) { 'Your Rainforest Run (<a href="http://www.rainforestqa.com/">Run #9: rainforest run</a>) failed. Time to finish: 12 minutes 30 seconds' }
     let(:expected_url) { "https://api.hipchat.com/v2/room/#{settings.first[:value]}/notification" }
     let(:expected_params) do
       {
         body: {
-          color: "red",
+          color: 'red',
           message: expected_message,
           notify: true,
-          message_format: "html"
+          message_format: 'html'
         }.to_json,
         headers: {
-          "Authorization" => "Bearer #{settings.last[:value]}",
-          "Content-Type" => "application/json",
-          "Accept" => "application/json"
+          'Authorization' => "Bearer #{settings.last[:value]}",
+          'Content-Type' => 'application/json',
+          'Accept' => 'application/json'
         }
       }
     end
@@ -56,7 +57,7 @@ describe Integrations::HipChat do
       allow(fake_room).to receive(:send).and_return(true)
     end
 
-    it "sets up room with all the proper options" do
+    it 'sets up room with all the proper options' do
       expect(HipChat::Room).to receive(:new).with(
         settings.last[:value],
         room_id: settings.first[:value],
@@ -66,13 +67,13 @@ describe Integrations::HipChat do
       expect(subject.send_event).to be_truthy
     end
 
-    context "with room ID" do
+    context 'with room ID' do
       before do
         expect(fake_room).to receive(:send).and_raise(HipChat::ServiceError)
       end
 
-      it "returns a user configuration error" do
-        expect{ subject.send_event }.to raise_error(Integrations::Error)
+      it 'returns a user configuration error' do
+        expect { subject.send_event }.to raise_error(Integrations::Error)
       end
     end
   end

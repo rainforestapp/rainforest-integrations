@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 describe Integration do
@@ -12,10 +13,10 @@ describe Integration do
         expect(subject['key']).to eq 'slack'
         expect(subject['title']).to eq 'Slack'
         expect(subject['settings'].first).to eq({
-                                                       'title' => 'Slack webhook URL',
-                                                       'key' => 'url',
-                                                       'required' => true
-                                                     })
+                                                  'title' => 'Slack webhook URL',
+                                                  'key' => 'url',
+                                                  'required' => true
+                                                })
       end
     end
 

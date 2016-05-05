@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 describe Integrations::Jira do
@@ -17,7 +18,7 @@ describe Integrations::Jira do
         }
       },
       failed_test: failed_test,
-      frontend_url: "http://www.rainforestqa.com/"
+      frontend_url: 'http://www.rainforestqa.com/'
     }
   end
   let(:settings) do
@@ -29,8 +30,8 @@ describe Integrations::Jira do
   end
   let(:failed_test) do
     {
-      id: "20",
-      title: "Always fails"
+      id: '20',
+      title: 'Always fails'
     }
   end
   let(:issues_queried) { [] }
@@ -39,21 +40,19 @@ describe Integrations::Jira do
     allow_any_instance_of(Integrations::Oauth).to receive(:oauth_access_token).and_return(access_token)
   end
 
-  context "with an unsupported event type" do
+  context 'with an unsupported event type' do
     let(:event_type) { 'run_completion' }
 
     it 'returns without doing anything' do
       expect(access_token).to_not receive(:post)
       expect_any_instance_of(described_class).to_not receive(:create_issue)
-      expect_any_instance_of(described_class).to_not receive(:update_issue)
       subject.send_event
     end
   end
 
   describe '#send_event' do
     let(:send_event) { subject.send_event }
-    let(:query_response) { instance_double('query_response', code: 200, body: {issues: issues_queried}.to_json) }
-    let(:final_response) { instance_double('query_response', code: 200) }
+    let(:query_response) { double('query_response', code: '200', body: {issues: issues_queried}.to_json) }
 
     before do
       expect(access_token).to receive(:post).with(
@@ -64,7 +63,7 @@ describe Integrations::Jira do
     end
 
     context 'when there is an authentication error' do
-      let(:query_response) { instance_double('query_response', code: 401) }
+      let(:query_response) { double('query_response', code: '401', body: {error: 'error'}.to_json) }
 
       it 'raises a Integrations::Error' do
         expect { send_event }.to raise_error(Integrations::Error)
@@ -72,7 +71,7 @@ describe Integrations::Jira do
     end
 
     context 'when there the JIRA base URL is wrong' do
-      let(:query_response) { instance_double('query_response', code: 404) }
+      let(:query_response) { double('query_response', code: '404', body: { error: 'error' }.to_json) }
 
       it 'raises a Integrations::Error' do
         expect { send_event }.to raise_error(Integrations::Error)
@@ -80,7 +79,7 @@ describe Integrations::Jira do
     end
 
     context 'for any other error' do
-      let(:query_response) { instance_double('query_response', code: 500) }
+      let(:query_response) { double('query_response', code: '500', body: {error: 'error'}.to_json) }
 
       it 'raises a Integrations::Error' do
         expect { send_event }.to raise_error(Integrations::Error)
@@ -88,11 +87,11 @@ describe Integrations::Jira do
     end
 
     context 'when no matching issues are found' do
-      let(:final_response) { instance_double('query_response', code: 201) }
+      let(:final_response) { double('query_response', code: '201') }
 
       context 'run_test_failure' do
         it 'posts useful information' do
-          allow(access_token).to receive(:post) do |url, post_json, _|
+          allow(access_token).to receive(:post) do |_url, post_json, _|
             fields = JSON.parse(post_json)['fields']
 
             expect(fields['summary']).to eq "Rainforest found a bug in 'Always fails'"
@@ -107,10 +106,10 @@ describe Integrations::Jira do
         let(:event_type) { 'webhook_timeout' }
 
         it 'posts useful information' do
-          allow(access_token).to receive(:post) do |url, post_json, _|
+          allow(access_token).to receive(:post) do |_url, post_json, _|
             fields = JSON.parse(post_json)['fields']
 
-            expect(fields['summary']).to eq "Your Rainforest webhook has timed out"
+            expect(fields['summary']).to eq 'Your Rainforest webhook has timed out'
             expect(fields['description']).to include(payload[:run][:description], payload[:run][:environment][:name])
           end.and_return(final_response)
 
@@ -119,21 +118,13 @@ describe Integrations::Jira do
       end
     end
 
-    context "with an existing identical issue" do
-      let(:issues_queried) { [{ 'id' => '101' }] }
-      let(:final_response) { instance_double('query_response', code: 204) }
+    context 'with an existing identical issue' do
+      let(:issues_queried) { [{ 'foo' => 'bar' }] }
+      let(:final_response) { double('query_response', code: '204') }
 
-      it 'edits the existing issue' do
-        expect(access_token).to receive(:put) do |url, put_json, _|
-          expect(url).to include('101')
-          payload = JSON.parse(put_json).with_indifferent_access
-
-          expect(payload).to include({
-            update: { labels: [{ add: 'RepeatedFailures' }] },
-            fields: { priority: { name: 'High' } }
-          })
-        end.and_return(final_response)
-
+      it 'returns without doing anything' do
+        expect(access_token).to_not receive(:post)
+        expect_any_instance_of(described_class).to_not receive(:create_issue)
         send_event
       end
     end

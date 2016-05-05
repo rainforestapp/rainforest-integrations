@@ -1,6 +1,7 @@
+# frozen_string_literal: true
 module Integrations
   class Base
-    CUSTOMER_SERVICE_EMAIL = 'help@rainforestqa.com'.freeze
+    CUSTOMER_SERVICE_EMAIL = 'help@rainforestqa.com'
     attr_reader :event_type, :payload, :settings, :run
 
     def initialize(event_type, payload, settings)
@@ -13,6 +14,14 @@ module Integrations
     # this key should match the key used to identify the integration in integrations.yml
     def self.key
       raise 'key must be defined in the child class'
+    end
+
+    def self.required_settings
+      @required_settings ||= Integration.find(key).fetch('settings').map do |setting|
+        if setting['required']
+          setting.fetch('key')
+        end
+      end.compact
     end
 
     # send_event will be the public facing method for all integrations. Please
@@ -39,25 +48,30 @@ module Integrations
       missing_settings = required_settings - supplied_settings
 
       unless missing_settings.empty?
-        log_error("Required settings were missing. Event Type: #{event_type}, Payload: #{payload}, Settings: #{settings}")
+        log_error("Required settings were missing: #{missing_settings.join(', ')}")
         false
       else
         true
       end
     end
 
-    protected
-
-    def self.required_settings
-      @required_settings ||= Integration.find(key).fetch('settings').map do |setting|
-        if setting['required']
-          setting.fetch('key')
-        end
-      end.compact
+    # Used for debug purposes
+    def to_s
+      "Event Type: #{event_type}, Payload: #{payload}, Settings: #{settings}"
     end
 
+    protected
+
     def log_error(msg)
-      Rails.logger.error(msg)
+      log(:error, msg)
+    end
+
+    def log_info(msg)
+      log(:info, msg)
+    end
+
+    def log(level, msg)
+      Rails.logger.public_send(level, "#{msg} - Debug: #{self}")
     end
   end
 end

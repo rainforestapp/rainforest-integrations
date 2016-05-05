@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 describe Integrations do
   describe '.send_event' do
     let(:event_type) { 'run_completion' }
@@ -7,7 +8,7 @@ describe Integrations do
           id: 3,
           status: 'failed'
         },
-        frontend_url: "http://www.rainforestqa.com/",
+        frontend_url: 'http://www.rainforestqa.com/',
         failed_tests: []
       }
     end
