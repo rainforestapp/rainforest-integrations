@@ -9,19 +9,12 @@ class Integrations::Jira < Integrations::Base
 
   def send_event
     return unless SUPPORTED_EVENTS.include?(event_type)
-    issues = search_for_existing_issues
-
-    if issues.length > 0
-      issue = issues.first
-      update_issue(issue[:id])
-    else
-      create_issue
-    end
+    create_issue if issue_does_not_exist?
   end
 
   private
 
-  def search_for_existing_issues
+  def issue_does_not_exist?
     label = case event_type
             when 'webhook_timeout' then "RfRun#{run[:id]}"
             when 'run_test_failure' then "RfTest#{payload[:failed_test][:id]}"
@@ -33,25 +26,19 @@ class Integrations::Jira < Integrations::Base
     }.to_json
 
     response = oauth_access_token.post("#{jira_base_url}/rest/api/2/search", body, 'Content-Type' => 'application/json')
-    validate_response(response)
-    parsed_response = MultiJson.load(response.body, symbolize_keys: true)
-    parsed_response[:issues]
-  end
+    response_code = response.code.to_i
 
-  def update_issue(issue_id)
-    params = {}
-    params[:update] = { labels: [{ add: repeated_issue_tag }] } if repeated_issue_tag
-    params[:fields] = { priority: { name: repeated_issue_priority } } if repeated_issue_priority
-
-    unless params.empty?
-      response = oauth_access_token.put(
-        "#{jira_base_url}/rest/api/2/issue/#{issue_id}",
-        params.to_json,
-        'Content-Type' => 'application/json'
-      )
-
+    if [401, 404].include?(response_code) || response_code >= 500
+      # Either URL, credentials, or something else is wrong, so error out
       validate_response(response)
+    elsif response_code >= 300
+      # Just create a new issue if you can't search because of some Jira setting.
+      log_info("JIRA search failed: #{response.body}. Attempting to post a new issue.")
+      return true
     end
+
+    parsed_response = MultiJson.load(response.body, symbolize_keys: true)
+    parsed_response[:issues].empty?
   end
 
   def create_issue
@@ -62,18 +49,22 @@ class Integrations::Jira < Integrations::Base
 
     response = oauth_access_token.post(
       "#{jira_base_url}/rest/api/2/issue/",
-      post_data.to_json,
+      {fields: post_data}.to_json,
       'Content-Type' => 'application/json'
     )
     validate_response(response)
   end
 
   def validate_response(response)
+    log_error("JIRA API Error: #{response.body}") unless response.code.to_i.between?(200, 299)
+
     case response.code.to_i
     when 200, 201, 204
       true
     when 401
-      raise Integrations::Error.new('user_configuration_error', 'Authentication failed. Wrong username and/or password. Keep in mind that your JIRA username is NOT your email address.')
+      raise Integrations::Error.new('user_configuration_error',
+                                    "Authentication failed. Wrong username and/or password. \
+                                    Keep in mind that your JIRA username is NOT your email address.")
     when 404
       raise Integrations::Error.new('user_configuration_error', 'This JIRA URL does exist.')
     else
@@ -84,32 +75,24 @@ class Integrations::Jira < Integrations::Base
   def create_test_failure_issue
     test = payload[:failed_test]
     {
-      fields: {
-        project: { key: settings[:project_key] },
-        summary: "Rainforest found a bug in '#{test[:title]}'",
-        description: "Failed test title: #{test[:title]}\n#{payload[:frontend_url]} on #{run[:environment][:name]}",
-        issuetype: {
-          name: 'Bug'
-        },
-        labels: ["RfTest#{test[:id]}"]
-      }
+      project: { key: settings[:project_key] },
+      labels: ["RfTest#{test[:id]}"],
+      issuetype: { name: 'Bug' },
+      summary: "Rainforest found a bug in '#{test[:title]}'",
+      description: "Failed test title: #{test[:title]}\n#{payload[:frontend_url]} on #{run[:environment][:name]}"
     }
   end
 
   def create_webhook_timeout_issue
     run_info = "Run ##{run[:id]}"
     run_info += " (#{run[:description]})" if run[:description].present?
-
     {
-      fields: {
-        project: { key: settings[:project_key] },
-        summary: 'Your Rainforest webhook has timed out',
-        description: "Your webhook has timed out for #{run_info} on #{run[:environment][:name]}. If you need help debugging, please contact us at help@rainforestqa.com",
-        issuetype: {
-          name: 'Bug'
-        },
-        labels: ["RfRun#{run[:id]}"]
-      }
+      project: { key: settings[:project_key] },
+      labels: ["RfRun#{run[:id]}"],
+      issuetype: { name: 'Bug' },
+      summary: 'Your Rainforest webhook has timed out',
+      description: "Your webhook has timed out for #{run_info} on #{run[:environment][:name]}. \
+                    If you need help debugging, please contact us at help@rainforestqa.com"
     }
   end
 
@@ -117,15 +100,5 @@ class Integrations::Jira < Integrations::Base
     # MAKE SURE IT DOESN'T HAVE A TRAILING SLASH
     base_url = settings[:jira_base_url]
     base_url.last == '/' ? base_url.chop : base_url
-  end
-
-  def repeated_issue_tag
-    # Hard coded until custom values are in place
-    'RepeatedFailures'
-  end
-
-  def repeated_issue_priority
-    # Hard coded until custom values are in place
-    'High'
   end
 end
