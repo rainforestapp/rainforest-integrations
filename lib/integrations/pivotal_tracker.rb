@@ -16,7 +16,11 @@ class Integrations::PivotalTracker < Integrations::Base
   end
 
   def send_event
-    return unless ok_to_send_event?
+    unless ok_to_send_event?
+      log_info("Unable to create or update story! current settings: #{settings.inspect}")
+      return
+    end
+
     stories = search_for_existing_stories
 
     if stories.length > 0

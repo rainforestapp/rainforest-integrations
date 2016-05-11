@@ -8,7 +8,11 @@ class Integrations::Jira < Integrations::Base
   end
 
   def send_event
-    return unless ok_to_send_event?
+    unless ok_to_send_event?
+      log_info("Unable to create jira issue! current settings: #{settings.inspect}")
+      return
+    end
+
     create_issue
   end
 

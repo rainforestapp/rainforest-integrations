@@ -5,7 +5,11 @@ class Integrations::HipChat < Integrations::Base
   end
 
   def send_event
-    return unless ok_to_send_event?
+    unless ok_to_send_event?
+      log_info("Unable to send hipchat message due to missing data: #{settings.inspect}")
+      return
+    end
+
     room = HipChat::Room.new(
       settings[:room_token],
       room_id: settings[:room_id],
