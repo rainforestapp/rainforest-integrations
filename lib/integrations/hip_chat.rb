@@ -5,6 +5,7 @@ class Integrations::HipChat < Integrations::Base
   end
 
   def send_event
+    return unless ok_to_send_event?
     room = HipChat::Room.new(
       settings[:room_token],
       room_id: settings[:room_id],
@@ -24,6 +25,10 @@ class Integrations::HipChat < Integrations::Base
   end
 
   private
+
+  def ok_to_send_event?
+    settings[:room_token].present? && settings[:room_id].present?
+  end
 
   def color
     case event_type

@@ -12,11 +12,11 @@ class Integrations::PivotalTracker < Integrations::Base
 
   def initialize(event_type, payload, settings)
     super(event_type, payload, settings)
-    self.class.base_uri "#{PIVOTAL_API_URL}/projects/#{@settings[:project_id]}"
+    self.class.base_uri "#{PIVOTAL_API_URL}/projects/#{self.settings[:project_id]}"
   end
 
   def send_event
-    return unless SUPPORTED_EVENTS.include?(event_type)
+    return unless ok_to_send_event?
     stories = search_for_existing_stories
 
     if stories.length > 0
@@ -28,6 +28,12 @@ class Integrations::PivotalTracker < Integrations::Base
   end
 
   private
+
+  def ok_to_send_event?
+    SUPPORTED_EVENTS.include?(event_type) &&
+    settings[:project_id].present? &&
+    settings[:api_token].present?
+  end
 
   def search_for_existing_stories
     response = request(:get, '/search', query: {query: "label:#{story_label} -state:#{FINAL_STORY_STATES.join(',')}"})

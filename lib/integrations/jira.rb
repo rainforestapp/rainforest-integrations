@@ -8,11 +8,18 @@ class Integrations::Jira < Integrations::Base
   end
 
   def send_event
-    return unless SUPPORTED_EVENTS.include?(event_type)
-    create_issue if issue_does_not_exist?
+    return unless ok_to_send_event?
+    create_issue
   end
 
   private
+
+  def ok_to_send_event?
+    SUPPORTED_EVENTS.include?(event_type) &&
+    jira_base_url.present? &&
+    settings[:project_key].present? &&
+    issue_does_not_exist?
+  end
 
   def issue_does_not_exist?
     label = case event_type
