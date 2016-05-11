@@ -17,7 +17,7 @@ class Integrations::PivotalTracker < Integrations::Base
 
   def send_event
     unless ok_to_send_event?
-      log_info("Unable to create or update story! current settings: #{settings.inspect}")
+      log_info("Unable to create or update story!")
       return
     end
 

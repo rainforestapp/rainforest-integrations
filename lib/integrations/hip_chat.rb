@@ -6,7 +6,7 @@ class Integrations::HipChat < Integrations::Base
 
   def send_event
     unless ok_to_send_event?
-      log_info("Unable to send hipchat message due to missing data: #{settings.inspect}")
+      log_info("Unable to send hipchat message!")
       return
     end
 
