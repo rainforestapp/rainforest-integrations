@@ -142,5 +142,20 @@ describe Integrations::PivotalTracker do
         }
       end
     end
+
+    context 'when the necessary settings are blank' do
+      let(:settings) do
+        [
+          { key: 'project_id', value: '' },
+          { key: 'api_token', value: '' }
+        ]
+      end
+
+      it 'does not try to communicate with pivotal' do
+        response = double(:response)
+        expect(described_class).to_not receive(:post)
+        subject.send_event
+      end
+    end
   end
 end

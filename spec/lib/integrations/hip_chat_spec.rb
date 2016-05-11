@@ -76,5 +76,26 @@ describe Integrations::HipChat do
         expect { subject.send_event }.to raise_error(Integrations::Error)
       end
     end
+
+    context 'with a blank room token or room id' do
+      let(:settings) do
+        [
+          {
+            key: 'room_id',
+            value: ''
+          },
+          {
+            key: 'room_token',
+            value: ''
+          }
+        ]
+      end
+
+      it 'does not send the message' do
+        expect(fake_room).to_not receive(:send)
+
+        subject.send_event
+      end
+    end
   end
 end
