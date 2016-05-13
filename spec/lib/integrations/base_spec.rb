@@ -5,7 +5,7 @@ describe Integrations::Base do
   describe '#send_event' do
     it 'should be overwritten by child classes' do
       expect do
-        Integrations::Base.new('foo', {}, []).send_event
+        Integrations::Base.new('foo', {}, [], {}).send_event
       end.to raise_error
     end
   end
@@ -16,17 +16,17 @@ describe Integrations::Base do
     end
 
     context 'missing settings' do
-      subject { described_class.new('event', {}, []) }
+      subject { described_class.new('event', {}, [], {}) }
       it { is_expected.to_not be_valid }
     end
 
     context 'empty settings' do
-      subject { described_class.new('event', {}, [{key: 'foo', value: ''}]) }
+      subject { described_class.new('event', {}, [{key: 'foo', value: ''}], {}) }
       it { is_expected.to_not be_valid }
     end
 
     context 'present settings' do
-      subject { described_class.new('event', {}, [{key: 'foo', value: 'val'}]) }
+      subject { described_class.new('event', {}, [{key: 'foo', value: 'val'}], {}) }
       it { is_expected.to be_valid }
     end
   end
