@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+require 'rails_helper'
+
 describe Integrations::Oauth do
   class Klass
     include Integrations::Oauth
@@ -6,7 +8,7 @@ describe Integrations::Oauth do
 
     def initialize
       @settings = { oauth_settings: {} }
-      @oauth_consumer = { secrets: {} }
+      @oauth_consumer = { secrets: { 'RSA-SHA1' => 'consumer secret' } }
     end
   end
 

@@ -12,9 +12,13 @@ module Integrations::Oauth
     validate_oauth_settings!
 
     oauth_settings = settings[:oauth_settings].with_indifferent_access
+    secrets = oauth_consumer[:secrets].with_indifferent_access
+
+    # NOTE: if we need to use a different encryption algorithm in the future, use
+    # the signature method to figure out which to use
     consumer = OAuth::Consumer.new(
       oauth_consumer[:key],
-      OpenSSL::PKey::RSA.new(oauth_consumer[:secrets][oauth_settings[:signature_method]]),
+      OpenSSL::PKey::RSA.new(secrets[oauth_settings[:signature_method]]),
       { signature_method: oauth_settings[:signature_method] }
     )
     OAuth::AccessToken.new(
