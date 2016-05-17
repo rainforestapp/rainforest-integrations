@@ -15,7 +15,7 @@ class EventsController < ApplicationController
   def create
     begin
       body = MultiJson.load(request.body.read, symbolize_keys: true)
-      unless %i(event_type integrations payload).all? { |key| body.key? key }
+      unless %i(event_type integrations payload oauth_consumer).all? { |key| body.key? key }
         return invalid_request
       end
 

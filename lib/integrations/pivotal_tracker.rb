@@ -10,8 +10,9 @@ class Integrations::PivotalTracker < Integrations::Base
     'pivotal_tracker'
   end
 
-  def initialize(event_type, payload, settings)
-    super(event_type, payload, settings)
+  # TODO: Don't make the class base URI dynamic - race conditions waiting to happen
+  def initialize(event_type, payload, settings, oauth_consumer)
+    super
     self.class.base_uri "#{PIVOTAL_API_URL}/projects/#{self.settings[:project_id]}"
   end
 

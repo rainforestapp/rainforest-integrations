@@ -5,6 +5,7 @@ require 'integrations'
 describe Integrations::HipChat do
   describe '#send_event' do
     let(:event_type) { 'run_completion' }
+    let(:oauth_consumer) { {} }
     let(:payload) do
       {
         run: {
@@ -50,7 +51,7 @@ describe Integrations::HipChat do
     end
     let(:fake_room) { instance_double('HipChat::Room') }
 
-    subject { described_class.new(event_type, payload, settings) }
+    subject { described_class.new(event_type, payload, settings, oauth_consumer) }
 
     before do
       allow(HipChat::Room).to receive(:new).and_return(fake_room)

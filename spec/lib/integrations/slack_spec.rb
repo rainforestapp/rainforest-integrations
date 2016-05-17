@@ -14,7 +14,7 @@ describe Integrations::Slack do
         expect(text).to eq expected_text
       end.and_return(response)
 
-      described_class.new(event_type, payload, settings).send_event
+      described_class.new(event_type, payload, settings, oauth_consumer).send_event
     end
 
     it 'expects a specific color' do
@@ -27,7 +27,7 @@ describe Integrations::Slack do
         expect(color).to eq expected_color
       end.and_return(response)
 
-      described_class.new(event_type, payload, settings).send_event
+      described_class.new(event_type, payload, settings, oauth_consumer).send_event
     end
 
     it 'expects a specific fallback text without markdown' do
@@ -40,7 +40,7 @@ describe Integrations::Slack do
         expect(fallback).to eq expected_fallback
       end.and_return(response)
 
-      described_class.new(event_type, payload, settings).send_event
+      described_class.new(event_type, payload, settings, oauth_consumer).send_event
     end
   end
 
@@ -53,6 +53,7 @@ describe Integrations::Slack do
         }
       ]
     end
+    let(:oauth_consumer) { {} }
 
     context 'notify of run_completion' do
       let(:expected_text) { 'Your Rainforest Run (Run#123) has failed.' }
@@ -77,7 +78,7 @@ describe Integrations::Slack do
 
       it 'sends a message to Slack' do
         VCR.use_cassette('run_completion_notify_slack') do
-          Integrations::Slack.new(event_type, payload, settings).send_event
+          Integrations::Slack.new(event_type, payload, settings, oauth_consumer).send_event
         end
       end
 
@@ -136,7 +137,7 @@ describe Integrations::Slack do
 
       it 'sends a message to Slack' do
         VCR.use_cassette('run_error_notify_slack') do
-          Integrations::Slack.new(event_type, payload, settings).send_event
+          Integrations::Slack.new(event_type, payload, settings, oauth_consumer).send_event
         end
       end
 
@@ -164,7 +165,7 @@ describe Integrations::Slack do
 
       it 'sends a message to Slack' do
         VCR.use_cassette('webhook_timeout_notify_slack') do
-          Integrations::Slack.new(event_type, payload, settings).send_event
+          Integrations::Slack.new(event_type, payload, settings, oauth_consumer).send_event
         end
       end
 
@@ -199,7 +200,7 @@ describe Integrations::Slack do
 
       it 'sends a message to Slack' do
         VCR.use_cassette('run_test_failure_notify_slack') do
-          Integrations::Slack.new(event_type, payload, settings).send_event
+          Integrations::Slack.new(event_type, payload, settings, oauth_consumer).send_event
         end
       end
 

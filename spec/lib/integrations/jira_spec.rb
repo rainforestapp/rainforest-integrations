@@ -2,9 +2,10 @@
 require 'rails_helper'
 
 describe Integrations::Jira do
-  subject { described_class.new(event_type, payload, settings) }
+  subject { described_class.new(event_type, payload, settings, oauth_consumer) }
 
   let(:event_type) { 'run_test_failure' }
+  let(:oauth_consumer) { {} }
   let(:access_token) { double('access_token') }
   let(:base_url) { 'http://example.com' }
   let(:payload) do
@@ -164,7 +165,7 @@ describe Integrations::Jira do
   end
 
   describe '#jira_base_url' do
-    subject { described_class.new(event_type, payload, settings).send(:jira_base_url) }
+    subject { described_class.new(event_type, payload, settings, oauth_consumer).send(:jira_base_url) }
 
     before do
       url_setting = settings.find { |s| s[:key] == 'jira_base_url' }
