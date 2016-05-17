@@ -2,13 +2,14 @@
 module Integrations
   class Base
     CUSTOMER_SERVICE_EMAIL = 'help@rainforestqa.com'
-    attr_reader :event_type, :payload, :settings, :run
+    attr_reader :event_type, :payload, :settings, :run, :oauth_consumer
 
-    def initialize(event_type, payload, settings)
+    def initialize(event_type, payload, settings, oauth_consumer)
       @event_type = event_type
       @payload = payload
       @run = payload[:run] || {}
       @settings = Integrations::Settings.new(settings)
+      @oauth_consumer = oauth_consumer
     end
 
     # this key should match the key used to identify the integration in integrations.yml

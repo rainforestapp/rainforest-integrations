@@ -19,12 +19,14 @@ describe EventsController, type: :controller do
   end
 
   let(:event_type) { 'run_completion' }
+  let(:oauth_consumer) { {} }
 
   let(:payload) do
     {
       event_type: event_type,
       integrations: integrations,
-      payload: run_payload
+      payload: run_payload,
+      oauth_consumer: oauth_consumer
     }.to_json
   end
 
@@ -53,9 +55,12 @@ describe EventsController, type: :controller do
 
       it 'delegates to Integrations' do
         expect(::Integrations).to receive(:send_event)
-                                   .with(event_type: event_type,
-                                         integrations: integrations,
-                                         payload: run_payload)
+          .with(
+            event_type: event_type,
+            integrations: integrations,
+            payload: run_payload,
+            oauth_consumer: oauth_consumer
+          )
         post :create, payload
       end
 

@@ -2,10 +2,11 @@
 describe Integrations::Oauth do
   class Klass
     include Integrations::Oauth
-    attr_accessor :settings
+    attr_accessor :settings, :oauth_consumer
 
     def initialize
       @settings = { oauth_settings: {} }
+      @oauth_consumer = { secrets: {} }
     end
   end
 

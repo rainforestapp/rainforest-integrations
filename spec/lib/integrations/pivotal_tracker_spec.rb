@@ -2,9 +2,10 @@
 require 'rails_helper'
 
 describe Integrations::PivotalTracker do
-  subject { described_class.new(event_type, payload, settings) }
+  subject { described_class.new(event_type, payload, settings, oauth_consumer) }
 
   let(:event_type) { 'run_test_failure' }
+  let(:oauth_consumer) { {} }
   let(:project_id) { '12345' }
   let(:api_token) { 'foobarbaz' }
   let(:base_url) { "#{described_class::PIVOTAL_API_URL}/projects/#{project_id}" }

@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+require 'rails_helper'
+
 describe Integrations do
   describe '.send_event' do
     let(:event_type) { 'run_completion' }
@@ -13,9 +15,15 @@ describe Integrations do
       }
     end
     let(:integrations) { [] }
+    let(:oauth_consumer) { {} }
 
     subject do
-      described_class.send_event(event_type: event_type, integrations: integrations, payload: payload)
+      described_class.send_event(
+        event_type: event_type,
+        integrations: integrations,
+        payload: payload,
+        oauth_consumer: oauth_consumer
+      )
     end
 
     context 'with a nonexistent integration' do
@@ -31,7 +39,9 @@ describe Integrations do
 
       it 'does not call #send_event on the corresponding class for the integration' do
         mock_integration = double
-        expect(Integrations::Slack).to receive(:new).with(event_type, payload, integrations.first[:settings]).and_return mock_integration
+        expect(Integrations::Slack).to receive(:new)
+          .with(event_type, payload, integrations.first[:settings], oauth_consumer)
+          .and_return mock_integration
         expect(mock_integration).to receive(:valid?).and_return(false)
         expect(mock_integration).to_not receive :send_event
         subject
@@ -43,7 +53,9 @@ describe Integrations do
 
       it 'calls #send_event on the corresponding class for the integration' do
         mock_integration = double
-        expect(Integrations::Slack).to receive(:new).with(event_type, payload, integrations.first[:settings]).and_return mock_integration
+        expect(Integrations::Slack).to receive(:new)
+          .with(event_type, payload, integrations.first[:settings], oauth_consumer)
+          .and_return mock_integration
         expect(mock_integration).to receive(:valid?).and_return(true)
         expect(mock_integration).to receive :send_event
         subject
