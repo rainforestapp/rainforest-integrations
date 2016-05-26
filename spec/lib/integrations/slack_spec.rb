@@ -206,9 +206,9 @@ describe Integrations::Slack do
 
       describe 'message text' do
         it_should_behave_like 'Slack notification',
-                              'Your Rainforest Run (<http://www.example.com | Run #666>) has a failed a test!',
+                              'Your Rainforest Run (<http://www.example.com | Run #666>) has a failed test!',
                               'danger',
-                              'Your Rainforest Run has a failed a test!'
+                              'Your Rainforest Run has a failed test!'
       end
     end
   end
