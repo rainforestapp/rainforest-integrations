@@ -3,100 +3,94 @@ require 'rails_helper'
 require 'integrations'
 
 describe Integrations::HipChat do
-  describe '#send_event' do
-    let(:event_type) { 'run_completion' }
-    let(:oauth_consumer) { {} }
-    let(:payload) do
-      {
-        run: {
-          id: 9,
-          state: 'failed',
-          description: 'rainforest run',
-          time_taken: 750
-        },
-        frontend_url: 'http://www.rainforestqa.com/',
-        failed_tests: {
-          name: 'Always fails'
-        }
-      }
-    end
+  shared_examples 'HipChat notification' do |event_type, payload|
     let(:settings) do
       [
-        {
-          key: 'room_id',
-          value: 'Rainforestqa'
-        },
-        {
-          key: 'room_token',
-          value: 'SFLaaWu13VxCd7ew4FqNnNJeCcoAZ8MF4kofX3GZ'
-        }
+        {key: 'room_id', value: 'Test'},
+        {key: 'room_token', value: 'sjc91Sq15qhcyciVoDo7f7jFrZhj0OizRKl8D6ED'}
       ]
     end
-    let(:expected_message) { 'Your Rainforest Run (<a href="http://www.rainforestqa.com/">Run #9: rainforest run</a>) failed. Time to finish: 12 minutes 30 seconds' }
-    let(:expected_url) { "https://api.hipchat.com/v2/room/#{settings.first[:value]}/notification" }
-    let(:expected_params) do
+    let(:oauth_consumer) { '' }
+
+    let(:run_test_failure_payload) do
       {
-        body: {
-          color: 'red',
-          message: expected_message,
-          notify: true,
-          message_format: 'html'
-        }.to_json,
-        headers: {
-          'Authorization' => "Bearer #{settings.last[:value]}",
-          'Content-Type' => 'application/json',
-          'Accept' => 'application/json'
+        run: {
+          id: 9382,
+          environment: { name: 'QA Environment' },
+          frontend_url: 'http://www.example.com',
+        },
+        failed_test: {
+          id: 7,
+          title: 'My failing test',
+          frontend_url: 'http://www.example.com/foo',
+        },
+        browser: {
+          full_name: 'Google Chrome',
+          description: 'Chrome 43'
         }
       }
     end
-    let(:fake_room) { instance_double('HipChat::Room') }
 
-    subject { described_class.new(event_type, payload, settings, oauth_consumer) }
-
-    before do
-      allow(HipChat::Room).to receive(:new).and_return(fake_room)
-      allow(fake_room).to receive(:send).and_return(true)
-    end
-
-    it 'sets up room with all the proper options' do
-      expect(HipChat::Room).to receive(:new).with(
-        settings.last[:value],
-        room_id: settings.first[:value],
-        api_version: 'v2',
-        server_url: 'https://api.hipchat.com'
-      ).and_return(fake_room)
-      expect(subject.send_event).to be_truthy
-    end
-
-    context 'with room ID' do
-      before do
-        expect(fake_room).to receive(:send).and_raise(HipChat::ServiceError)
-      end
-
-      it 'returns a user configuration error' do
-        expect { subject.send_event }.to raise_error(Integrations::Error)
-      end
-    end
-
-    context 'with a blank room token or room id' do
-      let(:settings) do
-        [
-          {
-            key: 'room_id',
-            value: ''
-          },
-          {
-            key: 'room_token',
-            value: ''
+    let(:run_completion_payload) do
+      {
+        frontend_url: 'http://www.example.com',
+        run: {
+          id: 123,
+          result: 'passed',
+          time_taken: (25.minutes + 3.seconds).to_i,
+          total_tests: 10,
+          total_passed_tests: 8,
+          total_failed_tests: 2,
+          total_no_result_tests: 0,
+          environment: {
+            name: 'QA Environment'
           }
-        ]
-      end
+        }
+      }
+    end
 
-      it 'does not send the message' do
-        expect(fake_room).to_not receive(:send)
+    let(:run_error_payload) do
+      {
+        frontend_url: 'http://www.example.com',
+        run: {
+          id: 123,
+          error_reason: 'We were unable to create social account(s)'
+        }
+      }
+    end
 
-        subject.send_event
+    let(:webhook_timeout_payload) do
+      {
+        run: {
+          id: 7,
+          environment: {
+            name: 'Foobar'
+          }
+        },
+        frontend_url: 'http://www.example.com'
+      }
+    end
+
+    subject do
+      described_class.new(
+        event_type,
+        self.send(:"#{event_type}_payload"),
+        settings,
+        oauth_consumer
+      )
+    end
+
+    it 'sends a notification' do
+      VCR.use_cassette("hipchat_notification_#{event_type}") do
+        expect(subject.send_event).to be(true)
       end
     end
+  end
+
+  describe '#send_event' do
+    it_behaves_like 'HipChat notification', 'run_test_failure'
+    it_behaves_like 'HipChat notification', 'run_completion'
+    it_behaves_like 'HipChat notification', 'run_error'
+    it_behaves_like 'HipChat notification', 'webhook_timeout'
   end
 end
