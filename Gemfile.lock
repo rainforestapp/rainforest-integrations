@@ -1,8 +1,8 @@
 GIT
   remote: git://github.com/hipchat/hipchat-rb.git
-  revision: d37c6378d094d355c6876b19ceed01e1ee3d7a02
+  revision: 5d427a9de0736293d966b6dbd5cb20a10478a77a
   specs:
-    hipchat (1.5.2)
+    hipchat (1.5.3)
       httparty
       mimemagic
 
@@ -86,7 +86,7 @@ GEM
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
     hitimes (1.2.2)
-    httparty (0.13.5)
+    httparty (0.13.7)
       json (~> 1.8)
       multi_xml (>= 0.5.2)
     i18n (0.7.0)
@@ -234,5 +234,8 @@ DEPENDENCIES
   web-console (~> 2.0)
   webmock
 
+RUBY VERSION
+   ruby 2.2.3p173
+
 BUNDLED WITH
-   1.10.6
+   1.12.4

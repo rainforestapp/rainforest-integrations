@@ -1,0 +1,55 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.hipchat.com/v2/room/Test/notification?auth_token=sjc91Sq15qhcyciVoDo7f7jFrZhj0OizRKl8D6ED
+    body:
+      encoding: UTF-8
+      string: '{"room_id":"Test","from":"Rainforest QA","message":"Rainforest \u003ca
+        href=\"http://www.example.com\"\u003eRun #123\u003c/a\u003e has encountered
+        an error!\nPlease contact help@rainforestqa.com for more details.\n","message_format":"html","color":"red","card":{"id":"142cd407-b0b0-40be-9263-5d2930d3df49","style":"application","icon":{"url":"https://www.rainforestqa.com/images/favicon-f246a1f7.png"},"title":"Your
+        Rainforest Run (#123) has encountered an error!","url":"http://www.example.com","attributes":[{"label":"Error
+        Reason","value":{"label":"We were unable to create social account(s)"}}]},"notify":true}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Date, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-Backoff
+      Content-Type:
+      - text/html
+      Date:
+      - Thu, 26 May 2016 10:08:00 GMT
+      Location:
+      - https://api.hipchat.com/v2/room/2776193/history/a9f2be10-e42e-440c-8dc3-13c63d9e4d4c
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000
+      X-Content-Type-Options:
+      - nosniff
+      X-Ratelimit-Limit:
+      - '100'
+      X-Ratelimit-Remaining:
+      - '97'
+      X-Ratelimit-Reset:
+      - '1464257375'
+      X-Xss-Protection:
+      - 1; mode=block
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Thu, 26 May 2016 10:07:58 GMT
+recorded_with: VCR 2.9.3

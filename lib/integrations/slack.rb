@@ -24,7 +24,7 @@ class Integrations::Slack < Integrations::Base
   end
 
   def run_test_failure_message
-    'has a failed a test!'
+    'has a failed test!'
   end
 
   def test_percentage(test_quantity)
