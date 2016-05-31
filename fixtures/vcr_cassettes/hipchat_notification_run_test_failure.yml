@@ -1,0 +1,56 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.hipchat.com/v2/room/Test/notification?auth_token=sjc91Sq15qhcyciVoDo7f7jFrZhj0OizRKl8D6ED
+    body:
+      encoding: UTF-8
+      string: '{"room_id":"Test","from":"Rainforest QA","message":"Rainforest \u003ca
+        href=\"\"\u003eRun #9382\u003c/a\u003e has a failed test!\nFailed Test: \u003ca
+        href=\"http://www.example.com/foo\"\u003eMy failing test\u003c/a\u003e\n","message_format":"html","color":"red","card":{"id":"d4f9b4c7-b03c-4956-b7d3-09927f46c2c6","style":"application","icon":{"url":"https://www.rainforestqa.com/images/favicon-f246a1f7.png"},"title":"Your
+        Rainforest Run (#9382) has failed a test!","url":"http://www.example.com/foo","attributes":[{"label":"Failed
+        Test","value":{"label":"My failing test (#7)"}},{"label":"Environment","value":{"label":"QA
+        Environment"}},{"label":"Browser","value":{"label":"Chrome 43"}}]},"notify":true}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Date, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-Backoff
+      Content-Type:
+      - text/html
+      Date:
+      - Thu, 26 May 2016 10:04:34 GMT
+      Location:
+      - https://api.hipchat.com/v2/room/2776193/history/64951189-d070-409c-bdcc-69407d4e95c1
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000
+      X-Content-Type-Options:
+      - nosniff
+      X-Ratelimit-Limit:
+      - '100'
+      X-Ratelimit-Remaining:
+      - '100'
+      X-Ratelimit-Reset:
+      - '1464257375'
+      X-Xss-Protection:
+      - 1; mode=block
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Thu, 26 May 2016 10:04:32 GMT
+recorded_with: VCR 2.9.3
