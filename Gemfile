@@ -4,7 +4,7 @@ ruby '2.2.3'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.1'
-gem 'puma'
+gem 'puma', '2.16.0'
 gem 'awesome_print'
 gem 'dotenv-rails'
 gem 'multi_json'
