@@ -25,7 +25,7 @@ describe Integrations::Oauth do
     it 'raises Integrations::Error with missing keys' do
       expect do
         subject.oauth_access_token
-      end.to raise_error(Integrations::Error, a_string_including(*required_keys.map(&:to_s)))
+      end.to raise_error(Integrations::Error)
     end
   end
 
@@ -45,7 +45,7 @@ describe Integrations::Oauth do
     it 'raises Integrations::Error with missing keys' do
       expect do
         subject.oauth_access_token
-      end.to raise_error(Integrations::Error, a_string_including(*missing_keys.map(&:to_s)))
+      end.to raise_exception(Integrations::Error)
     end
   end
 

@@ -24,7 +24,7 @@ class EventsController < ApplicationController
     rescue MultiJson::ParseError
       invalid_request('unable to parse request', type: 'parse_error')
     rescue Integrations::Error => e
-      invalid_request(e.message, type: e.type)
+      format_integration_error(e)
     rescue PayloadValidator::InvalidPayloadError => e
       invalid_request e.message, type: 'invalid payload'
     end
@@ -34,6 +34,16 @@ class EventsController < ApplicationController
 
   def invalid_request(message = 'invalid request', type: 'invalid_request')
     render json: { error: message, type: type }, status: 400
+  end
+
+  def format_integration_error(exception)
+    exception_info = {
+      error: exception.message,
+      type: exception.type,
+      failed_response_body: exception.response_body,
+      failed_response_code: exception.response_code,
+    }
+    render json: exception_info, status: 400
   end
 
   def verify_signature
