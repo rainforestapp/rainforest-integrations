@@ -94,11 +94,11 @@ class Integrations::PivotalTracker < Integrations::Base
 
   def validate_response!(response)
     if response.code == 404
-      raise Integrations::Error.new('user_configuration_error', 'The project ID provided was not found.')
+      raise Integrations::Error.new('user_configuration_error', 'The project ID provided was not found.', response)
     elsif response.code == 403
-      raise Integrations::Error.new('user_configuration_error', 'The authorization token is invalid.')
+      raise Integrations::Error.new('user_configuration_error', 'The authorization token is invalid.', response)
     elsif response.code != 200
-      raise Integrations::Error.new('user_configuration_error', 'Invalid request to the Pivotal Tracker API.')
+      raise Integrations::Error.new('user_configuration_error', 'Invalid request to the Pivotal Tracker API.', response)
     end
   end
 
