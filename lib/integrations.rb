@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 module Integrations
   class Error < StandardError
-    attr_reader :type, :message, :response, :response_body, :response_code
+    attr_reader :type, :message, :response_body, :response_code
 
     def initialize(type='unknown_error', message='Unknown Error', response)
       @type = type
       @message = message
       if response && response.respond_to?(:body)
-        @response = response
         @response_body = response.body
         @response_code = response.code
       end
