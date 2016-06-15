@@ -91,8 +91,10 @@ describe EventsController, type: :controller do
       end
 
       context 'with an unsupported integration' do
+        let(:service_response) { double(:service_response, code: 400, body: "errors") }
+
         before do
-          allow(Integrations).to receive(:send_event).and_raise Integrations::Error.new('unsupported_integration', "Integration 'yo' is not supported")
+          allow(Integrations).to receive(:send_event).and_raise Integrations::Error.new('unsupported_integration', "Integration 'yo' is not supported", service_response)
         end
 
         let(:integrations) { [{ key: 'yo', settings: [] }]}
@@ -102,12 +104,16 @@ describe EventsController, type: :controller do
           expect(response.code).to eq '400'
           expect(json['error']).to eq "Integration 'yo' is not supported"
           expect(json['type']).to eq 'unsupported_integration'
+          expect(json['failed_response_body']).to eq service_response.body
+          expect(json['failed_response_code']).to eq service_response.code
         end
       end
 
       context 'with a misconfigured integration' do
+        let(:service_response) { double(:response, body: "{\"errorMessages\": [\"SomeField is required\"], \"errors\": {}}", code: '400')}
+
         before do
-          allow(Integrations).to receive(:send_event).and_raise Integrations::Error.new('misconfigured_integration', 'ERROR!')
+          allow(Integrations).to receive(:send_event).and_raise Integrations::Error.new('misconfigured_integration', 'ERROR!', service_response)
         end
 
         it 'returns a 400 with a useful error message' do
@@ -115,6 +121,8 @@ describe EventsController, type: :controller do
           expect(response.code).to eq '400'
           expect(json['error']).to eq 'ERROR!'
           expect(json['type']).to eq 'misconfigured_integration'
+          expect(json['failed_response_body']).to be_present
+          expect(json['failed_response_code']).to eq '400'
         end
       end
 
