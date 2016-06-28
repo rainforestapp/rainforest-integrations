@@ -37,6 +37,7 @@ class Integrations::Slack < Integrations::Base
 
   def send_event
     return unless SUPPORTED_EVENTS.include?(event_type)
+    return unless ok_to_send_event?
     response = HTTParty.post(settings[:url],
                              body: {
                                attachments: attachments
@@ -57,6 +58,10 @@ class Integrations::Slack < Integrations::Base
   end
 
   private
+
+  def ok_to_send_event?
+    settings[:url].present?
+  end
 
   def attachments
     case event_type
