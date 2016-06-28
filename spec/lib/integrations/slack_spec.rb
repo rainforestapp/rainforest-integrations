@@ -89,6 +89,13 @@ describe Integrations::Slack do
                               'Your Rainforest Run is complete!'
       end
 
+      context 'when the url is blank' do
+        it 'does not send a request to slack' do
+          settings[0][:key] = ''
+          Integrations::Slack.new(event_type, payload, settings, oauth_consumer).send_event
+        end
+      end
+
       context 'when there is a description' do
         before do
           payload[:run][:description] = 'some description'
