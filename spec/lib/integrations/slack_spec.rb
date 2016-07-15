@@ -3,10 +3,14 @@ require 'rails_helper'
 require 'integrations'
 
 describe Integrations::Slack do
+  let(:response) { double('response') }
+
+  before do
+    allow(response).to receive(:code).and_return(200)
+  end
+
   shared_examples_for 'Slack notification' do |expected_text, expected_color, expected_fallback|
     it 'expects a specific text' do
-      response = double('response')
-      allow(response).to receive(:code).and_return(200)
 
       expect(HTTParty).to receive(:post) do |url, options|
         expect(url).to eq settings.first[:value]
@@ -201,7 +205,17 @@ describe Integrations::Slack do
           frontend_url: 'http://www.example.com',
           browser: {
             full_name: 'Google Chrome'
-          }
+          },
+          feedback: [
+            {
+              worker_name: 'Mrs. Awesome',
+              note: 'This test is not awesome'
+            },
+            {
+              worker_name: 'Mr. Fail',
+              note: 'This test definitely fails'
+            }
+          ]
         }
       end
 
@@ -216,6 +230,24 @@ describe Integrations::Slack do
                               'Your Rainforest Run (<http://www.example.com | Run #666>) has a failed test!',
                               'danger',
                               'Your Rainforest Run has a failed test!'
+      end
+
+      describe 'feedback' do
+        it 'sends tester feedback to slack' do
+          expect(HTTParty).to receive(:post) do |_url, options|
+            body = MultiJson.load(options[:body], symbolize_keys: true)
+            attachment = body[:attachments].first
+            expected_feedback = attachment[:fields].last(2)
+            expected_feedback.each do |feedback|
+              expect(feedback).to include(:title, :value)
+              expect(feedback[:short]).to eq(false)
+            end
+          end.and_return(response)
+
+          VCR.use_cassette('run_test_failure_notify_slack') do
+            Integrations::Slack.new(event_type, payload, settings, oauth_consumer).send_event
+          end
+        end
       end
     end
   end

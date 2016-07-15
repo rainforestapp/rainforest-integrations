@@ -125,17 +125,27 @@ class Integrations::Slack < Integrations::Base
 
   def run_test_failure_fields
     failed_test = payload[:failed_test]
+    fields = [
+      {
+        title: 'Failed Test',
+        value: "<#{failed_test[:frontend_url]} | Test ##{failed_test[:id]}: #{failed_test[:title]}>",
+        short: true
+      },
+      { title: 'Environment', value: run[:environment][:name], short: true },
+      { title: 'Browser', value: payload[:browser][:description], short: true }
+    ]
+
+    payload[:feedback].each do |feedback|
+      fields << {
+        title: "Feedback from #{feedback[:worker_name]}",
+        value: feedback[:note],
+        short: false
+      }
+    end
+
     {
       color: 'danger',
-      fields: [
-        {
-          title: 'Failed Test',
-          value: "<#{failed_test[:frontend_url]} | Test ##{failed_test[:id]}: #{failed_test[:title]}>",
-          short: true
-        },
-        { title: 'Environment', value: run[:environment][:name], short: true },
-        { title: 'Browser', value: payload[:browser][:description], short: true }
-      ]
+      fields: fields
     }
   end
 
