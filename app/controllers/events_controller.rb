@@ -14,7 +14,7 @@ class EventsController < ApplicationController
 
   def create
     begin
-      body = MultiJson.load(request.body.read, symbolize_keys: true)
+      body = MultiJson.load(body_string, symbolize_keys: true)
       unless %i(event_type integrations payload oauth_consumer).all? { |key| body.key? key }
         return invalid_request
       end
@@ -49,12 +49,22 @@ class EventsController < ApplicationController
   def verify_signature
     return true if Rails.env.development?
 
-    body_string = request.body.read
     digest = OpenSSL::Digest.new('sha256')
     hmac = OpenSSL::HMAC.hexdigest(digest, SIGNING_KEY, body_string)
 
     unless request.headers['X-SIGNATURE'] == hmac
       render json: { status: 'unauthorized' }, status: :unauthorized
     end
+  end
+
+  # Returns the body POST data as a string
+  def body_string
+    body = request.body
+    body.rewind # Since this is a StringIO and we access it twice, rewind it
+    body.read
+  rescue RuntimeError => exception
+    # Rails 4.2 with Ruby 2.3 raises "RuntimeError: can't modify frozen String"
+    # when trying to access request.body with invalid JSON. Fallback to header.
+    request.headers["RAW_POST_DATA"]
   end
 end
