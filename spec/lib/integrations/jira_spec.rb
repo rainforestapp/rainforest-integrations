@@ -127,7 +127,7 @@ describe Integrations::Jira do
               fields = JSON.parse(post_json)['fields']
 
               expect(fields['summary']).to eq "Rainforest found a bug in 'Always fails'"
-              expect(fields['description']).to include(failed_test[:title], payload[:run][:environment][:name])
+              expect(fields['description']).to include(failed_test[:title], payload[:run][:environment][:name], payload[:run][:id].to_s)
             end.and_return(final_response)
 
             send_event
