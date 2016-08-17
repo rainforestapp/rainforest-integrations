@@ -90,7 +90,7 @@ class Integrations::Jira < Integrations::Base
       labels: ["RfTest#{test[:id]}"],
       issuetype: { name: 'Bug' },
       summary: "Rainforest found a bug in '#{test[:title]}'",
-      description: "Failed test title: #{test[:title]}\n#{payload[:frontend_url]} on #{run[:environment][:name]}"
+      description: "Failed test title: #{test[:title]}\n#{payload[:frontend_url]}\nEnvironment: #{run[:environment][:name]}\nRun##{run[:id]}"
     }
   end
 
