@@ -84,7 +84,7 @@ class Integrations::PivotalTracker < Integrations::Base
   def create_integration_test_story
     {
       name: 'Integration Test',
-      description: 'Your slack integration works!',
+      description: 'Your Pivotal Tracker integration works!',
       story_type: 'bug',
       labels: [story_label],
       comments: []

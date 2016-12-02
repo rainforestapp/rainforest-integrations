@@ -199,9 +199,9 @@ describe Integrations::Slack do
 
       describe 'message text' do
         it_should_behave_like 'Slack notification',
-                              'Your slack integration works!',
+                              'Your Slack integration works!',
                               'good',
-                              'Your slack integration works!'
+                              'Your Slack integration works!'
       end
     end
 

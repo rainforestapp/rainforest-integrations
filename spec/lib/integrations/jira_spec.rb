@@ -156,8 +156,8 @@ describe Integrations::Jira do
             allow(access_token).to receive(:post) do |_url, post_json, _|
               fields = JSON.parse(post_json)['fields']
 
-              expect(fields['summary']).to eq 'Your slack integration works!'
-              expect(fields['description']).to eq 'Your slack integration works!'
+              expect(fields['summary']).to eq 'Your Jira integration works!'
+              expect(fields['description']).to eq 'Your Jira integration works!'
             end.and_return(final_response)
 
             send_event

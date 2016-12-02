@@ -165,8 +165,8 @@ class Integrations::Slack < Integrations::Base
     {
       color: 'good',
       fields: [],
-      fallback: 'Your slack integration works!',
-      text: 'Your slack integration works!'
+      fallback: 'Your Slack integration works!',
+      text: 'Your Slack integration works!'
     }
   end
 end

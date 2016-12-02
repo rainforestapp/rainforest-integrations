@@ -71,6 +71,12 @@ describe Integrations::HipChat do
       }
     end
 
+    let(:integration_test_payload) do
+      {
+        frontend_url: 'http://www.example.com'
+      }
+    end
+
     subject do
       described_class.new(
         event_type,
@@ -92,5 +98,6 @@ describe Integrations::HipChat do
     it_behaves_like 'HipChat notification', 'run_completion'
     it_behaves_like 'HipChat notification', 'run_error'
     it_behaves_like 'HipChat notification', 'webhook_timeout'
+    it_behaves_like 'HipChat notification', 'integration_test'
   end
 end

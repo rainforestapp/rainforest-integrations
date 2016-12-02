@@ -114,8 +114,8 @@ class Integrations::Jira < Integrations::Base
       project: { key: settings[:project_key] },
       labels: ['Integration Test'],
       issuetype: { name: 'Bug' },
-      summary: 'Your slack integration works!',
-      description: "Your slack integration works!"
+      summary: 'Your Jira integration works!',
+      description: "Your Jira integration works!"
     }
   end
 

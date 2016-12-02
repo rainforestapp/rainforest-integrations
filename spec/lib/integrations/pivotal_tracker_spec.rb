@@ -133,7 +133,7 @@ describe Integrations::PivotalTracker do
             body = Rack::Utils.parse_nested_query(req.body).with_indifferent_access
             run = payload[:run]
             expect(body[:name]).to eq('Integration Test')
-            expect(body[:description]).to eq 'Your slack integration works!'
+            expect(body[:description]).to eq 'Your Pivotal Tracker integration works!'
             expect(body[:story_type]).to eq('bug')
             expect(body[:labels]).to eq(["Integration Test"])
             expect(body[:comments]).to be nil
