@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class Integrations::Jira < Integrations::Base
   include Integrations::Oauth
-  SUPPORTED_EVENTS = %w(webhook_timeout run_test_failure).freeze
+  SUPPORTED_EVENTS = %w(webhook_timeout run_test_failure integration_test).freeze
 
   def self.key
     'jira'
@@ -29,6 +29,7 @@ class Integrations::Jira < Integrations::Base
     label = case event_type
             when 'webhook_timeout' then "RfRun#{run[:id]}"
             when 'run_test_failure' then "RfTest#{payload[:failed_test][:id]}"
+            when 'integration_test' then "Integration Test"
             end
 
     body = {
@@ -56,6 +57,7 @@ class Integrations::Jira < Integrations::Base
     post_data = case event_type
                 when 'webhook_timeout' then create_webhook_timeout_issue
                 when 'run_test_failure' then create_test_failure_issue
+                when 'integration_test' then create_integration_test_issue
                 end
 
     response = oauth_access_token.post(
@@ -104,6 +106,16 @@ class Integrations::Jira < Integrations::Base
       summary: 'Your Rainforest webhook has timed out',
       description: "Your webhook has timed out for #{run_info} on #{run[:environment][:name]}. \
                     If you need help debugging, please contact us at help@rainforestqa.com"
+    }
+  end
+
+  def create_integration_test_issue
+    {
+      project: { key: settings[:project_key] },
+      labels: ['Integration Test'],
+      issuetype: { name: 'Bug' },
+      summary: 'Your slack integration works!',
+      description: "Your slack integration works!"
     }
   end
 

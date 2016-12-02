@@ -148,6 +148,21 @@ describe Integrations::Jira do
             send_event
           end
         end
+
+        context 'integration_test' do
+          let(:event_type) { 'integration_test' }
+
+          it 'posts useful information' do
+            allow(access_token).to receive(:post) do |_url, post_json, _|
+              fields = JSON.parse(post_json)['fields']
+
+              expect(fields['summary']).to eq 'Your slack integration works!'
+              expect(fields['description']).to eq 'Your slack integration works!'
+            end.and_return(final_response)
+
+            send_event
+          end
+        end
       end
 
       context 'with an existing identical issue' do
