@@ -6,7 +6,6 @@ slack:
     - run_error
     - webhook_timeout
     - run_test_failure
-    - integration_test
   settings:
     - key: 'url'
       title: 'Slack webhook URL'
@@ -18,7 +17,6 @@ hip_chat:
     - run_error
     - webhook_timeout
     - run_test_failure
-    - integration_test
   settings:
     - key: 'room_id'
       title: 'HipChat Room id'
@@ -31,7 +29,6 @@ pivotal_tracker:
   events:
     - webhook_timeout
     - run_test_failure
-    - integration_test
   settings:
     - key: "project_id"
       title: "Project ID for new stories to be posted"
@@ -44,7 +41,6 @@ jira:
   events:
     - webhook_timeout
     - run_test_failure
-    - integration_test
   settings:
     - key: oauth_settings
       oauth_version: 1

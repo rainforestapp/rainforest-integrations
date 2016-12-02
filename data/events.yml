@@ -13,9 +13,6 @@ webhook_timeout:
   description: Receive a notification when your webhook times out.
   payload:
     run: [id, description, environment]
-integration_test:
-  title: Integration Test
-  description: Receive a notification to make sure your integration works.
 run_test_failure:
   title: Test Failure
   description: Receive a notification when any of your tests fail.

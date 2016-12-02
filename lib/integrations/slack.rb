@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 class Integrations::Slack < Integrations::Base
-  SUPPORTED_EVENTS = %w(run_completion run_error webhook_timeout run_test_failure integration_test).freeze
+  SUPPORTED_EVENTS = %w(run_completion run_error webhook_timeout run_test_failure).freeze
 
-  def message_text(fallback = false, test = false)
+  def message_text(fallback = false)
     message = self.send(event_type.dup.concat('_message').to_sym)
-    if test
-      integration_test_message
-    elsif fallback
+    if fallback
       "Your Rainforest Run #{message}"
     else
       "Your Rainforest Run (<#{payload[:frontend_url]} | Run ##{run[:id]}#{run[:description].present? ? ": #{run[:description]}" : ""}>) #{message}"
@@ -75,16 +73,13 @@ class Integrations::Slack < Integrations::Base
       attachment = run_test_failure_fields
     when 'webhook_timeout'
       attachment = webhook_timeout_fields
-    when 'integration_test'
-      attachment = integration_test
     end
 
-    unless event_type == 'integration_test'
-      attachment.merge!(
-        fallback: message_text(fallback: true),
-        text: message_text
-      )
-    end
+    attachment.merge!(
+      fallback: message_text(fallback: true),
+      text: message_text
+    )
+
     return [attachment]
   end
 
@@ -158,15 +153,6 @@ class Integrations::Slack < Integrations::Base
     {
       color: 'danger',
       fields: [{ title: 'Environment', value: run[:environment][:name], short: false }]
-    }
-  end
-
-  def integration_test
-    {
-      color: 'good',
-      fields: [],
-      fallback: 'Your slack integration works!',
-      text: 'Your slack integration works!'
     }
   end
 end
