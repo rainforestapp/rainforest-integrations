@@ -3,7 +3,7 @@ class Integrations::PivotalTracker < Integrations::Base
   include HTTParty
 
   PIVOTAL_API_URL = 'https://www.pivotaltracker.com/services/v5'
-  SUPPORTED_EVENTS = %w(webhook_timeout run_test_failure).freeze
+  SUPPORTED_EVENTS = %w(webhook_timeout run_test_failure integration_test).freeze
   FINAL_STORY_STATES = %w(delivered accepted).freeze
 
   def self.key
@@ -61,6 +61,7 @@ class Integrations::PivotalTracker < Integrations::Base
     post_data = case event_type
                 when 'webhook_timeout' then create_webhook_timeout_story
                 when 'run_test_failure' then create_test_failure_story
+                when 'integration_test' then create_integration_test_story
                 end
 
     response = request(:post, '/stories', body: post_data)
@@ -77,6 +78,16 @@ class Integrations::PivotalTracker < Integrations::Base
       story_type: 'bug',
       labels: [story_label],
       comments: [{text: "Environment: #{run[:environment][:name]}"}]
+    }
+  end
+
+  def create_integration_test_story
+    {
+      name: 'Integration Test',
+      description: 'Your slack integration works!',
+      story_type: 'bug',
+      labels: [story_label],
+      comments: []
     }
   end
 
@@ -118,6 +129,7 @@ class Integrations::PivotalTracker < Integrations::Base
     case event_type
     when 'webhook_timeout' then "RfRun#{run[:id]}"
     when 'run_test_failure' then "RfTest#{payload[:failed_test][:id]}"
+    when 'integration_test' then "Integration Test"
     end
   end
 

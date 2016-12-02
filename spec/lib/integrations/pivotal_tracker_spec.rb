@@ -123,6 +123,23 @@ describe Integrations::PivotalTracker do
           }
         end
       end
+
+      context 'integration_test' do
+        let(:event_type) { 'integration_test' }
+
+        it 'posts useful information' do
+          subject.send_event
+          expect(WebMock).to have_requested(:post, new_story_url).with { |req|
+            body = Rack::Utils.parse_nested_query(req.body).with_indifferent_access
+            run = payload[:run]
+            expect(body[:name]).to eq('Integration Test')
+            expect(body[:description]).to eq 'Your slack integration works!'
+            expect(body[:story_type]).to eq('bug')
+            expect(body[:labels]).to eq(["Integration Test"])
+            expect(body[:comments]).to be nil
+          }
+        end
+      end
     end
 
     context 'with an existing identical issue' do
