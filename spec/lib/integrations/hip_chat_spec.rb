@@ -71,11 +71,7 @@ describe Integrations::HipChat do
       }
     end
 
-    let(:integration_test_payload) do
-      {
-        frontend_url: 'http://www.example.com'
-      }
-    end
+    let(:integration_test_payload) { {} }
 
     subject do
       described_class.new(

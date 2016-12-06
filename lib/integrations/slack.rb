@@ -2,11 +2,9 @@
 class Integrations::Slack < Integrations::Base
   SUPPORTED_EVENTS = %w(run_completion run_error webhook_timeout run_test_failure integration_test).freeze
 
-  def message_text(fallback = false, test = false)
+  def message_text(fallback = false)
     message = self.send(event_type.dup.concat('_message').to_sym)
-    if test
-      integration_test_message
-    elsif fallback
+    if fallback
       "Your Rainforest Run #{message}"
     else
       "Your Rainforest Run (<#{payload[:frontend_url]} | Run ##{run[:id]}#{run[:description].present? ? ": #{run[:description]}" : ""}>) #{message}"
