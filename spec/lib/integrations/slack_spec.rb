@@ -11,7 +11,6 @@ describe Integrations::Slack do
 
   shared_examples_for 'Slack notification' do |expected_text, expected_color, expected_fallback|
     it 'expects a specific text' do
-
       expect(HTTParty).to receive(:post) do |url, options|
         expect(url).to eq settings.first[:value]
         text = JSON.parse(options[:body])['attachments'].first['text']
@@ -185,6 +184,24 @@ describe Integrations::Slack do
                               "Your Rainforest Run (<http://www.example.com | Run #7>) has timed out due to a webhook failure!\nIf you need a hand debugging it, please let us know via email at help@rainforestqa.com.",
                               'danger',
                               "Your Rainforest Run has timed out due to a webhook failure!\nIf you need a hand debugging it, please let us know via email at help@rainforestqa.com."
+      end
+    end
+
+    context 'notify of integration test' do
+      let(:event_type) { 'integration_test' }
+      let(:payload) { {} }
+
+      it 'sends a message to Slack' do
+        VCR.use_cassette('webhook_timeout_notify_slack') do
+          Integrations::Slack.new(event_type, payload, settings, oauth_consumer).send_event
+        end
+      end
+
+      describe 'message text' do
+        it_should_behave_like 'Slack notification',
+                              'Your Slack integration works!',
+                              'good',
+                              'Your Slack integration works!'
       end
     end
 

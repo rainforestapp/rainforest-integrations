@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class Integrations::Slack < Integrations::Base
-  SUPPORTED_EVENTS = %w(run_completion run_error webhook_timeout run_test_failure).freeze
+  SUPPORTED_EVENTS = %w(run_completion run_error webhook_timeout run_test_failure integration_test).freeze
 
   def message_text(fallback = false)
     message = self.send(event_type.dup.concat('_message').to_sym)
@@ -73,13 +73,16 @@ class Integrations::Slack < Integrations::Base
       attachment = run_test_failure_fields
     when 'webhook_timeout'
       attachment = webhook_timeout_fields
+    when 'integration_test'
+      attachment = integration_test
     end
 
-    attachment.merge!(
-      fallback: message_text(fallback: true),
-      text: message_text
-    )
-
+    unless event_type == 'integration_test'
+      attachment.merge!(
+        fallback: message_text(fallback: true),
+        text: message_text
+      )
+    end
     return [attachment]
   end
 
@@ -153,6 +156,15 @@ class Integrations::Slack < Integrations::Base
     {
       color: 'danger',
       fields: [{ title: 'Environment', value: run[:environment][:name], short: false }]
+    }
+  end
+
+  def integration_test
+    {
+      color: 'good',
+      fields: [],
+      fallback: 'Your Slack integration works!',
+      text: 'Your Slack integration works!'
     }
   end
 end

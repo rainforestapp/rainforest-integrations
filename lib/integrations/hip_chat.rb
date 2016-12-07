@@ -54,6 +54,7 @@ class Integrations::HipChat < Integrations::Base
     case event_type
     when 'run_completion' then run[:result] == 'passed' ? 'green' : 'red'
     when 'run_error', 'run_test_failure', 'webhook' then 'red'
+    when 'integration_test' then 'green'
     end
   end
 
@@ -157,6 +158,20 @@ Please contact #{CUSTOMER_SERVICE_EMAIL} if you need help debugging this problem
           value: { label: run[:environment][:name] }
         }
       ]
+    }
+  end
+
+  def integration_test_message
+    <<-HTML
+Your HipChat integration works!
+    HTML
+  end
+
+  def integration_test_card
+    {
+      title: 'Integration Test',
+      url: payload[:frontend_url],
+      attributes: [],
     }
   end
 end

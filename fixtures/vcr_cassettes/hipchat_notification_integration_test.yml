@@ -1,0 +1,53 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.hipchat.com/v2/room/Test/notification?auth_token=sjc91Sq15qhcyciVoDo7f7jFrZhj0OizRKl8D6ED
+    body:
+      encoding: UTF-8
+      string: '{"room_id":"Test","from":"Rainforest QA","message":"Your Pivotal Tracker
+        integration works!\n","message_format":"html","color":"green","card":{"id":"fcc030f7-2d09-4db3-a6d1-45dd59f75418","style":"application","icon":{"url":"https://www.rainforestqa.com/images/favicon-f246a1f7.png"},"title":"Integration
+        Test","url":"http://www.example.com","attributes":[]},"notify":true}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Date, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-Backoff
+      Content-Type:
+      - text/html
+      Date:
+      - Fri, 02 Dec 2016 21:22:34 GMT
+      Location:
+      - https://api.hipchat.com/v2/room/2776193/history/c7cfd412-42cc-4214-b23c-72a606fcecbe
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000
+      X-Content-Type-Options:
+      - nosniff
+      X-Ratelimit-Limit:
+      - '100'
+      X-Ratelimit-Remaining:
+      - '100'
+      X-Ratelimit-Reset:
+      - '1480714055'
+      X-Xss-Protection:
+      - 1; mode=block
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Fri, 02 Dec 2016 21:22:34 GMT
+recorded_with: VCR 2.9.3
