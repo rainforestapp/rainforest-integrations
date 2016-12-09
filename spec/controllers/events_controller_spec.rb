@@ -91,7 +91,7 @@ describe EventsController, type: :controller do
       end
 
       context 'with an integration test' do
-        let(:payload_integration_test) do
+        let(:payload) do
           {
             event_type: 'test_integration',
             integrations: integrations,

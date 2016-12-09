@@ -13,7 +13,7 @@ class PayloadValidator
 
   def validate!
     # integration_test doens't have a payload
-    return true if @event_type.to_s == :integration_test
+    return true if @event_type.to_s == "integration_test"
     event = EVENTS.fetch(@event_type.to_s) do
       raise InvalidPayloadError, "Event #{@event_type} is not supported"
     end
