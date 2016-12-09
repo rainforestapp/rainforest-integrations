@@ -90,6 +90,23 @@ describe EventsController, type: :controller do
         end
       end
 
+      context 'with an integration test' do
+        let(:payload_integration_test) do
+          {
+            event_type: 'test_integration',
+            integrations: integrations,
+            payload: {},
+            oauth_consumer: oauth_consumer
+          }.to_json
+        end
+
+        it 'returns a 201' do
+          post :create, payload
+          expect(response.code).to eq '201'
+          expect(json['status']).to eq 'ok'
+        end
+      end
+
       context 'with an unsupported integration' do
         let(:service_response) { double(:service_response, code: 400, body: "errors") }
 
