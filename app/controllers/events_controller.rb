@@ -18,7 +18,6 @@ class EventsController < ApplicationController
       unless %i(event_type integrations payload oauth_consumer).all? { |key| body.key? key }
         return invalid_request
       end
-
       Integrations.send_event(body)
       render json: { status: 'ok' }, status: :created
     rescue MultiJson::ParseError
