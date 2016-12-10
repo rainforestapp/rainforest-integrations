@@ -170,7 +170,7 @@ Your HipChat integration works!
   def integration_test_card
     {
       title: 'Integration Test',
-      url: payload[:frontend_url],
+      url: '#',
       attributes: [],
     }
   end
