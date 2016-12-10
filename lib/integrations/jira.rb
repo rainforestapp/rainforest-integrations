@@ -112,8 +112,8 @@ class Integrations::Jira < Integrations::Base
   def create_integration_test_issue
     {
       project: { key: settings[:project_key] },
-      labels: ['Integration Test'],
-      issuetype: { name: 'Bug' },
+      labels: ['Integration-Test'],
+      issuetype: { name: 'Task' },
       summary: 'Your Jira integration works!',
       description: "Your Jira integration works!"
     }
