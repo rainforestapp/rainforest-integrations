@@ -61,5 +61,32 @@ describe Integrations do
         subject
       end
     end
+
+    context 'with an integration_test' do
+      let(:event_type) { 'integration_test' }
+      let(:payload) do
+        {}
+      end
+      let(:integrations) { [{:key=>'slack', :settings=>{:url=>"https://example.com/fake_url"}}] }
+      let(:oauth_consumer) { {} }
+      subject do
+        described_class.send_event(
+          event_type: event_type,
+          integrations: integrations,
+          payload: payload,
+          oauth_consumer: oauth_consumer
+        )
+      end
+
+      it 'calls #send_event on the corresponding class for the integration' do
+        mock_integration = double
+        expect(Integrations::Slack).to receive(:new)
+          .with(event_type, payload, integrations.first[:settings], oauth_consumer)
+          .and_return mock_integration
+        expect(mock_integration).to receive(:valid?).and_return(true)
+        expect(mock_integration).to receive :send_event
+        subject
+      end
+    end
   end
 end
