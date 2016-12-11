@@ -110,6 +110,8 @@ class Integrations::Jira < Integrations::Base
   end
 
   def create_integration_test_issue
+    # In Jira labels can't have spaces in the name
+    # and default issuetype created in jira is Task
     {
       project: { key: settings[:project_key] },
       labels: ['Integration-Test'],
