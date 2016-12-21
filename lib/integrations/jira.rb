@@ -110,9 +110,10 @@ class Integrations::Jira < Integrations::Base
   end
 
   def create_integration_test_issue
+    # In Jira labels can't have spaces in the name
     {
       project: { key: settings[:project_key] },
-      labels: ['Integration Test'],
+      labels: ['Integration-Test'],
       issuetype: { name: 'Bug' },
       summary: 'Your Jira integration works!',
       description: "Your Jira integration works!"
