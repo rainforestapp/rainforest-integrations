@@ -52,6 +52,7 @@ describe Integrations::Slack do
       [
         {
           key: 'url',
+          # NOTE: This is an invalid slack webhook URL.
           value: 'https://hooks.slack.com/services/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'
         }
       ]
